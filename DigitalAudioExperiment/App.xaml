@@ -1,9 +1,10 @@
 ﻿<Application x:Class="DigitalAudioExperiment.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:DigitalAudioExperiment"
+             xmlns:local="clr-namespace:DigitalAudioExperiment" 
+             xmlns:viewmodel="clr-namespace:DigitalAudioExperiment.ViewModel"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <viewmodel:DaeReceiverViewModel x:Key="DaeReceiverViewModelKey"/>
     </Application.Resources>
 </Application>
