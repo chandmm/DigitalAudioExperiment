@@ -45,12 +45,41 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <Button Grid.Row="9" Content="Power" Command="{Binding ExitCommand}" Margin="5"/>
             <StackPanel Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="20">
                 <TextBlock x:Name="title" Text="{Binding Title}" Style="{StaticResource TextBlockTitleStyle}"/>
                 <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>
             </StackPanel>
             <Border Grid.Row="1" Grid.RowSpan="7" Margin="20" Grid.ColumnSpan="10" BorderThickness="2" BorderBrush="Silver" Background="Black">
-                                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Column="9">
+                        <ContentControl Template="{StaticResource StereoIndicatorKey}"/>
+                    </Grid>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

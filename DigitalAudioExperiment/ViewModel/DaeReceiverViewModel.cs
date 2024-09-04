@@ -1,4 +1,6 @@
-﻿namespace DigitalAudioExperiment.ViewModel
+﻿using DigitalAudioExperiment.Infrastructure;
+
+namespace DigitalAudioExperiment.ViewModel
 {
     public class DaeReceiverViewModel : BaseViewModel
     {
@@ -26,11 +28,22 @@
             }
         }
 
+
+        #region Commands
+
+        public RelayCommand ExitCommand { get; set; }
+
+        #endregion
+
         public DaeReceiverViewModel()
         {
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
+
+            ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
         }
+
+        #region Dispose
 
         protected override void Dispose(bool isDisposng)
         {
@@ -44,5 +57,7 @@
                 _isDisposed = true;
             }
         }
+
+        #endregion
     }
 }

@@ -16,4 +16,17 @@
         <Setter Property="FontFamily" Value="Ariel"/>
         <Setter Property="FontStyle" Value="Italic"/>
     </Style>
+
+    <ControlTemplate x:Key="StereoIndicatorKey">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Grid.Column="1" Fill="Red"/>
+            <TextBlock Text="MONO" Margin="5"/>
+            <TextBlock Grid.Column="1" Text="STEREO" Margin="5"/>
+        </Grid>
+    </ControlTemplate>
 </ResourceDictionary>    
