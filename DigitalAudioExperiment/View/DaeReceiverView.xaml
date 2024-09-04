@@ -45,7 +45,13 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="title" Text="{Binding Title}" Grid.ColumnSpan="2" Foreground="White" Margin="5"/>
+            <StackPanel Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="20">
+                <TextBlock x:Name="title" Text="{Binding Title}" Style="{StaticResource TextBlockTitleStyle}"/>
+                <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>
+            </StackPanel>
+            <Border Grid.Row="1" Grid.RowSpan="7" Margin="20" Grid.ColumnSpan="10" BorderThickness="2" BorderBrush="Silver" Background="Black">
+                                
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

@@ -4,4 +4,16 @@
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
         <Setter Property="Source" Value="/Resources/ReceiverFacePlate.jpg"/>
     </Style>
+    <Style TargetType="TextBlock" x:Key="TextBlockTitleStyle">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Ariel"/>
+    </Style>
+    <Style TargetType="TextBlock" x:Key="TextBlockSubTitleStyle">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Ariel"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+    </Style>
 </ResourceDictionary>    

@@ -14,9 +14,22 @@
             } 
         }
 
+        private string _subTitle;
+        public string SubTitle
+        {
+            get => _subTitle;
+            set
+            {
+                _subTitle = value;
+
+                OnNotifyPropertyChanged();
+            }
+        }
+
         public DaeReceiverViewModel()
         {
-            Title = "Mp3 Digital Audio";
+            Title = "Digital Audio Experiment(DAE)";
+            SubTitle = "Mp3 Digital Audio";
         }
 
         protected override void Dispose(bool isDisposng)
