@@ -10,14 +10,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DigitalAudioExperiment.Views
+namespace DigitalAudioExperiment.View
 {
     /// <summary>
     /// Interaction logic for DaeReceiverView.xaml
     /// </summary>
-    public partial class DaeReceiverView : Window
+    public partial class DaeReceiverView : UserControl
     {
         public DaeReceiverView()
         {

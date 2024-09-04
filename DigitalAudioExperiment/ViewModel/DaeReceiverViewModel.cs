@@ -2,21 +2,34 @@
 {
     public class DaeReceiverViewModel : BaseViewModel
     {
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set 
+            {
+                _title = value;
 
-        #region Dispose
+                OnNotifyPropertyChanged();
+            } 
+        }
 
-        protected override void Dispose(bool disposing)
+        public DaeReceiverViewModel()
+        {
+            Title = "Mp3 Digital Audio";
+        }
+
+        protected override void Dispose(bool isDisposng)
         {
             if (!_isDisposed)
             {
-                if (disposing)
+                if (isDisposng)
                 {
+                    // TODO: Dispose resources.
                 }
 
                 _isDisposed = true;
             }
         }
-
-        #endregion
     }
 }

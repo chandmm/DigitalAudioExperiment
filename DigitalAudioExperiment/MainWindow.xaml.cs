@@ -20,5 +20,12 @@ namespace DigitalAudioExperiment
         {
             InitializeComponent();
         }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+            this.DragMove();
+        }
     }
 }

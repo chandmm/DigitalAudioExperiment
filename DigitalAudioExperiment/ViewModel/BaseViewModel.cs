@@ -5,27 +5,18 @@ namespace DigitalAudioExperiment.ViewModel
 {
     public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
     {
-        protected bool _isDisposed;
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        protected bool _isDisposed = false;
 
-        #region Events
-
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        protected void OnNotifyPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        #endregion
+        protected abstract void Dispose(bool isDisposng);
 
-        #region Dispose
-
-        protected abstract void Dispose(bool disposing);
-
-        public virtual void Dispose()
+        public void Dispose()
         {
             Dispose(true);
         }
-
-        #endregion
     }
 }

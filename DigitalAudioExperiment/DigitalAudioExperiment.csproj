@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ReceiverFacePlate.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ReceiverFacePlate.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Logic\" />
   </ItemGroup>
