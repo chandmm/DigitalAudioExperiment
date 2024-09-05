@@ -76,9 +76,17 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Column="9">
-                        <ContentControl Template="{StaticResource StereoIndicatorKey}"/>
+                    <Grid Grid.Column="9" Style="{StaticResource MonoStereoDisplayComponentGridStyle}" Margin="5">
+                        <Rectangle/>
+                        <TextBlock/>
                     </Grid>
+                    <!--Place holder for VU controls-->
+                    <Rectangle Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="2" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>
+                    <Rectangle Grid.Row="6" Grid.RowSpan="4" Grid.Column="2" Grid.ColumnSpan="2" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>
+                    <!-- VU VU -->
+                    <Slider x:Name="PlaceHolder" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Grid.ColumnSpan="6" VerticalAlignment="Center" Margin="5" TickPlacement="TopLeft" Minimum="-60" Maximum="0" Value="-30"/>
+                    <TextBox BorderThickness="0" TextWrapping="Wrap" Text="Sampling Rate: 44.1 kHz BPS: 128 kbps" Background="Black" Foreground="Cyan" Grid.RowSpan="6" Grid.ColumnSpan="2" Margin="5"/>
+                    <TextBox BorderThickness="0" Text="Title: Some song title" Background="Black" Foreground="Cyan" Grid.RowSpan="6" Grid.ColumnSpan="7" Grid.Column="2" Margin="5"/>
                 </Grid>
             </Border>
         </Grid>

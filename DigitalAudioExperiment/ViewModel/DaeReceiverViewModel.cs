@@ -1,4 +1,5 @@
 ﻿using DigitalAudioExperiment.Infrastructure;
+using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -12,7 +13,7 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 _title = value;
 
-                OnNotifyPropertyChanged();
+                OnPropertyChanged();
             } 
         }
 
@@ -24,10 +25,15 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 _subTitle = value;
 
-                OnNotifyPropertyChanged();
+                OnPropertyChanged();
             }
         }
 
+        private bool _isMono;
+        public bool IsMono
+        {
+            get => _isMono;
+        }
 
         #region Commands
 
@@ -39,9 +45,21 @@ namespace DigitalAudioExperiment.ViewModel
         {
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
+            _isMono = true;
 
             ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
+
+            RaisePropertyChangedEvents();
         }
+
+        #region Events
+
+        private void RaisePropertyChangedEvents()
+        {
+            OnPropertyChanged(nameof(IsMono));
+        }
+
+        #endregion
 
         #region Dispose
 

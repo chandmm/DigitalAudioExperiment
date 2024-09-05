@@ -9,8 +9,22 @@ namespace DigitalAudioExperiment.ViewModel
 
         protected bool _isDisposed = false;
 
-        protected void OnNotifyPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        protected void OnPropertyChanged(params string[] propertyNames)
+        {
+            if (propertyNames == null
+                || !propertyNames.Any())
+            {
+                return;
+            }
+
+            foreach (var name in propertyNames)
+            {
+                OnPropertyChanged(name);
+            }
+        }
 
         protected abstract void Dispose(bool isDisposng);
 

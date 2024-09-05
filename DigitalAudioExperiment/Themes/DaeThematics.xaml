@@ -17,16 +17,29 @@
         <Setter Property="FontStyle" Value="Italic"/>
     </Style>
 
-    <ControlTemplate x:Key="StereoIndicatorKey">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Rectangle Fill="Blue"/>
-            <Rectangle Grid.Column="1" Fill="Red"/>
-            <TextBlock Text="MONO" Margin="5"/>
-            <TextBlock Grid.Column="1" Text="STEREO" Margin="5"/>
-        </Grid>
-    </ControlTemplate>
+    <Style TargetType="Grid" x:Key="MonoStereoDisplayComponentGridStyle">
+        <Style.Resources>
+            <Style TargetType="Rectangle">
+                <Setter Property="Fill" Value="Cyan"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsMono}" Value="False">
+                        <Setter Property="Fill" Value="Red"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Text" Value="MONO"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsMono}" Value="False">
+                        <Setter Property="Text" Value="STEREO"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Style.Resources>
+    </Style>
+
 </ResourceDictionary>    
