@@ -23,4 +23,10 @@
     <Folder Include="Logic\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="WpfAudioControlLibrary">
+      <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Debug\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

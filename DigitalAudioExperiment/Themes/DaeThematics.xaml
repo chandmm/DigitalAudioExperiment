@@ -20,7 +20,7 @@
     <Style TargetType="Grid" x:Key="MonoStereoDisplayComponentGridStyle">
         <Style.Resources>
             <Style TargetType="Rectangle">
-                <Setter Property="Fill" Value="Cyan"/>
+                <Setter Property="Fill" Value="#62e3f6"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsMono}" Value="False">
                         <Setter Property="Fill" Value="Red"/>
@@ -41,45 +41,5 @@
             </Style>
         </Style.Resources>
     </Style>
-
-    <DataTemplate x:Key="PlayBackControlsTemplate" DataType="ContentControl">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button Content="SkipStart"/>
-            <Button Grid.Column="1" Content="Stop"/>
-            <Button Grid.Column="2" Content="Play"/>
-            <Button Grid.Column="3" Content="Pause"/>
-            <Button Grid.Column="4" Content="Eject"/>
-            <StackPanel Grid.Column="5" VerticalAlignment="Stretch">
-                <ToggleButton Content="Autoplay" Margin="2"/>
-                <ToggleButton Content="Loop" Margin="2"/>
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate x:Key="VolumneControlTemplate">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Ellipse MinWidth="50" MinHeight="50">
-                <Ellipse.Fill>
-                    <RadialGradientBrush>
-                        <GradientStop Color="Black" Offset="1"/>
-                        <GradientStop Color="White" Offset="0"/>
-                    </RadialGradientBrush>
-                </Ellipse.Fill>
-            </Ellipse>
-            <TextBlock Grid.Row="1" Text="Volume" Foreground="White" HorizontalAlignment="Center"/>
-        </Grid>
-    </DataTemplate>
 
 </ResourceDictionary>    

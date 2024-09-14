@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DigitalAudioExperiment.View"
+             xmlns:local="clr-namespace:DigitalAudioExperiment.View" 
+             xmlns:components="clr-namespace:DigitalAudioExperiment.View.Components"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
@@ -20,86 +21,6 @@
         <Viewbox Stretch="Fill">
             <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
         </Viewbox>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Button Grid.Row="9" Content="Power" Command="{Binding ExitCommand}" Margin="5"/>
-            <StackPanel Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="20">
-                <TextBlock x:Name="title" Text="{Binding Title}" Style="{StaticResource TextBlockTitleStyle}"/>
-                <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>
-            </StackPanel>
-            <Border Grid.Row="1" Grid.RowSpan="7" Margin="20" Grid.ColumnSpan="10" BorderThickness="2" BorderBrush="Silver" Background="Black">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Column="9" Style="{StaticResource MonoStereoDisplayComponentGridStyle}" Margin="5">
-                        <Rectangle/>
-                        <TextBlock/>
-                    </Grid>
-                    <!--Place holder for VU controls-->
-                    <Rectangle Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="2" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>
-                    <Rectangle Grid.Row="6" Grid.RowSpan="4" Grid.Column="2" Grid.ColumnSpan="2" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>
-                    <!-- VU VU -->
-                    <Slider x:Name="PlaceHolder" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Grid.ColumnSpan="6" VerticalAlignment="Center" Margin="5" TickPlacement="TopLeft" Minimum="-60" Maximum="0" Value="-30"/>
-                    <TextBox BorderThickness="0" TextWrapping="Wrap" Text="Sampling Rate: 44.1 kHz BPS: 128 kbps" Background="Black" Foreground="DarkCyan" Grid.RowSpan="6" Grid.ColumnSpan="2" Margin="5"/>
-                    <TextBox BorderThickness="0" Text="Title: Some song title" Background="Black" Foreground="DArkCyan" Grid.RowSpan="6" Grid.ColumnSpan="7" Grid.Column="2" Margin="5"/>
-                </Grid>
-            </Border>
-            <ContentControl ContentTemplate="{StaticResource PlayBackControlsTemplate}"
-                Grid.Row="8"
-                Grid.Column="2"
-                Grid.ColumnSpan="6"/>
-            <ContentControl ContentTemplate="{StaticResource VolumneControlTemplate}"
-                Grid.Row="8"
-                Grid.Column="8"
-                Grid.ColumnSpan="2"
-                Grid.RowSpan="2"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"/>
-        </Grid>
+        <components:FacePlateControlView/>
     </Grid>
 </UserControl>

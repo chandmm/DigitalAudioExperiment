@@ -1,4 +1,5 @@
 ﻿using DigitalAudioExperiment.Infrastructure;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -38,6 +39,7 @@ namespace DigitalAudioExperiment.ViewModel
         #region Commands
 
         public RelayCommand ExitCommand { get; set; }
+        public RelayCommand PlayCommand { get; set; }
 
         #endregion
 
@@ -48,8 +50,14 @@ namespace DigitalAudioExperiment.ViewModel
             _isMono = true;
 
             ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
+            PlayCommand = new RelayCommand(PlayButton, () => true);
 
             RaisePropertyChangedEvents();
+        }
+
+        private void PlayButton()
+        {
+            MessageBox.Show("Play Pressed");
         }
 
         #region Events
