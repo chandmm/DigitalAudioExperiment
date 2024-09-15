@@ -32,16 +32,14 @@ namespace DigitalAudioExperiment.Logic
             {
                 return;
             }
-
-            using (var simpleStream = _simpleDecoder.GetStream())
-            {
-
-            }
         }
 
         private void InternalPlay()
         {
-            
+            using (var simpleStream = _simpleDecoder.GetStream())
+            {
+
+            }
         }
 
         #endregion
@@ -50,6 +48,21 @@ namespace DigitalAudioExperiment.Logic
 
         public SimpleDecoder? GetDecoder()
             => _simpleDecoder;
+
+        public string GetAudioFileInfo()
+        {
+            if (_simpleDecoder == null)
+            {
+                throw new NullReferenceException("Decoder is not initialised.");
+            }
+
+            if (_simpleDecoder.GetFrameCount() == 0)
+            {
+                throw new ApplicationException("No frames present or invalid audio file format.");
+            }
+
+            return _simpleDecoder.GetFrames().First().ToString();
+        }
 
         #endregion
 
