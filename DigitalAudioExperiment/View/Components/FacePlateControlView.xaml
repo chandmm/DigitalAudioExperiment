@@ -41,7 +41,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button Grid.Column="9" Content="Power" Command="{Binding ExitCommand}" Margin="5"/>
+            <controls:PowerButtonControl Grid.Column="9" ExitCommand="{Binding ExitCommand}" Margin="5" Background="Transparent" HorizontalAlignment="Right"/>
             <StackPanel Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="20">
                 <TextBlock x:Name="title" Text="{Binding Title}" Style="{StaticResource TextBlockTitleStyle}"/>
                 <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>

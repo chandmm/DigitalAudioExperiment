@@ -1,6 +1,5 @@
 ﻿using DigitalAudioExperiment.Infrastructure;
 using System.Windows;
-using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -36,6 +35,18 @@ namespace DigitalAudioExperiment.ViewModel
             get => _isMono;
         }
 
+        private double _values;
+        public double Values
+        {
+            get => _values;
+            set
+            {
+                _values = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #region Commands
 
         public RelayCommand ExitCommand { get; set; }
@@ -57,7 +68,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void PlayButton()
         {
-            MessageBox.Show("Play Pressed");
+            //Values += 10d;
         }
 
         #region Events
