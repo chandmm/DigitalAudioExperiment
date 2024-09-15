@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\ReceiverFacePlate.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ReceiverFacePlate.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+    <Folder Include="Logic\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="WpfAudioControlLibrary">
+      <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Debug\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
