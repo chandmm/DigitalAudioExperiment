@@ -1,5 +1,6 @@
 ﻿using Mp3DecoderSimple;
 using NAudio.Wave;
+using System.Windows.Input;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -10,6 +11,9 @@ namespace DigitalAudioExperiment.Logic
         private bool _isDisposed;
         private string _fileName;
         private SimpleDecoder? _simpleDecoder;
+        private int _bitRate;
+        private int _frameIndex;
+        private (int, int) _duration;
 
         #endregion
 
@@ -36,9 +40,32 @@ namespace DigitalAudioExperiment.Logic
 
         private void InternalPlay()
         {
+            PlayStream();
+        }
+
+        private void PlayStream()
+        {
             using (var simpleStream = _simpleDecoder.GetStream())
             {
+                simpleStream.Position = 0;
+                simpleStream.SetBitrateCallback(UpdateInfoFromStreamCallback);
+                _duration = (simpleStream.DurationMinutes, simpleStream.DurationSeconds);
 
+                using (WaveOutEvent waveOut = new WaveOutEvent())
+                {
+                    using (WaveStream waveStream = new RawSourceWaveStream(simpleStream, new WaveFormat(simpleStream.GetSampleRate(), 16, simpleStream.GetNumberOfChannels())))
+                    {
+                        waveOut.DesiredLatency = 150;
+                        waveOut.PlaybackStopped += PlaybackStoppedCallback;
+                        waveOut.Init(waveStream);
+                        waveOut.Play();
+
+                        while (waveOut.PlaybackState == PlaybackState.Playing)
+                        {
+                            Thread.Sleep(40);
+                        }
+                    }
+                }
             }
         }
 
@@ -62,6 +89,24 @@ namespace DigitalAudioExperiment.Logic
             }
 
             return _simpleDecoder.GetFrames().First().ToString();
+        }
+
+        public (int, int) Duration()
+            => _duration;
+
+        #endregion
+
+        #region Callback Methods
+
+        private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
+        {
+            _bitRate = bitRate;
+            _frameIndex = frameIndex;
         }
 
         #endregion

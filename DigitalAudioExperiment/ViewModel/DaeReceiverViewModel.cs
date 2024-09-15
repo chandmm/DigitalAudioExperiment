@@ -1,10 +1,17 @@
 ﻿using DigitalAudioExperiment.Infrastructure;
-using System.Windows;
 
 namespace DigitalAudioExperiment.ViewModel
 {
     public class DaeReceiverViewModel : BaseViewModel
     {
+        #region Fields
+
+        private Func<string?> _getFile;
+
+        #endregion
+
+        #region Properties
+
         private string _title;
         public string Title
         {
@@ -47,12 +54,17 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        #endregion
+
         #region Commands
 
         public RelayCommand ExitCommand { get; set; }
         public RelayCommand PlayCommand { get; set; }
+        public RelayCommand SelectCommand { get; set; }
 
         #endregion
+
+        #region Initialisation
 
         public DaeReceiverViewModel()
         {
@@ -62,14 +74,40 @@ namespace DigitalAudioExperiment.ViewModel
 
             ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
             PlayCommand = new RelayCommand(PlayButton, () => true);
+            SelectCommand = new RelayCommand(SelectFile, () => true);
 
             RaisePropertyChangedEvents();
         }
+
+        public DaeReceiverViewModel(Func<string?> callback)
+            : this()
+        {
+            SetGetFileCallback(callback);
+        }
+
+        public void SetGetFileCallback(Func<string> callback)
+            => _getFile = callback;
+
+        #endregion
+
+        #region Playback Logic
 
         private void PlayButton()
         {
             //Values += 10d;
         }
+
+        private void SelectFile()
+        {
+            if (_getFile == null)
+            {
+                return;
+            }
+
+            _getFile.Invoke();
+        }
+
+        #endregion
 
         #region Events
 
