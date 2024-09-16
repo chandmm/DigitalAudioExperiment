@@ -19,6 +19,8 @@ namespace DigitalAudioExperiment.Logic
         private bool _isPlaying;
         private bool _isSeeking;
         private int _seekPosition;
+        private bool _isPaused;
+        private Action<int> _seekPositionCallback;
 
         #endregion
 
@@ -31,6 +33,9 @@ namespace DigitalAudioExperiment.Logic
             _simpleDecoder = new SimpleDecoder(fileName, null);
         }
 
+        public void SetSeekPositionCallback(Action<int> seekPositionCallback)
+            => _seekPositionCallback = seekPositionCallback;
+
         #endregion
 
         #region Logic
@@ -41,10 +46,20 @@ namespace DigitalAudioExperiment.Logic
             {
                 return;
             }
+
+            if (_isPlaying)
+            {
+                return;
+            }
+
+            InternalPlay();
         }
 
         private void InternalPlay()
         {
+            _isPlaying = true;
+            _isPaused = false;
+
             PlayStream();
         }
 
@@ -68,7 +83,7 @@ namespace DigitalAudioExperiment.Logic
                         while (waveOut.PlaybackState == PlaybackState.Playing
                             || waveOut.PlaybackState == PlaybackState.Paused)
                         {
-                            HandleOnPlayUpdates(simpleStream, waveOut);
+                            HandlePlaybackStates(simpleStream, waveOut);
 
                             Thread.Sleep(40);
                         }
@@ -77,11 +92,21 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        private void HandleOnPlayUpdates (DecoderSimplePcmStream simpleStream, WaveOutEvent waveOut)
+        private void HandlePlaybackStates (DecoderSimplePcmStream simpleStream, WaveOutEvent waveOut)
         {
             if (!_isPlaying)
             {
                 waveOut.Stop();
+
+                return;
+            }
+
+            if (_isPaused
+                && waveOut.PlaybackState != PlaybackState.Paused)
+            {
+                waveOut.Pause();
+
+                return;
             }
 
             if (_isSeeking)
@@ -89,6 +114,14 @@ namespace DigitalAudioExperiment.Logic
                 _isSeeking = false;
                 simpleStream.Seek(_seekPosition, SeekOrigin.Begin);
             }
+
+            if (waveOut.PlaybackState == PlaybackState.Paused
+                && !_isPaused)
+            {
+                waveOut.Play();
+            }
+
+            _seekPositionCallback?.Invoke((int)simpleStream.Position);
         }
 
         public void Stop()
@@ -101,6 +134,16 @@ namespace DigitalAudioExperiment.Logic
             _seekPosition = seekPosition;
             _isSeeking = true;
 
+        }
+
+        public void Pause()
+        {
+            if (!_isPlaying)
+            {
+                return; 
+            }
+
+            _isPaused = !_isPaused;
         }
 
         #endregion
@@ -128,13 +171,17 @@ namespace DigitalAudioExperiment.Logic
         public (int, int) Duration()
             => _duration;
 
+        public int GetFrameCount()
+            => (int)_simpleDecoder?.GetFrameCount();
+
         #endregion
 
         #region Callback Methods
 
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            _isPlaying = false;
         }
 
         private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
@@ -153,6 +200,11 @@ namespace DigitalAudioExperiment.Logic
             {
                 if (_isDisposing)
                 {
+                    if (_isPlaying)
+                    {
+                        _isPlaying = false;
+                    }
+
                     _simpleDecoder?.Dispose();
                     _simpleDecoder = null;
                 }

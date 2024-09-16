@@ -35,4 +35,13 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\HuffmanTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ScalefactorBandTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

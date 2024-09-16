@@ -1,4 +1,5 @@
 ﻿using DigitalAudioExperiment.Infrastructure;
+using DigitalAudioExperiment.Logic;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -7,6 +8,7 @@ namespace DigitalAudioExperiment.ViewModel
         #region Fields
 
         private Func<string?> _getFile;
+        private DaeAudioPlayer _player;
 
         #endregion
 
@@ -42,13 +44,37 @@ namespace DigitalAudioExperiment.ViewModel
             get => _isMono;
         }
 
-        private double _values;
-        public double Values
+        private double _value;
+        public double Value
         {
-            get => _values;
+            get => _value;
             set
             {
-                _values = value;
+                _value = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double _maximum;
+        public double Maximum
+        {
+            get => _maximum;
+            set
+            {
+                _maximum = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double _tickFrequency;
+        public double TickFrequency
+        {
+            get => _tickFrequency;
+            set
+            {
+                _tickFrequency = value;
 
                 OnPropertyChanged();
             }
@@ -61,6 +87,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand ExitCommand { get; set; }
         public RelayCommand PlayCommand { get; set; }
         public RelayCommand SelectCommand { get; set; }
+        public RelayCommand StopCommand { get; set; }
 
         #endregion
 
@@ -73,8 +100,9 @@ namespace DigitalAudioExperiment.ViewModel
             _isMono = true;
 
             ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
-            PlayCommand = new RelayCommand(PlayButton, () => true);
+            PlayCommand = new RelayCommand(async () => await PlayButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
+            StopCommand = new RelayCommand(StopButton, () => true);
 
             RaisePropertyChangedEvents();
         }
@@ -92,19 +120,58 @@ namespace DigitalAudioExperiment.ViewModel
 
         #region Playback Logic
 
-        private void PlayButton()
+        private void StopButton()
         {
-            //Values += 10d;
+            _player.Stop();
         }
 
-        private void SelectFile()
+        private async Task PlayButton()
+        {
+            await Task.Run(() => _player.Play()).ConfigureAwait(false);
+        }
+
+        private async void SelectFile()
         {
             if (_getFile == null)
             {
                 return;
             }
 
-            _getFile.Invoke();
+            var fileName = _getFile.Invoke();
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+
+            OnFileSelected(fileName);
+        }
+
+        private void OnFileSelected(string fileName)
+        {
+            if (_player != null)
+            {
+                _player.Stop();
+                _player.Dispose();
+            }
+
+            _player = new DaeAudioPlayer(fileName);
+            _player.SetSeekPositionCallback(UpdatePosition);
+            Maximum = 100d;
+            SetTickFrequency();
+        }
+
+        private void SetTickFrequency()
+        {
+            TickFrequency = 2d;
+        }
+
+        private void UpdatePosition(int position)
+        {
+            App.Current.Dispatcher.BeginInvoke(() =>
+            {
+                Value = position;
+            });
         }
 
         #endregion
@@ -126,7 +193,7 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 if (isDisposng)
                 {
-                    // TODO: Dispose resources.
+                    _player?.Dispose();
                 }
 
                 _isDisposed = true;

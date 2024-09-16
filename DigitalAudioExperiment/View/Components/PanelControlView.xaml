@@ -76,8 +76,8 @@
                 <controls:SeekSiderControl 
                     TickFrequency="2" 
                     Minimum="0" 
-                    Maximum="100" 
-                    Value="40" Grid.Row="6"
+                    Maximum="{Binding Path=Maximum, RelativeSource={RelativeSource AncestorType=Grid}}" 
+                    Value="{Binding Value}" Grid.Row="6"
                     ElapsedMinutes="2"
                     ElapsedSeconds="30"
                     ElapsedHours="90"
