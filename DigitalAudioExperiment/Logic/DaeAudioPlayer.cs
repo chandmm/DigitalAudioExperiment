@@ -1,5 +1,7 @@
 ﻿using Mp3DecoderSimple;
+using Mp3DecoderSimple.Data;
 using NAudio.Wave;
+using System.IO;
 using System.Windows.Input;
 
 namespace DigitalAudioExperiment.Logic
@@ -14,6 +16,9 @@ namespace DigitalAudioExperiment.Logic
         private int _bitRate;
         private int _frameIndex;
         private (int, int) _duration;
+        private bool _isPlaying;
+        private bool _isSeeking;
+        private int _seekPosition;
 
         #endregion
 
@@ -60,13 +65,42 @@ namespace DigitalAudioExperiment.Logic
                         waveOut.Init(waveStream);
                         waveOut.Play();
 
-                        while (waveOut.PlaybackState == PlaybackState.Playing)
+                        while (waveOut.PlaybackState == PlaybackState.Playing
+                            || waveOut.PlaybackState == PlaybackState.Paused)
                         {
+                            HandleOnPlayUpdates(simpleStream, waveOut);
+
                             Thread.Sleep(40);
                         }
                     }
                 }
             }
+        }
+
+        private void HandleOnPlayUpdates (DecoderSimplePcmStream simpleStream, WaveOutEvent waveOut)
+        {
+            if (!_isPlaying)
+            {
+                waveOut.Stop();
+            }
+
+            if (_isSeeking)
+            {
+                _isSeeking = false;
+                simpleStream.Seek(_seekPosition, SeekOrigin.Begin);
+            }
+        }
+
+        public void Stop()
+        {
+            _isPlaying = false;
+        }
+
+        public void Seek(int seekPosition)
+        {
+            _seekPosition = seekPosition;
+            _isSeeking = true;
+
         }
 
         #endregion
