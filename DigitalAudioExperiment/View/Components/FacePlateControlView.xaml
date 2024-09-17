@@ -47,7 +47,12 @@
                 <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>
             </StackPanel>
             <local:PanelControlView Grid.Row="1" Grid.RowSpan="7" Margin="10,10,10,55" Grid.ColumnSpan="10"/>
-            <controls:PlaybackControls PlayCommand="{Binding PlayCommand}" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="6"/>
+            <controls:PlaybackControls 
+                PlayCommand="{Binding}" 
+                SelectCommand="{Binding}"
+                Grid.Row="8" 
+                Grid.Column="2" 
+                Grid.ColumnSpan="6"/>
             <controls:VolumeControlView Value="0" Max="100" Min="0" ControlLabel="Volume" Grid.Row="7" Grid.Column="8" Grid.RowSpan="3" Grid.ColumnSpan="2" />
         </Grid>
     </Grid>
