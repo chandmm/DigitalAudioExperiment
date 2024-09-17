@@ -6,6 +6,7 @@ namespace DigitalAudioExperiment.ViewModel
     public class DaeReceiverViewModel : BaseViewModel
     {
         #region Fields
+        private readonly double _tickPercentage = 0.01;
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
@@ -164,14 +165,14 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
+            Maximum = _player.GetFrameCount() ?? 0;
 
-            Maximum = _player.GetFrameCount();
             SetTickFrequency();
         }
 
         private void SetTickFrequency()
         {
-            TickFrequency = Maximum * 0.01;
+            TickFrequency = Maximum * _tickPercentage;
         }
 
         private void UpdatePosition(int position)
@@ -180,6 +181,16 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 Value = position;
             });
+        }
+
+        public void StartIsSeeking(bool isSeeking)
+        {
+            _player?.Pause();
+        }
+
+        public void SetSeekValue()
+        {
+            _player?.Seek((int)Value);
         }
 
         #endregion
