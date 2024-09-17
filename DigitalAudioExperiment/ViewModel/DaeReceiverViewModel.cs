@@ -86,6 +86,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public RelayCommand ExitCommand { get; set; }
         public RelayCommand PlayCommand { get; set; }
+        public RelayCommand PauseCommand { get; set; }
         public RelayCommand SelectCommand { get; set; }
         public RelayCommand StopCommand { get; set; }
 
@@ -101,6 +102,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
             PlayCommand = new RelayCommand(async () => await PlayButton(), () => true);
+            PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
 
@@ -130,6 +132,11 @@ namespace DigitalAudioExperiment.ViewModel
             await Task.Run(() => _player.Play()).ConfigureAwait(false);
         }
 
+        private async Task PauseButton()
+        {
+            _player?.Pause();
+        }
+
         private async void SelectFile()
         {
             if (_getFile == null)
@@ -157,18 +164,19 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
-            Maximum = 100d;
+
+            Maximum = _player.GetFrameCount();
             SetTickFrequency();
         }
 
         private void SetTickFrequency()
         {
-            TickFrequency = 2d;
+            TickFrequency = Maximum * 0.01;
         }
 
         private void UpdatePosition(int position)
         {
-            App.Current.Dispatcher.BeginInvoke(() =>
+            App.Current.Dispatcher.Invoke(() =>
             {
                 Value = position;
             });

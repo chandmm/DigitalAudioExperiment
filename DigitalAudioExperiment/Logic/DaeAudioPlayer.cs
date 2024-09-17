@@ -121,7 +121,7 @@ namespace DigitalAudioExperiment.Logic
                 waveOut.Play();
             }
 
-            _seekPositionCallback?.Invoke((int)simpleStream.Position);
+            _seekPositionCallback?.Invoke(_frameIndex);
         }
 
         public void Stop()

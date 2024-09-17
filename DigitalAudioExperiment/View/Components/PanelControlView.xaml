@@ -74,10 +74,11 @@
                 <!-- VU VU -->
                 <!--<Slider x:Name="PlaceHolder" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Grid.ColumnSpan="6" VerticalAlignment="Center" Margin="5" TickPlacement="TopLeft" Minimum="-60" Maximum="0" Value="-30"/>-->
                 <controls:SeekSiderControl 
-                    TickFrequency="2" 
+                    TickFrequency="{Binding Path=DataContext.TickFrequency, RelativeSource={RelativeSource AncestorType=Grid}}"  
                     Minimum="0" 
-                    Maximum="{Binding Path=Maximum, RelativeSource={RelativeSource AncestorType=Grid}}" 
-                    Value="{Binding Value}" Grid.Row="6"
+                    Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource AncestorType=Grid}}" 
+                    Value="{Binding Path=DataContext.Value, RelativeSource={RelativeSource AncestorType=Grid}}" 
+                    Grid.Row="6"
                     ElapsedMinutes="2"
                     ElapsedSeconds="30"
                     ElapsedHours="90"
