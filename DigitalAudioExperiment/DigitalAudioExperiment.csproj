@@ -20,13 +20,28 @@
 
   <ItemGroup>
     <Folder Include="Model\" />
-    <Folder Include="Logic\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mp3DecoderSimple">
+      <HintPath>..\..\AudioDecoderLabs\Mp3DecoderSimple\bin\Release\net8.0\Mp3DecoderSimple.dll</HintPath>
+    </Reference>
     <Reference Include="WpfAudioControlLibrary">
       <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Debug\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\HuffmanTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ScalefactorBandTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
