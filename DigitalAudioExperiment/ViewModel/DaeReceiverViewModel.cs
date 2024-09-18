@@ -1,6 +1,6 @@
 ﻿/*
     Digital Audio Experiement: Plays mp3 files and may be others in the future.
-    Copyright (C) 2024  Michael Chand
+    Copyright (C) 2024  Michael Chand.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using System.Diagnostics;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -99,6 +100,30 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private int _volume;
+        public int Volume
+        {
+            get => _volume;
+            set
+            {
+                VolumeAdjust(value);
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _volumeLabel;
+        public string VolumeLabel
+        {
+            get => _volumeLabel;
+            set
+            {
+                _volumeLabel = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -124,7 +149,8 @@ namespace DigitalAudioExperiment.ViewModel
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
-
+            Volume = 20;
+            VolumeLabel = "Vol";
             RaisePropertyChangedEvents();
         }
 
@@ -184,8 +210,13 @@ namespace DigitalAudioExperiment.ViewModel
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
             Maximum = _player.GetFrameCount() ?? 0;
+            _isMono = _player.GetIsMonoChannel();
+            Value = 0;
+            _player.SetVolume(Volume);
 
             SetTickFrequency();
+
+            RaisePropertyChangedEvents();
         }
 
         private void SetTickFrequency()
@@ -209,6 +240,16 @@ namespace DigitalAudioExperiment.ViewModel
         public void SetSeekValue()
         {
             _player?.Seek((int)Value);
+        }
+
+        #endregion
+
+        #region Application Logic
+
+        private void VolumeAdjust(int value)
+        {
+            _volume = value;
+            _player?.SetVolume(_volume);
         }
 
         #endregion

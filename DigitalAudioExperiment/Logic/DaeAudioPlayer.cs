@@ -17,6 +17,7 @@
 */
 using Mp3DecoderSimple;
 using Mp3DecoderSimple.Data;
+using Mp3DecoderSimple.Logic;
 using NAudio.Wave;
 using System.IO;
 
@@ -25,6 +26,7 @@ namespace DigitalAudioExperiment.Logic
     public class DaeAudioPlayer : IDisposable
     {
         #region Fields
+        private readonly int _volumeScaler = 100;
 
         private bool _isDisposed;
         private string _fileName;
@@ -37,6 +39,7 @@ namespace DigitalAudioExperiment.Logic
         private int _seekPosition;
         private bool _isPaused;
         private Action<int> _seekPositionCallback;
+        private int _volume;
 
         #endregion
 
@@ -91,7 +94,7 @@ namespace DigitalAudioExperiment.Logic
                 {
                     using (WaveStream waveStream = new RawSourceWaveStream(simpleStream, new WaveFormat(simpleStream.GetSampleRate(), 16, simpleStream.GetNumberOfChannels())))
                     {
-                        waveOut.DesiredLatency = 150;
+                        waveOut.DesiredLatency = 100;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
                         waveOut.Init(waveStream);
                         waveOut.Play();
@@ -142,6 +145,11 @@ namespace DigitalAudioExperiment.Logic
             {
                 _seekPositionCallback?.Invoke(_frameIndex);
             }
+
+            if ((waveOut.Volume * _volumeScaler) != _volume)
+            {
+                waveOut.Volume = (float)_volume / _volumeScaler;
+            }
         }
 
         public void Stop()
@@ -165,9 +173,12 @@ namespace DigitalAudioExperiment.Logic
             _isPaused = !_isPaused;
         }
 
+        public void SetVolume(int volume)
+            => _volume = volume;
+
         #endregion
 
-        #region Fetch Playback Information Logic
+        #region Fetch File Information Logic
 
         public SimpleDecoder? GetDecoder()
             => _simpleDecoder;
@@ -186,6 +197,9 @@ namespace DigitalAudioExperiment.Logic
 
             return _simpleDecoder.GetFrames().First().ToString();
         }
+
+        public bool GetIsMonoChannel()
+            => HeaderInfoUtils.GetNumberOfChannels(_simpleDecoder?.GetFrames().First().Header)  < 2;
 
         public (int, int) Duration()
             => _duration;
