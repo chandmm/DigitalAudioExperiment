@@ -41,6 +41,7 @@ namespace DigitalAudioExperiment.Logic
         private bool _isPaused;
         private Action<int> _seekPositionCallback;
         private int _volume;
+        private Action _updateCallback;
 
         #endregion
 
@@ -59,6 +60,9 @@ namespace DigitalAudioExperiment.Logic
 
         public void SetSeekPositionCallback(Action<int> seekPositionCallback)
             => _seekPositionCallback = seekPositionCallback;
+
+        public void SetUpdateCallback(Action updateCallback)
+            => _updateCallback = updateCallback;
 
         #endregion
 
@@ -158,6 +162,8 @@ namespace DigitalAudioExperiment.Logic
             {
                 waveOut.Volume = (float)_volume / _volumeScaler;
             }
+
+            _updateCallback?.Invoke();
         }
 
         public void Stop()
@@ -203,14 +209,24 @@ namespace DigitalAudioExperiment.Logic
                 throw new ApplicationException("No frames present or invalid audio file format.");
             }
 
-            return _simpleDecoder.GetFrames().First().ToString();
+            return _simpleDecoder.GetFrames().First().ToStringShort();
         }
+
+        public int GetBitRate()
+            => _stream.GetBitRate();
+
+        public int GetBitratePerFrame()
+            => _bitRate;
 
         public bool GetIsMonoChannel()
             => HeaderInfoUtils.GetNumberOfChannels(_simpleDecoder?.GetFrames().First().Header)  < 2;
 
         public (int, int) Duration()
             => _duration;
+        public double GetElapsed()
+        {
+            return _stream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
+        }
 
         public int? GetFrameCount()
             => _simpleDecoder?.GetFrameCount();

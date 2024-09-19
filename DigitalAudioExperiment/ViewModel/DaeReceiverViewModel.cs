@@ -18,6 +18,8 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using Mp3DecoderSimple;
+using NAudio.Wave.Compression;
 using System.Windows;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -125,6 +127,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private int _durationHours;
+        public int DurationHours
+        {
+            get => _durationHours;
+            set
+            {
+                _durationHours = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         private int _durationMinutes;
         public int DurationMinutes
         {
@@ -136,6 +150,68 @@ namespace DigitalAudioExperiment.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        private int _durationSeconds;
+        public int DurationSeconds
+        {
+            get => _durationSeconds;
+            set
+            {
+                _durationSeconds = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedHours;
+        public int ElapsedHours
+        {
+            get => _elapsedHours;
+            set
+            {
+                _elapsedHours = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedMinutes;
+        public int ElapsedMinutes
+        {
+            get => _elapsedMinutes;
+            set
+            {
+                _elapsedMinutes = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedSeconds;
+        public int ElapsedSeconds
+        {
+            get => _elapsedSeconds;
+            set
+            {
+                _elapsedSeconds = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _bitRate;
+        public int Bitrate
+        {
+            get => _bitRate;
+            set
+            {
+                _bitRate = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string Metadata { get; private set; }
 
         #endregion
 
@@ -223,11 +299,15 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
+            _player.SetUpdateCallback(Update);
             Maximum = _player.GetFrameCount() ?? 0;
             _isMono = _player.GetIsMonoChannel();
             Value = 0;
             _player.SetVolume(Volume);
             DurationMinutes = _player.Duration().Item1;
+            DurationSeconds = _player.Duration().Item2;
+            DurationHours = DurationMinutes / 60;
+            Metadata = _player.GetAudioFileInfo();
 
             SetTickFrequency();
 
@@ -266,6 +346,16 @@ namespace DigitalAudioExperiment.ViewModel
             _volume = value;
             _player?.SetVolume(_volume);
         }
+        private void Update()
+        {
+            var duration = _player?.GetElapsed();
+
+            ElapsedMinutes = (int)(duration / 60);
+            ElapsedSeconds = (int)(duration % 60);
+            ElapsedHours = (ElapsedMinutes / 60);
+
+            Bitrate = (int)_player?.GetBitratePerFrame();
+        }
 
         #endregion
 
@@ -273,7 +363,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void RaisePropertyChangedEvents()
         {
-            OnPropertyChanged(nameof(IsMono));
+            OnPropertyChanged(nameof(IsMono)
+                , nameof(Metadata));
         }
 
         #endregion
