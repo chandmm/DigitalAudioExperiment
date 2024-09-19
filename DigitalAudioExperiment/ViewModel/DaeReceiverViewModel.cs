@@ -1,5 +1,26 @@
-﻿using DigitalAudioExperiment.Infrastructure;
+﻿/*
+    Digital Audio Experiement: Plays mp3 files and may be others in the future.
+    Copyright (C) 2024  Michael Chand.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using Mp3DecoderSimple;
+using NAudio.Wave.Compression;
+using System.Windows;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -7,6 +28,7 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
+        private readonly int _initialSafeVolume = 10;
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
@@ -81,6 +103,116 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private int _volume;
+        public int Volume
+        {
+            get => _volume;
+            set
+            {
+                VolumeAdjust(value);
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _volumeLabel;
+        public string VolumeLabel
+        {
+            get => _volumeLabel;
+            set
+            {
+                _volumeLabel = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _durationHours;
+        public int DurationHours
+        {
+            get => _durationHours;
+            set
+            {
+                _durationHours = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _durationMinutes;
+        public int DurationMinutes
+        {
+            get => _durationMinutes;
+            set
+            {
+                _durationMinutes = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _durationSeconds;
+        public int DurationSeconds
+        {
+            get => _durationSeconds;
+            set
+            {
+                _durationSeconds = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedHours;
+        public int ElapsedHours
+        {
+            get => _elapsedHours;
+            set
+            {
+                _elapsedHours = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedMinutes;
+        public int ElapsedMinutes
+        {
+            get => _elapsedMinutes;
+            set
+            {
+                _elapsedMinutes = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _elapsedSeconds;
+        public int ElapsedSeconds
+        {
+            get => _elapsedSeconds;
+            set
+            {
+                _elapsedSeconds = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _bitRate;
+        public int Bitrate
+        {
+            get => _bitRate;
+            set
+            {
+                _bitRate = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string Metadata { get; private set; }
+
         #endregion
 
         #region Commands
@@ -106,7 +238,8 @@ namespace DigitalAudioExperiment.ViewModel
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
-
+            Volume = _initialSafeVolume;
+            VolumeLabel = "Volume";
             RaisePropertyChangedEvents();
         }
 
@@ -130,7 +263,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async Task PlayButton()
         {
-            await Task.Run(() => _player.Play()).ConfigureAwait(false);
+            await Task.Run(() => 
+            _player.Play()).ConfigureAwait(false);
         }
 
         private async Task PauseButton()
@@ -165,9 +299,19 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
+            _player.SetUpdateCallback(Update);
             Maximum = _player.GetFrameCount() ?? 0;
+            _isMono = _player.GetIsMonoChannel();
+            Value = 0;
+            _player.SetVolume(Volume);
+            DurationMinutes = _player.Duration().Item1;
+            DurationSeconds = _player.Duration().Item2;
+            DurationHours = DurationMinutes / 60;
+            Metadata = _player.GetAudioFileInfo();
 
             SetTickFrequency();
+
+            RaisePropertyChangedEvents();
         }
 
         private void SetTickFrequency()
@@ -195,11 +339,32 @@ namespace DigitalAudioExperiment.ViewModel
 
         #endregion
 
+        #region Application Logic
+
+        private void VolumeAdjust(int value)
+        {
+            _volume = value;
+            _player?.SetVolume(_volume);
+        }
+        private void Update()
+        {
+            var duration = _player?.GetElapsed();
+
+            ElapsedMinutes = (int)(duration / 60);
+            ElapsedSeconds = (int)(duration % 60);
+            ElapsedHours = (ElapsedMinutes / 60);
+
+            Bitrate = (int)_player?.GetBitratePerFrame();
+        }
+
+        #endregion
+
         #region Events
 
         private void RaisePropertyChangedEvents()
         {
-            OnPropertyChanged(nameof(IsMono));
+            OnPropertyChanged(nameof(IsMono)
+                , nameof(Metadata));
         }
 
         #endregion

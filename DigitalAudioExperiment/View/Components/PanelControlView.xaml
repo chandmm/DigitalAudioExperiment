@@ -80,13 +80,13 @@
                     Value="{Binding Path=DataContext.Value, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}" 
                     PreviewMouseLeftButtonDown="SeekSiderControl_PreviewMouseLeftButtonDown"
                     PreviewMouseLeftButtonUp="SeekSiderControl_PreviewMouseLeftButtonUp"
+                    ElapsedHours="{Binding Path=DataContext.ElapsedHours, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    ElapsedMinutes="{Binding Path=DataContext.ElapsedMinutes, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    ElapsedSeconds="{Binding Path=DataContext.ElapsedSeconds, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    DurationHours="{Binding Path=DataContext.DurationHours, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    DurationMinutes="{Binding Path=DataContext.DurationMinutes, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    DurationSeconds="{Binding Path=DataContext.DurationSeconds, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     Grid.Row="6"
-                    ElapsedMinutes="2"
-                    ElapsedSeconds="30"
-                    ElapsedHours="90"
-                    DurationMinutes="5"
-                    DurationSeconds="1"
-                    DurationHours="95"
                     Grid.RowSpan="4" 
                     Grid.Column="2" 
                     Grid.ColumnSpan="8"/>
@@ -95,12 +95,12 @@
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     TextWrapping="Wrap" 
-                    Text="Sampling Rate: 44.1 kHz BPS: 128 kbps" 
+                    Text="{Binding Bitrate, StringFormat='{}Bitrate: {0}'}" 
                     Background="Black" 
                     Foreground="SteelBlue" 
                     Grid.RowSpan="6" 
                     Margin="5"/>
-                <TextBox IsReadOnly="True" BorderThickness="0" Text="Title: Some song title" Background="Black" Foreground="SteelBlue" Grid.RowSpan="6" Grid.ColumnSpan="3" Grid.Column="1" Margin="5"/>
+                <TextBox IsReadOnly="True" BorderThickness="0" Text="{Binding Metadata, Mode=OneWay}" Background="Black" Foreground="SteelBlue" Grid.RowSpan="6" Grid.ColumnSpan="3" Grid.Column="1" Margin="5"/>
                 <Rectangle Fill="Transparent" Grid.RowSpan="6" Margin="5" Width="{Binding Width, ElementName=playbackInfo}" Height="{Binding Height, ElementName=playbackInfo}"/>
             </Grid>
         </Border>

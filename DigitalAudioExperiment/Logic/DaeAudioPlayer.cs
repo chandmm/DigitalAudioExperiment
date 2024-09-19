@@ -1,5 +1,23 @@
-﻿using Mp3DecoderSimple;
+﻿/*
+    Digital Audio Experiement: Plays mp3 files and may be others in the future.
+    Copyright (C) 2024  Michael Chand
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+using Mp3DecoderSimple;
 using Mp3DecoderSimple.Data;
+using Mp3DecoderSimple.Logic;
 using NAudio.Wave;
 using System.IO;
 
@@ -8,7 +26,9 @@ namespace DigitalAudioExperiment.Logic
     public class DaeAudioPlayer : IDisposable
     {
         #region Fields
+        private readonly int _volumeScaler = 100;
 
+        private DecoderSimplePcmStream? _stream;
         private bool _isDisposed;
         private string _fileName;
         private SimpleDecoder? _simpleDecoder;
@@ -20,6 +40,8 @@ namespace DigitalAudioExperiment.Logic
         private int _seekPosition;
         private bool _isPaused;
         private Action<int> _seekPositionCallback;
+        private int _volume;
+        private Action _updateCallback;
 
         #endregion
 
@@ -30,10 +52,17 @@ namespace DigitalAudioExperiment.Logic
             _fileName = fileName;
 
             _simpleDecoder = new SimpleDecoder(fileName, null);
+
+            _stream = _simpleDecoder.GetStream();
+            _stream.Position = 0;
+            _duration = (_stream.DurationMinutes, _stream.DurationSeconds);
         }
 
         public void SetSeekPositionCallback(Action<int> seekPositionCallback)
             => _seekPositionCallback = seekPositionCallback;
+
+        public void SetUpdateCallback(Action updateCallback)
+            => _updateCallback = updateCallback;
 
         #endregion
 
@@ -64,17 +93,20 @@ namespace DigitalAudioExperiment.Logic
 
         private void PlayStream()
         {
-            using (var simpleStream = _simpleDecoder.GetStream())
+            if (_simpleDecoder == null)
             {
-                simpleStream.Position = 0;
-                simpleStream.SetBitrateCallback(UpdateInfoFromStreamCallback);
-                _duration = (simpleStream.DurationMinutes, simpleStream.DurationSeconds);
+                return;
+            }
+
+            using (_stream = _simpleDecoder.GetStream())
+            { 
+                _stream.SetBitrateCallback(UpdateInfoFromStreamCallback);
 
                 using (WaveOutEvent waveOut = new WaveOutEvent())
                 {
-                    using (WaveStream waveStream = new RawSourceWaveStream(simpleStream, new WaveFormat(simpleStream.GetSampleRate(), 16, simpleStream.GetNumberOfChannels())))
+                    using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
                     {
-                        waveOut.DesiredLatency = 150;
+                        waveOut.DesiredLatency = 100;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
                         waveOut.Init(waveStream);
                         waveOut.Play();
@@ -82,7 +114,7 @@ namespace DigitalAudioExperiment.Logic
                         while (waveOut.PlaybackState == PlaybackState.Playing
                             || waveOut.PlaybackState == PlaybackState.Paused)
                         {
-                            HandlePlaybackStates(simpleStream, waveOut);
+                            HandlePlaybackStates(waveOut);
 
                             Thread.Sleep(40);
                         }
@@ -91,7 +123,7 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        private void HandlePlaybackStates (DecoderSimplePcmStream simpleStream, WaveOutEvent waveOut)
+        private void HandlePlaybackStates (WaveOutEvent waveOut)
         {
             if (!_isPlaying)
             {
@@ -112,7 +144,7 @@ namespace DigitalAudioExperiment.Logic
             {
                 _isSeeking = false;
                 _isPaused = false;
-                simpleStream.Seek(_seekPosition, SeekOrigin.Begin);
+                _stream?.Seek(_seekPosition, SeekOrigin.Begin);
             }
 
             if (waveOut.PlaybackState == PlaybackState.Paused
@@ -125,6 +157,13 @@ namespace DigitalAudioExperiment.Logic
             {
                 _seekPositionCallback?.Invoke(_frameIndex);
             }
+
+            if ((waveOut.Volume * _volumeScaler) != _volume)
+            {
+                waveOut.Volume = (float)_volume / _volumeScaler;
+            }
+
+            _updateCallback?.Invoke();
         }
 
         public void Stop()
@@ -148,9 +187,12 @@ namespace DigitalAudioExperiment.Logic
             _isPaused = !_isPaused;
         }
 
+        public void SetVolume(int volume)
+            => _volume = volume;
+
         #endregion
 
-        #region Fetch Playback Information Logic
+        #region Fetch File Information Logic
 
         public SimpleDecoder? GetDecoder()
             => _simpleDecoder;
@@ -167,11 +209,24 @@ namespace DigitalAudioExperiment.Logic
                 throw new ApplicationException("No frames present or invalid audio file format.");
             }
 
-            return _simpleDecoder.GetFrames().First().ToString();
+            return _simpleDecoder.GetFrames().First().ToStringShort();
         }
+
+        public int GetBitRate()
+            => _stream.GetBitRate();
+
+        public int GetBitratePerFrame()
+            => _bitRate;
+
+        public bool GetIsMonoChannel()
+            => HeaderInfoUtils.GetNumberOfChannels(_simpleDecoder?.GetFrames().First().Header)  < 2;
 
         public (int, int) Duration()
             => _duration;
+        public double GetElapsed()
+        {
+            return _stream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
+        }
 
         public int? GetFrameCount()
             => _simpleDecoder?.GetFrameCount();
@@ -207,6 +262,8 @@ namespace DigitalAudioExperiment.Logic
                         _isPlaying = false;
                     }
 
+                    _stream?.Dispose();
+                    _stream = null;
                     _simpleDecoder?.Dispose();
                     _simpleDecoder = null;
                 }
