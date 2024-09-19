@@ -84,7 +84,7 @@
                     ElapsedMinutes="2"
                     ElapsedSeconds="30"
                     ElapsedHours="90"
-                    DurationMinutes="5"
+                    DurationMinutes="{Binding Path=DataContext.DurationMinutes, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}"
                     DurationSeconds="1"
                     DurationHours="95"
                     Grid.RowSpan="4" 

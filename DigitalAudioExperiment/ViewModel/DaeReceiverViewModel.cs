@@ -18,7 +18,7 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
-using System.Diagnostics;
+using System.Windows;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -26,6 +26,7 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
+        private readonly int _initialSafeVolume = 10;
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
@@ -124,6 +125,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private int _durationMinutes;
+        public int DurationMinutes
+        {
+            get => _durationMinutes;
+            set
+            {
+                _durationMinutes = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -149,8 +162,8 @@ namespace DigitalAudioExperiment.ViewModel
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
-            Volume = 20;
-            VolumeLabel = "Vol";
+            Volume = _initialSafeVolume;
+            VolumeLabel = "Volume";
             RaisePropertyChangedEvents();
         }
 
@@ -174,7 +187,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async Task PlayButton()
         {
-            await Task.Run(() => _player.Play()).ConfigureAwait(false);
+            await Task.Run(() => 
+            _player.Play()).ConfigureAwait(false);
         }
 
         private async Task PauseButton()
@@ -213,6 +227,7 @@ namespace DigitalAudioExperiment.ViewModel
             _isMono = _player.GetIsMonoChannel();
             Value = 0;
             _player.SetVolume(Volume);
+            DurationMinutes = _player.Duration().Item1;
 
             SetTickFrequency();
 

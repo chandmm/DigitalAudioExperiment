@@ -28,6 +28,7 @@ namespace DigitalAudioExperiment.Logic
         #region Fields
         private readonly int _volumeScaler = 100;
 
+        private DecoderSimplePcmStream? _stream;
         private bool _isDisposed;
         private string _fileName;
         private SimpleDecoder? _simpleDecoder;
@@ -50,6 +51,10 @@ namespace DigitalAudioExperiment.Logic
             _fileName = fileName;
 
             _simpleDecoder = new SimpleDecoder(fileName, null);
+
+            _stream = _simpleDecoder.GetStream();
+            _stream.Position = 0;
+            _duration = (_stream.DurationMinutes, _stream.DurationSeconds);
         }
 
         public void SetSeekPositionCallback(Action<int> seekPositionCallback)
@@ -84,15 +89,18 @@ namespace DigitalAudioExperiment.Logic
 
         private void PlayStream()
         {
-            using (var simpleStream = _simpleDecoder.GetStream())
+            if (_simpleDecoder == null)
             {
-                simpleStream.Position = 0;
-                simpleStream.SetBitrateCallback(UpdateInfoFromStreamCallback);
-                _duration = (simpleStream.DurationMinutes, simpleStream.DurationSeconds);
+                return;
+            }
+
+            using (_stream = _simpleDecoder.GetStream())
+            { 
+                _stream.SetBitrateCallback(UpdateInfoFromStreamCallback);
 
                 using (WaveOutEvent waveOut = new WaveOutEvent())
                 {
-                    using (WaveStream waveStream = new RawSourceWaveStream(simpleStream, new WaveFormat(simpleStream.GetSampleRate(), 16, simpleStream.GetNumberOfChannels())))
+                    using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
                     {
                         waveOut.DesiredLatency = 100;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
@@ -102,7 +110,7 @@ namespace DigitalAudioExperiment.Logic
                         while (waveOut.PlaybackState == PlaybackState.Playing
                             || waveOut.PlaybackState == PlaybackState.Paused)
                         {
-                            HandlePlaybackStates(simpleStream, waveOut);
+                            HandlePlaybackStates(waveOut);
 
                             Thread.Sleep(40);
                         }
@@ -111,7 +119,7 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        private void HandlePlaybackStates (DecoderSimplePcmStream simpleStream, WaveOutEvent waveOut)
+        private void HandlePlaybackStates (WaveOutEvent waveOut)
         {
             if (!_isPlaying)
             {
@@ -132,7 +140,7 @@ namespace DigitalAudioExperiment.Logic
             {
                 _isSeeking = false;
                 _isPaused = false;
-                simpleStream.Seek(_seekPosition, SeekOrigin.Begin);
+                _stream?.Seek(_seekPosition, SeekOrigin.Begin);
             }
 
             if (waveOut.PlaybackState == PlaybackState.Paused
@@ -238,6 +246,8 @@ namespace DigitalAudioExperiment.Logic
                         _isPlaying = false;
                     }
 
+                    _stream?.Dispose();
+                    _stream = null;
                     _simpleDecoder?.Dispose();
                     _simpleDecoder = null;
                 }
