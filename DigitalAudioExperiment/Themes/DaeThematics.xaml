@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
-        <Setter Property="Source" Value="/Resources/ReceiverFacePlate.jpg"/>
+        <Setter Property="Source" Value="/Resources/AudioPlayerFacePlateRounded.png"/>
     </Style>
     <Style TargetType="TextBlock" x:Key="TextBlockTitleStyle">
         <Setter Property="Foreground" Value="White"/>
@@ -15,31 +15,6 @@
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Ariel"/>
         <Setter Property="FontStyle" Value="Italic"/>
-    </Style>
-
-    <Style TargetType="Grid" x:Key="MonoStereoDisplayComponentGridStyle">
-        <Style.Resources>
-            <Style TargetType="Rectangle">
-                <Setter Property="Fill" Value="#62e3f6"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsMono}" Value="False">
-                        <Setter Property="Fill" Value="Red"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="TextAlignment" Value="Center"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Text" Value="MONO"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsMono}" Value="False">
-                        <Setter Property="Text" Value="STEREO"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Style.Resources>
     </Style>
 
 </ResourceDictionary>    

@@ -41,10 +41,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Column="9" Style="{StaticResource MonoStereoDisplayComponentGridStyle}" Margin="5">
-                    <Rectangle/>
-                    <TextBlock/>
-                </Grid>
+                <controls:StereoIndicatorControl Grid.Column="9" IsMono="{Binding Path=DataContext.IsMono, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"/>
                 <!--Place holder for VU controls-->
                 <controls:VUControl 
                     Mark1="-20"
