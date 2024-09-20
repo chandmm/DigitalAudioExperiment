@@ -106,7 +106,7 @@ namespace DigitalAudioExperiment.Logic
                 {
                     using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
                     {
-                        waveOut.DesiredLatency = 100;
+                        waveOut.DesiredLatency = 150;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
                         waveOut.Init(waveStream);
                         waveOut.Play();
@@ -190,6 +190,42 @@ namespace DigitalAudioExperiment.Logic
         public void SetVolume(int volume)
             => _volume = volume;
 
+        public (double, double) GetVUMeterValues()
+        {
+            var level = _stream.GetRmsValues();
+            return CalculateDBLevels(level.Item1, level.Item2, level.Item3);
+        }
+
+        private float MapDbToMeterValue(float dBValue, float dBMin, float dBMax, float MeterMin, float MeterMax)
+        {
+            // Ensure the dBValue stays within the expected range
+            dBValue = Math.Max(dBMin, Math.Min(dBMax, dBValue));
+
+            // Linear mapping from dB scale to VU meter scale
+            float MeterValue = ((dBValue - dBMin) / (dBMax - dBMin)) * (MeterMax - MeterMin) + MeterMin;
+
+            return MeterValue;
+        }
+
+        private (float, float) CalculateDBLevels(float dBLeft, float dBRight, float difference)
+        {
+
+            // Define your dB range and VU meter range
+            float dBMin = -60.0f;  // The minimum dB value
+            float dBMax = 0.0f;    // The maximum dB value
+            float MeterMin = 0.0f; // The minimum meter value
+            float MeterMax = 96.0f; // The maximum meter value
+
+            // Map the dB values to the meter range
+            float meterLeft = MapDbToMeterValue(dBLeft, dBMin, dBMax, MeterMin, MeterMax);
+            float meterRight = MapDbToMeterValue(dBRight, dBMin, dBMax, MeterMin, MeterMax);
+
+            return (meterLeft, meterRight);
+        }
+
+        public bool IsStopped
+            => !_isPlaying;
+
         #endregion
 
         #region Fetch File Information Logic
@@ -223,6 +259,7 @@ namespace DigitalAudioExperiment.Logic
 
         public (int, int) Duration()
             => _duration;
+
         public double GetElapsed()
         {
             return _stream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
@@ -237,8 +274,8 @@ namespace DigitalAudioExperiment.Logic
 
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
-            //throw new NotImplementedException();
             _isPlaying = false;
+            _updateCallback.Invoke();
         }
 
         private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
@@ -246,6 +283,9 @@ namespace DigitalAudioExperiment.Logic
             _bitRate = bitRate;
             _frameIndex = frameIndex;
         }
+
+        public string GetMetadata()
+            => string.Join("\r\n",_simpleDecoder?.GetMetadata());
 
         #endregion
 

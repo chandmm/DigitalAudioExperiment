@@ -18,9 +18,7 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
-using Mp3DecoderSimple;
-using NAudio.Wave.Compression;
-using System.Windows;
+using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -32,6 +30,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
+        private System.Timers.Timer _vuUpdateTimer;
+        private double _timerInterval = 50;
 
         #endregion
 
@@ -211,7 +211,32 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        public string HeaderData { get; private set; }
         public string Metadata { get; private set; }
+
+        private double _leftdB;
+        public double LeftdB
+        {
+            get => _leftdB;
+            set
+            {
+                _leftdB = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double _rightdB;
+        public double RightdB
+        {
+            get => _rightdB;
+            set
+            {
+                _rightdB = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -240,6 +265,10 @@ namespace DigitalAudioExperiment.ViewModel
             StopCommand = new RelayCommand(StopButton, () => true);
             Volume = _initialSafeVolume;
             VolumeLabel = "Volume";
+            _vuUpdateTimer = new System.Timers.Timer(_timerInterval);
+            _vuUpdateTimer.AutoReset = true;
+            _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
+
             RaisePropertyChangedEvents();
         }
 
@@ -259,12 +288,18 @@ namespace DigitalAudioExperiment.ViewModel
         private void StopButton()
         {
             _player.Stop();
+            _vuUpdateTimer.Stop();
         }
 
         private async Task PlayButton()
         {
-            await Task.Run(() => 
-            _player.Play()).ConfigureAwait(false);
+            _vuUpdateTimer.Start();
+
+            await Task.Run(() =>
+            {
+                _player?.Play();
+
+            }).ConfigureAwait(false);
         }
 
         private async Task PauseButton()
@@ -307,7 +342,8 @@ namespace DigitalAudioExperiment.ViewModel
             DurationMinutes = _player.Duration().Item1;
             DurationSeconds = _player.Duration().Item2;
             DurationHours = DurationMinutes / 60;
-            Metadata = _player.GetAudioFileInfo();
+            HeaderData = _player.GetAudioFileInfo();
+            Metadata = _player?.GetMetadata();
 
             SetTickFrequency();
 
@@ -348,6 +384,15 @@ namespace DigitalAudioExperiment.ViewModel
         }
         private void Update()
         {
+            if (_player.IsStopped)
+            {
+                _vuUpdateTimer.Stop();
+                LeftdB = 0;
+                RightdB = 0;
+
+                return;
+            }
+
             var duration = _player?.GetElapsed();
 
             ElapsedMinutes = (int)(duration / 60);
@@ -359,11 +404,30 @@ namespace DigitalAudioExperiment.ViewModel
 
         #endregion
 
+        #region Callbacks
+
+        private void UpdateVuMeterControls(object? sender, ElapsedEventArgs e)
+        {
+            if (_player == null
+                || _player.IsStopped)
+            {
+                return;
+            }
+
+            var levels = _player?.GetVUMeterValues();
+
+            LeftdB = levels.Value.Item1;
+            RightdB = levels.Value.Item2;
+        }
+
+        #endregion
+
         #region Events
 
         private void RaisePropertyChangedEvents()
         {
             OnPropertyChanged(nameof(IsMono)
+                , nameof(HeaderData)
                 , nameof(Metadata));
         }
 
@@ -377,6 +441,11 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 if (isDisposng)
                 {
+                    if (_vuUpdateTimer.Enabled)
+                    {
+                        _vuUpdateTimer.Stop();
+                        _vuUpdateTimer?.Dispose();
+                    }
                     _player?.Dispose();
                 }
 
