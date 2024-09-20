@@ -9,8 +9,12 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Title="MainWindow" Height="476" Width="1080">
-    <Grid>
+        Title="MainWindow" 
+        Height="476" Width="1080" 
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Grid Background="Transparent">
         <view:DaeReceiverView/>
     </Grid>
 </Window>

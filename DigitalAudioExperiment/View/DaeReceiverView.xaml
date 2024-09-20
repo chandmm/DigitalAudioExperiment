@@ -17,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="Transparent">
         <Viewbox Stretch="Fill">
             <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
         </Viewbox>

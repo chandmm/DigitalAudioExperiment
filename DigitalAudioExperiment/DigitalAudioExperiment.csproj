@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\ReceiverFacePlate.jpg" />
+    <None Remove="Resources\AudioPlayerFacePlateRounded.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\ReceiverFacePlate.jpg">
+    <Content Include="Resources\AudioPlayerFacePlateRounded.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
