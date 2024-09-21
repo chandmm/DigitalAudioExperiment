@@ -262,6 +262,12 @@ namespace DigitalAudioExperiment.Logic
 
         public double GetElapsed()
         {
+            if (_stream == null
+                || _simpleDecoder == null)
+            {
+                return 0;
+            }
+
             return _stream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
         }
 

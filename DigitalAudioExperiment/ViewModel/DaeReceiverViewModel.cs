@@ -31,7 +31,9 @@ namespace DigitalAudioExperiment.ViewModel
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
-        private double _timerInterval = 50;
+        private System.Timers.Timer _applicationHeartBeatTimer;
+        private double _vuHeartBeatInterval = 50;
+        private double _heartBeatInterval = 200;
         private bool _canContinueLoopMode = true;
 
         #endregion
@@ -42,12 +44,12 @@ namespace DigitalAudioExperiment.ViewModel
         public string Title
         {
             get => _title;
-            set 
+            set
             {
                 _title = value;
 
                 OnPropertyChanged();
-            } 
+            }
         }
 
         private string _subTitle;
@@ -264,6 +266,17 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private bool _isOn;
+        public bool IsOn
+        {
+            get => _isOn;
+            set
+            {
+                _isOn = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -285,7 +298,7 @@ namespace DigitalAudioExperiment.ViewModel
             SubTitle = "Mp3 Digital Audio";
             _isMono = true;
 
-            ExitCommand = new RelayCommand(() => Environment.Exit(0), () => true);
+            ExitCommand = new RelayCommand(() => Exit(), () => true);
             PlayCommand = new RelayCommand(async () => await PlayButton(), () => true);
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
@@ -295,9 +308,14 @@ namespace DigitalAudioExperiment.ViewModel
             Volume = _initialSafeVolume;
             VolumeLabel = "Volume";
             IsAutoPlayChecked = true;
-            _vuUpdateTimer = new System.Timers.Timer(_timerInterval);
+            _vuUpdateTimer = new System.Timers.Timer(_vuHeartBeatInterval);
             _vuUpdateTimer.AutoReset = true;
             _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
+
+            _applicationHeartBeatTimer = new System.Timers.Timer(_heartBeatInterval);
+            _applicationHeartBeatTimer.AutoReset = true;
+            _applicationHeartBeatTimer.Elapsed += UpdateApplicationHeartBeat;
+            _applicationHeartBeatTimer.Start();
 
             RaisePropertyChangedEvents();
         }
@@ -336,6 +354,8 @@ namespace DigitalAudioExperiment.ViewModel
                 _player?.Play();
 
             }).ConfigureAwait(false);
+
+            RaisePropertyChangedEvents();
         }
 
         private async Task PauseButton()
@@ -456,6 +476,13 @@ namespace DigitalAudioExperiment.ViewModel
             Bitrate = (int)_player?.GetBitratePerFrame();
         }
 
+        private void Exit()
+        {
+            this.Dispose();
+            
+            Environment.Exit(0);
+        }
+
         #endregion
 
         #region Callbacks
@@ -472,6 +499,11 @@ namespace DigitalAudioExperiment.ViewModel
 
             LeftdB = levels.Value.Item1;
             RightdB = levels.Value.Item2;
+        }
+
+        private void UpdateApplicationHeartBeat(object? sender, ElapsedEventArgs e)
+        {
+            IsOn = _player == null ? false : !_player.IsStopped;
         }
 
         #endregion
@@ -500,6 +532,13 @@ namespace DigitalAudioExperiment.ViewModel
                         _vuUpdateTimer.Stop();
                         _vuUpdateTimer?.Dispose();
                     }
+
+                    if (_applicationHeartBeatTimer.Enabled)
+                    {
+                        _applicationHeartBeatTimer.Stop();
+                        _applicationHeartBeatTimer?.Dispose();
+                    }
+
                     _player?.Dispose();
                 }
 
