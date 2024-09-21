@@ -116,7 +116,7 @@ namespace DigitalAudioExperiment.Logic
                         {
                             HandlePlaybackStates(waveOut);
 
-                            Thread.Sleep(40);
+                            Thread.Sleep(75);
                         }
                     }
                 }
@@ -173,8 +173,8 @@ namespace DigitalAudioExperiment.Logic
 
         public void Seek(int seekPosition)
         {
-            _isSeeking = true;
             _seekPosition = seekPosition;
+            _isSeeking = true;
         }
 
         public void Pause()
