@@ -41,6 +41,13 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <controls:PlayIndicatorControl 
+                IsOn="{Binding Path=DataContext.IsOn, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Grid.Column="4"
+                Grid.ColumnSpan="2"
+                Padding="0,20,0,20"/>
             <controls:PowerButtonControl Grid.Column="9" ExitCommand="{Binding ExitCommand}" Margin="5" Background="Transparent" HorizontalAlignment="Right"/>
             <StackPanel Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="20">
                 <TextBlock x:Name="title" Text="{Binding Title}" Style="{StaticResource TextBlockTitleStyle}"/>
