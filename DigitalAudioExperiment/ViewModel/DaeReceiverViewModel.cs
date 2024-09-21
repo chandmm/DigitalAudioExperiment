@@ -32,6 +32,7 @@ namespace DigitalAudioExperiment.ViewModel
         private DaeAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private double _timerInterval = 50;
+        private bool _canContinueLoopMode = true;
 
         #endregion
 
@@ -238,6 +239,31 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private bool _isAutoPlayChecked;
+        public bool IsAutoPlayChecked
+        {
+            get => _isAutoPlayChecked;
+            set
+            {
+                _isAutoPlayChecked = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isLoopPlayChecked;
+        public bool IsLoopPlayChecked
+        {
+            get => _isLoopPlayChecked;
+            set
+            {
+                _isLoopPlayChecked = value;
+                _canContinueLoopMode = IsLoopPlayChecked;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -247,6 +273,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand PauseCommand { get; set; }
         public RelayCommand SelectCommand { get; set; }
         public RelayCommand StopCommand { get; set; }
+        public RelayCommand SkipToStartCommand { get; set; }
 
         #endregion
 
@@ -263,8 +290,11 @@ namespace DigitalAudioExperiment.ViewModel
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
+            SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
+
             Volume = _initialSafeVolume;
             VolumeLabel = "Volume";
+            IsAutoPlayChecked = true;
             _vuUpdateTimer = new System.Timers.Timer(_timerInterval);
             _vuUpdateTimer.AutoReset = true;
             _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
@@ -287,13 +317,19 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void StopButton()
         {
+            _canContinueLoopMode = false;
             _player.Stop();
             _vuUpdateTimer.Stop();
         }
 
         private async Task PlayButton()
         {
-            _vuUpdateTimer.Start();
+            if (!_vuUpdateTimer.Enabled)
+            {
+                _vuUpdateTimer.Start();
+            }
+
+            _canContinueLoopMode = IsLoopPlayChecked;
 
             await Task.Run(() =>
             {
@@ -305,6 +341,12 @@ namespace DigitalAudioExperiment.ViewModel
         private async Task PauseButton()
         {
             _player?.Pause();
+        }
+
+        private async void SkipToStartButton()
+        {
+            Value = 0;
+            SetSeekValue();
         }
 
         private async void SelectFile()
@@ -348,6 +390,11 @@ namespace DigitalAudioExperiment.ViewModel
             SetTickFrequency();
 
             RaisePropertyChangedEvents();
+
+            if (IsAutoPlayChecked)
+            {
+                PlayButton();
+            }
         }
 
         private void SetTickFrequency()
@@ -384,13 +431,20 @@ namespace DigitalAudioExperiment.ViewModel
         }
         private void Update()
         {
-            if (_player.IsStopped)
+            if (_player.IsStopped
+                && !IsLoopPlayChecked)
             {
                 _vuUpdateTimer.Stop();
                 LeftdB = 0;
                 RightdB = 0;
 
                 return;
+            }
+
+            if (IsLoopPlayChecked
+                && _canContinueLoopMode)
+            {
+                PlayButton();
             }
 
             var duration = _player?.GetElapsed();

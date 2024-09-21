@@ -45,7 +45,6 @@
                     Grid.Column="9" 
                     IsMono="{Binding Path=DataContext.IsMono, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                     Margin="5"/>
-                <!--Place holder for VU controls-->
                 <controls:VUControl 
                     Mark1="-20"
                     Mark2="-10"
@@ -69,10 +68,6 @@
                     Grid.RowSpan="4" 
                     Grid.Column="1" 
                     Margin="5"/>
-                <!--<Rectangle Grid.Row="6" Grid.RowSpan="4" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>-->
-                <!--<Rectangle Grid.Row="6" Grid.RowSpan="4" Grid.Column="1" Stroke="Silver" StrokeThickness="1" Fill="Cyan" Margin="5"/>-->
-                <!-- VU VU -->
-                <!--<Slider x:Name="PlaceHolder" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Grid.ColumnSpan="6" VerticalAlignment="Center" Margin="5" TickPlacement="TopLeft" Minimum="-60" Maximum="0" Value="-30"/>-->
                 <TextBox 
                     x:Name="playbackInfo"
                     IsReadOnly="True" 
