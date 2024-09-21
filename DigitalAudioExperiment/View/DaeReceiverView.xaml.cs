@@ -26,17 +26,10 @@ namespace DigitalAudioExperiment.View
     {
         public DaeReceiverView()
         {
-            App.Current.Exit += OnExit;
             InitializeComponent();
-            this.Unloaded += OnUnloaded;
 
             DataContextChanged += OnDataContextChanged;
             Loaded += OnLoaded;
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            
         }
 
         private void OnLoaded(object sender, RoutedEventArgs args)
@@ -70,17 +63,5 @@ namespace DigitalAudioExperiment.View
 
             return null;
         }
-
-        #region Cleanup
-
-        private void OnExit(object sender, ExitEventArgs e)
-        {
-            if (DataContext is DaeReceiverViewModel viewModel)
-            {
-                viewModel.Dispose();
-            }
-        }
-
-        #endregion
     }
 }
