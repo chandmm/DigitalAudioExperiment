@@ -56,7 +56,7 @@
             <local:PanelControlView Grid.Row="1" Grid.RowSpan="7" Margin="10,10,10,55" Grid.ColumnSpan="10"/>
             <controls:PlaybackControls
                 Grid.Row="8" 
-                Grid.Column="2" 
+                Grid.Column="1" 
                 Grid.ColumnSpan="6"/>
             <controls:VolumeControlView 
                 Volume="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
@@ -64,9 +64,15 @@
                 ControlLabel="{Binding Path=DataContext.VolumeLabel, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}" 
                 Cursor="ScrollNS"
                 Grid.Row="7" 
-                Grid.Column="8" 
+                Grid.Column="7" 
                 Grid.RowSpan="3" 
                 Grid.ColumnSpan="2" />
+            <Button
+                Content="Play list"
+                Command="{Binding Path=DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"
+                Grid.Row="8"
+                Grid.Column="9"
+                Margin="5"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -1,6 +1,6 @@
 ﻿/*
     Digital Audio Experiement: Plays mp3 files and may be others in the future.
-    Copyright (C) 2024  Michael Chand
+    Copyright (C) 2024  Michael Chand.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,23 +15,34 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System.Windows;
-using System.Windows.Input;
-
-namespace DigitalAudioExperiment
+namespace DigitalAudioExperiment.ViewModel
 {
-    public partial class MainWindow : Window
+    public class PlaylistPageViewModel : BaseViewModel
     {
-        public MainWindow()
+        private bool _isDisposed;
+        private List<string> _playlist = new List<string>();
+
+        public void Add(string playlistItem)
+            => _playlist.Add(playlistItem);
+
+        public void Remove(string playlistItem)
+            => _playlist.Remove(playlistItem);
+
+        #region Dispose
+
+        protected override void Dispose(bool isDisposng)
         {
-            InitializeComponent();
+            if (!_isDisposed)
+            {
+                if (isDisposng)
+                {
+
+                }
+
+                _isDisposed = true;
+            }
         }
 
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonDown(e);
-
-            this.DragMove();
-        }
+        #endregion
     }
 }

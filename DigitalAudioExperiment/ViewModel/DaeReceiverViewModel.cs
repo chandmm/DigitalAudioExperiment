@@ -18,6 +18,7 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using DigitalAudioExperiment.View;
 using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -35,6 +36,7 @@ namespace DigitalAudioExperiment.ViewModel
         private double _vuHeartBeatInterval = 50;
         private double _heartBeatInterval = 200;
         private bool _canContinueLoopMode = true;
+        private PlaylistPageView _playlistPageView;
 
         #endregion
 
@@ -287,6 +289,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand SelectCommand { get; set; }
         public RelayCommand StopCommand { get; set; }
         public RelayCommand SkipToStartCommand { get; set; }
+        public RelayCommand OpenPlaylistCommand { get; set; }
 
         #endregion
 
@@ -304,6 +307,7 @@ namespace DigitalAudioExperiment.ViewModel
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
             SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
+            OpenPlaylistCommand = new RelayCommand(OpenPlaylist, () => true);
 
             Volume = _initialSafeVolume;
             VolumeLabel = "Volume";
@@ -318,6 +322,22 @@ namespace DigitalAudioExperiment.ViewModel
             _applicationHeartBeatTimer.Start();
 
             RaisePropertyChangedEvents();
+        }
+
+        private void OpenPlaylist()
+        {
+            if (_playlistPageView != null)
+            {
+                _playlistPageView.Close();
+                _playlistPageView = null;
+
+                return;
+            }
+
+            _playlistPageView = new PlaylistPageView();
+            _playlistPageView.DataContext = new PlaylistPageViewModel();
+            _playlistPageView.Owner = App.Current.MainWindow;
+            _playlistPageView.Show();
         }
 
         public DaeReceiverViewModel(Func<string?> callback)

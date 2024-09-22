@@ -1,6 +1,6 @@
 ﻿/*
     Digital Audio Experiement: Plays mp3 files and may be others in the future.
-    Copyright (C) 2024  Michael Chand
+    Copyright (C) 2024  Michael Chand.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,13 +16,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DigitalAudioExperiment
+namespace DigitalAudioExperiment.View
 {
-    public partial class MainWindow : Window
+    /// <summary>
+    /// Interaction logic for PlaylistPageView.xaml
+    /// </summary>
+    public partial class PlaylistPageView : Window
     {
-        public MainWindow()
+        public PlaylistPageView()
         {
             InitializeComponent();
         }
