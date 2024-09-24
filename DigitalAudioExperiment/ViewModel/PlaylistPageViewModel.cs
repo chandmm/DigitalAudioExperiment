@@ -15,18 +15,38 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Model;
+using System.IO;
+
 namespace DigitalAudioExperiment.ViewModel
 {
     public class PlaylistPageViewModel : BaseViewModel
     {
         private bool _isDisposed;
-        private List<string> _playlist = new List<string>();
+        private List<PlaylistModel> _playlist = new List<PlaylistModel>();
+
+        #region Manage List
 
         public void Add(string playlistItem)
-            => _playlist.Add(playlistItem);
+            => _playlist.Add(new PlaylistModel() { FullFilePathName = playlistItem, FileName = Path.GetFileName(playlistItem)});
 
         public void Remove(string playlistItem)
+        {
+            var item = _playlist.FirstOrDefault(x => x.FullFilePathName == playlistItem);
+
+            if (item != null)
+            {
+                _playlist.Remove(item);
+            }
+        }
+
+        public void Add(PlaylistModel playlistModelItem)
+            => _playlist.Add(playlistModelItem);
+
+        public void Remove(PlaylistModel playlistItem)
             => _playlist.Remove(playlistItem);
+
+        #endregion
 
         #region Dispose
 

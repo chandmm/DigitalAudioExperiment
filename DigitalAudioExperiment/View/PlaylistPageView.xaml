@@ -10,7 +10,10 @@
       WindowStyle="None"
       WindowStartupLocation="CenterOwner"
       AllowsTransparency="True"
-      Background="Transparent">
+      Background="Transparent"
+      ResizeMode="CanResize"
+      ShowInTaskbar="False">
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

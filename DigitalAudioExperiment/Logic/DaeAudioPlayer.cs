@@ -42,6 +42,7 @@ namespace DigitalAudioExperiment.Logic
         private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
+        private Action _playbackStoppedCallback;
 
         #endregion
 
@@ -63,6 +64,9 @@ namespace DigitalAudioExperiment.Logic
 
         public void SetUpdateCallback(Action updateCallback)
             => _updateCallback = updateCallback;
+
+        public void SetPlaybackStoppedCallback(Action playbackStopped)
+            => _playbackStoppedCallback = playbackStopped;
 
         #endregion
 
@@ -281,7 +285,8 @@ namespace DigitalAudioExperiment.Logic
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
-            _updateCallback.Invoke();
+            _updateCallback?.Invoke();
+            _playbackStoppedCallback?.Invoke();
         }
 
         private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
@@ -308,8 +313,12 @@ namespace DigitalAudioExperiment.Logic
                         _isPlaying = false;
                     }
 
-                    _stream?.Dispose();
-                    _stream = null;
+                    if (_stream != null)
+                    {
+                        _stream?.Dispose();
+                        _stream = null;
+                    }
+
                     _simpleDecoder?.Dispose();
                     _simpleDecoder = null;
                 }
