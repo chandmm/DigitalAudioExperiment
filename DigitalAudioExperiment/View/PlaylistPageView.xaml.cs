@@ -15,15 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace DigitalAudioExperiment.View
 {
-    /// <summary>
-    /// Interaction logic for PlaylistPageView.xaml
-    /// </summary>
     public partial class PlaylistPageView : Window
     {
         public PlaylistPageView()
@@ -37,5 +34,35 @@ namespace DigitalAudioExperiment.View
 
             this.DragMove();
         }
+
+        public new void Show()
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.IsShowing = true;
+
+                if (base.Visibility == Visibility.Collapsed)
+                {
+                    base.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                base.Show();
+            }
+        }
+
+        public new void Close()
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.IsShowing = false;
+
+                base.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public void CloseExit()
+            => base.Close();
     }
 }

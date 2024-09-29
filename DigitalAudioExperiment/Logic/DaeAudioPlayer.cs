@@ -110,8 +110,9 @@ namespace DigitalAudioExperiment.Logic
                 {
                     using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
                     {
-                        waveOut.DesiredLatency = 150;
+                        waveOut.DesiredLatency = 100;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
+                        waveOut.NumberOfBuffers = 4;
                         waveOut.Init(waveStream);
                         waveOut.Play();
 

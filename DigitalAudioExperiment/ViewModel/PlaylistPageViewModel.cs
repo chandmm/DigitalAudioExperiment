@@ -22,8 +22,18 @@ namespace DigitalAudioExperiment.ViewModel
 {
     public class PlaylistPageViewModel : BaseViewModel
     {
+        #region Fields
+
         private bool _isDisposed;
         private List<PlaylistModel> _playlist = new List<PlaylistModel>();
+
+        #endregion
+
+        #region Properties
+
+        public bool IsShowing { get; set; }
+
+        #endregion
 
         #region Manage List
 

@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Title="DAE" 
+        Title="Digital Audio Experiment" 
         Height="476" Width="1080" 
         AllowsTransparency="True"
         Background="Transparent">
