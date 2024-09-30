@@ -27,7 +27,7 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
-        private readonly int _initialSafeVolume = 10;
+        private readonly int _initialSafeVolume = 5;
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
@@ -365,6 +365,9 @@ namespace DigitalAudioExperiment.ViewModel
             _canContinueLoopMode = false;
             _player.Stop();
             _vuUpdateTimer.Stop();
+            _player.SetHardStop(true);
+            _applicationHeartBeatTimer.Stop();
+            _applicationHeartBeatTimer.Enabled = false;
         }
 
         private async Task PlayButton()
@@ -376,11 +379,18 @@ namespace DigitalAudioExperiment.ViewModel
 
             _canContinueLoopMode = IsLoopPlayChecked;
 
+            _player.SetHardStop(false);
+
             await Task.Run(() =>
             {
                 _player?.Play();
 
             }).ConfigureAwait(false);
+
+            if (!_applicationHeartBeatTimer.Enabled)
+            {
+                _applicationHeartBeatTimer.Start();
+            }
 
             RaisePropertyChangedEvents();
         }
@@ -413,12 +423,59 @@ namespace DigitalAudioExperiment.ViewModel
             OnFileSelected(fileName);
         }
 
-        private void OnFileSelected(string fileName)
+        private void ResetPlayer()
         {
             if (_player != null)
             {
                 _player.Stop();
                 _player.Dispose();
+            }
+        }
+
+        private void OnFileSelected(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+
+            SetupPlayListControls(fileName);
+
+            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel
+                && playlistPageViewModel.PlayList.Count() == 1
+                && _player == null)
+            {
+                ResetPlayer();
+                SetupWithAutoPlay();
+            }
+        }
+
+        private void SetupPlayListControls(string fileName)
+        {
+            if (_playlistPageView == null)
+            {
+                _playlistPageView = new PlaylistPageView();
+                _playlistPageView.DataContext = new PlaylistPageViewModel();
+            }
+
+            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel)
+            {
+                playlistPageViewModel.Add(fileName);
+            }
+        }
+
+        private void SetupWithAutoPlay()
+        {
+            if (!(_playlistPageView.DataContext is PlaylistPageViewModel viewModel))
+            {
+                return;
+            }
+
+            var fileName = viewModel.GetNextFile();
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
             }
 
             _player = new DaeAudioPlayer(fileName);
@@ -476,6 +533,7 @@ namespace DigitalAudioExperiment.ViewModel
             _volume = value;
             _player?.SetVolume(_volume);
         }
+
         private void Update()
         {
             if (_player.IsStopped
@@ -531,6 +589,25 @@ namespace DigitalAudioExperiment.ViewModel
         private void UpdateApplicationHeartBeat(object? sender, ElapsedEventArgs e)
         {
             IsOn = _player == null ? false : !_player.IsStopped;
+
+            if (_player != null
+                && _player.IsHardStop)
+            {
+                return;
+            }
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (_player != null
+                    && _player.IsStopped
+                    && _isAutoPlayChecked
+                    && _playlistPageView != null
+                    && (_playlistPageView.DataContext as PlaylistPageViewModel).PlayList.Any())
+                {
+                    ResetPlayer();
+                    SetupWithAutoPlay();
+                }
+            });
         }
 
         #endregion
@@ -570,7 +647,7 @@ namespace DigitalAudioExperiment.ViewModel
 
                     _playlistPageView?.CloseExit();
                     
-                    if (_playlistPageView.DataContext is PlaylistPageViewModel viewModel)
+                    if (_playlistPageView?.DataContext is PlaylistPageViewModel viewModel)
                     {
                         viewModel.Dispose();
                         _playlistPageView.DataContext = null;

@@ -43,6 +43,7 @@ namespace DigitalAudioExperiment.Logic
         private int _volume;
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
+        private bool _hardStop;
 
         #endregion
 
@@ -50,6 +51,11 @@ namespace DigitalAudioExperiment.Logic
 
         public DaeAudioPlayer(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
             _fileName = fileName;
 
             _simpleDecoder = new SimpleDecoder(fileName, null);
@@ -278,6 +284,12 @@ namespace DigitalAudioExperiment.Logic
 
         public int? GetFrameCount()
             => _simpleDecoder?.GetFrameCount();
+
+        public void SetHardStop(bool hardStop)
+            => _hardStop = hardStop;
+
+        public bool IsHardStop
+            => _hardStop;
 
         #endregion
 

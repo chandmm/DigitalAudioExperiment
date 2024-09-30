@@ -21,14 +21,16 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
-    <Border BorderBrush="DodgerBlue" BorderThickness="2" CornerRadius="10">
+
+    <Border Style="{StaticResource DialogBorderStyle}">
         <Grid>
             <Viewbox Stretch="Fill">
                 <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
             </Viewbox>
-            <Grid Background="#62e3f6" Margin="20">
-
+            <Grid Background="{StaticResource ComponentBackgroundColour}" Margin="20">
+                <ItemsControl 
+                    ItemTemplate="{StaticResource PlaylistItemsTemplate}" 
+                    ItemsSource="{Binding PlayList}"/>
             </Grid>
         </Grid>
     </Border>

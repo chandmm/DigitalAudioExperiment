@@ -15,7 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Extensions;
 using DigitalAudioExperiment.Model;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -25,7 +27,8 @@ namespace DigitalAudioExperiment.ViewModel
         #region Fields
 
         private bool _isDisposed;
-        private List<PlaylistModel> _playlist = new List<PlaylistModel>();
+        private PlaylistModel? _listSelectedPlayModel = null;
+        private PlaylistModel? _currentlyPlaying;
 
         #endregion
 
@@ -33,28 +36,124 @@ namespace DigitalAudioExperiment.ViewModel
 
         public bool IsShowing { get; set; }
 
+        public bool IsLoop { get; private set; }
+
+        private int _currentPlayIndex;
+        public int CurrentPlayIndex
+        {
+            get => _currentPlayIndex;
+            set
+            {
+                _currentPlayIndex = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<PlaylistModel> _playList;
+        public ObservableCollection<PlaylistModel> PlayList
+        {
+            get => _playList;
+            set
+            {
+                _playList = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region Initialisation
+
+        public PlaylistPageViewModel()
+        {
+            CurrentPlayIndex = 0;
+            PlayList = new ObservableCollection<PlaylistModel>();
+        }
+
         #endregion
 
         #region Manage List
 
         public void Add(string playlistItem)
-            => _playlist.Add(new PlaylistModel() { FullFilePathName = playlistItem, FileName = Path.GetFileName(playlistItem)});
+        {
+            PlayList.Add(
+                new PlaylistModel(
+                    PlayList.Any() ? PlayList.Max(x => x.SequenceId) : 0,
+                    HandleIsSelected)
+                {
+                    FullFilePathName = playlistItem,
+                    FileName = Path.GetFileName(playlistItem)
+                });
+        }
 
         public void Remove(string playlistItem)
         {
-            var item = _playlist.FirstOrDefault(x => x.FullFilePathName == playlistItem);
+            var item = PlayList.FirstOrDefault(x => x.FullFilePathName == playlistItem);
 
             if (item != null)
             {
-                _playlist.Remove(item);
+                PlayList.Remove(item);
             }
         }
 
-        public void Add(PlaylistModel playlistModelItem)
-            => _playlist.Add(playlistModelItem);
+        public string GetNextFile()
+        {
+            _currentlyPlaying = _listSelectedPlayModel ?? PlayList
+                .Select(x => x)
+                .Except(new[] {_currentlyPlaying })?
+                .FirstOrDefault(x => x.SequenceId > CurrentPlayIndex);
 
-        public void Remove(PlaylistModel playlistItem)
-            => _playlist.Remove(playlistItem);
+
+            if (_currentlyPlaying == null)
+            {
+                return string.Empty;
+            }
+
+            HandleIsSelected(_currentlyPlaying);
+
+            _listSelectedPlayModel = null;
+
+            if (IsLoop
+                && CurrentPlayIndex == _currentlyPlaying.SequenceId)
+            {
+                CurrentPlayIndex = PlayList.First().SequenceId;
+
+                return PlayList.First().FullFilePathName;
+            }
+
+            //if (!IsLoop)
+            //{
+            //    PlayList.RemoveAt(PlayList.IndexOf(model));
+            //}
+
+            _currentlyPlaying = _currentlyPlaying;
+
+            CurrentPlayIndex = _currentlyPlaying.SequenceId;
+
+            return _currentlyPlaying.FullFilePathName;
+        }
+
+        public void SetLoopPlay(bool loop)
+            => IsLoop = loop;
+
+        private void HandleIsSelected(PlaylistModel model)
+        {
+            foreach (var item in PlayList)
+            {
+                item.IsSelected = false;
+            }
+
+            PlayList.ElementAt(_playList.IndexOf(model)).IsSelected = true;
+
+            _listSelectedPlayModel = model;
+
+            PlayList.Refresh();
+        }
+
+        public string GetCurrentlyPlaying()
+            => _currentlyPlaying.FullFilePathName;
 
         #endregion
 
@@ -66,7 +165,8 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 if (isDisposng)
                 {
-
+                    PlayList.Clear();
+                    PlayList = null;
                 }
 
                 _isDisposed = true;

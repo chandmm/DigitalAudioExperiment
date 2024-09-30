@@ -15,11 +15,32 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Infrastructure;
+
 namespace DigitalAudioExperiment.Model
 {
     public class PlaylistModel
     {
         public string FullFilePathName { get; set; }
         public string FileName { get; set; }
+        public int SequenceId { get; private set; }
+        public bool IsSelected { get; set; }
+
+        public RelayCommand IsSelectedCommand { get; set; }
+
+        public PlaylistModel(int maxId, Action<PlaylistModel> commandMethodCallback)
+        {
+            if (commandMethodCallback == null)
+            {
+                throw new ArgumentNullException(nameof(commandMethodCallback));
+            }
+
+            SequenceId = maxId + 1;
+            
+            IsSelectedCommand = new RelayCommand(() =>
+            {
+                commandMethodCallback(this);
+            }, () => true);
+        }
     }
 }
