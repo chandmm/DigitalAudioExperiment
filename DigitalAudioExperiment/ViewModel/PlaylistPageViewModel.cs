@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.Extensions;
+using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -64,12 +65,20 @@ namespace DigitalAudioExperiment.ViewModel
 
         #endregion
 
+        #region Commands
+
+        public RelayCommand RemoveCommand { get; set; }
+
+        #endregion
+
         #region Initialisation
 
         public PlaylistPageViewModel()
         {
             CurrentPlayIndex = 0;
             PlayList = new ObservableCollection<PlaylistModel>();
+
+            RemoveCommand  = new RelayCommand(Remove, () => true);
         }
 
         #endregion
@@ -154,6 +163,11 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string GetCurrentlyPlaying()
             => _currentlyPlaying.FullFilePathName;
+
+        private void Remove()
+        {
+            _playList.RemoveAt(_playList.IndexOf(_currentlyPlaying));
+        }
 
         #endregion
 

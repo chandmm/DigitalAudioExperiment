@@ -21,8 +21,8 @@
 
     <Style TargetType="Border" x:Key="DialogBorderStyle">
         <Setter Property="BorderBrush" Value="DodgerBlue"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderThickness" Value="5"/>
+        <Setter Property="CornerRadius" Value="15"/>
     </Style>
 
     <DataTemplate x:Key="PlaylistItemsTemplate">
