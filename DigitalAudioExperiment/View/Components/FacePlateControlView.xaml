@@ -68,11 +68,17 @@
                 Grid.RowSpan="3" 
                 Grid.ColumnSpan="2" />
             <Button
-                Content="Play list"
+                Width="30"
+                BorderThickness="0"
+                Background="Silver"
                 Command="{Binding Path=DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"
                 Grid.Row="8"
                 Grid.Column="9"
-                Margin="5"/>
+                Margin="5">
+                <Button.Content>
+                    <Viewbox Child="{StaticResource OpenViewBox}"/>
+                </Button.Content>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
