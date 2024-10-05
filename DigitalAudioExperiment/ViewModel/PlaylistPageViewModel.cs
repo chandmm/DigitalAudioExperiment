@@ -20,6 +20,7 @@ using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
 using DigitalAudioExperiment.View;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -120,6 +121,38 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string GetNextFile()
         {
+            if (!PlayList.Any())
+            {
+                return string.Empty;
+            }
+
+            if (_listSelectedPlayModel == null
+                && PlayList.IndexOf(_currentlyPlaying) == PlayList.Count() - 1)
+            {
+                return string.Empty; 
+            }
+
+            var index = PlayList.IndexOf(_listSelectedPlayModel ?? _currentlyPlaying);
+
+            if (index < 0)
+            {
+                index = 0;
+            }
+            else if (_listSelectedPlayModel == null)
+            {
+                index++;
+            }
+
+            _listSelectedPlayModel = null;
+            _currentlyPlaying = PlayList.ElementAt(index);
+            HandleIsSelected(_currentlyPlaying, updateListSelected: false);
+
+            return _currentlyPlaying.FullFilePathName;
+        }
+
+
+        public string GetNextFile2()
+        {
             _currentlyPlaying = _listSelectedPlayModel ?? PlayList
                 .Select(x => x)
                 .Except(new[] { _currentlyPlaying })?
@@ -143,11 +176,6 @@ namespace DigitalAudioExperiment.ViewModel
                 return PlayList.First().FullFilePathName;
             }
 
-            //if (!IsLoop)
-            //{
-            //    PlayList.RemoveAt(PlayList.IndexOf(model));
-            //}
-
             _currentlyPlaying = _currentlyPlaying;
 
             CurrentPlayIndex = _currentlyPlaying.SequenceId;
@@ -158,13 +186,8 @@ namespace DigitalAudioExperiment.ViewModel
         public void SetLoopPlay(bool loop)
             => IsLoop = loop;
 
-        private void HandleIsSelected(PlaylistModel model)
+        private void HandleIsSelected(PlaylistModel model, bool updateListSelected = true)
         {
-            if (_currentlyPlaying?.FullFilePathName == model.FullFilePathName)
-            {
-                return;
-            }
-
             foreach (var item in PlayList)
             {
                 item.IsSelected = false;
@@ -172,7 +195,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             PlayList.ElementAt(_playList.IndexOf(model)).IsSelected = true;
 
-            _listSelectedPlayModel = model;
+            _listSelectedPlayModel = updateListSelected ? model : null;
 
             PlayList.Refresh();
         }
@@ -302,10 +325,13 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-        internal void SetPlaylistViewControl(Action closeAction)
+        public void SetPlaylistViewControl(Action closeAction)
         {
             _closeAction = closeAction;
         }
+
+        public bool IsEndOfList()
+            => (PlayList.Count() - 1) == PlayList.IndexOf(_currentlyPlaying);
 
         private void ExitPlaylist()
         {

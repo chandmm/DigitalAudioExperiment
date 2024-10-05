@@ -29,7 +29,7 @@ namespace DigitalAudioExperiment.Model
 
         public RelayCommand IsSelectedCommand { get; set; }
 
-        public PlaylistModel(int maxId, Action<PlaylistModel> commandMethodCallback)
+        public PlaylistModel(int maxId, Action<PlaylistModel, bool> commandMethodCallback)
         {
             if (commandMethodCallback == null)
             {
@@ -40,7 +40,7 @@ namespace DigitalAudioExperiment.Model
             
             IsSelectedCommand = new RelayCommand(() =>
             {
-                commandMethodCallback(this);
+                commandMethodCallback(this, true);
             }, () => true);
         }
 

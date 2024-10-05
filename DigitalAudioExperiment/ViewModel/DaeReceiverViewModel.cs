@@ -629,10 +629,20 @@ namespace DigitalAudioExperiment.ViewModel
                     && _player.IsStopped
                     && _isAutoPlayChecked
                     && _playlistPageView != null
-                    && (_playlistPageView.DataContext as PlaylistPageViewModel).PlayList.Any())
+                    && (_playlistPageView.DataContext as PlaylistPageViewModel).PlayList.Any()
+                    && !(_playlistPageView.DataContext as PlaylistPageViewModel).IsEndOfList())
                 {
                     ResetPlayer();
                     SetupWithAutoPlay();
+                }
+
+                if (_player != null
+                    && _player.IsStopped
+                    && (_playlistPageView.DataContext as PlaylistPageViewModel).IsEndOfList())
+                {
+                    ResetPlayer();
+                    SetupWithAutoPlay(autoPlayOverride: true);
+                    StopButton();
                 }
             });
         }
