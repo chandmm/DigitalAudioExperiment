@@ -124,6 +124,14 @@
         </Grid>
     </Viewbox>
 
+    <Viewbox Stretch="Uniform" x:Key="ExitIconViewBox" Margin="2">
+        <Grid>
+            <Path Data="M 5.0468882,7 H 13.115516 V 9 H 5.0468882 Z" Stroke="Black" Fill="Black"/>
+            <Path Data="m 13.430871,8.9753916 0.01522,1.9950894 2.20748,-2.9521927 -2.20748,-2.9791525 z" Stroke="Black" Fill="Black"/>
+            <Path Data="M 11.745312,6.0239042 V 0.25513471 L 0.24159449,0.24187317 V 15.731351 l 11.50371751,0.02652 0.01309,-5.835077" Stroke="Black"/>
+        </Grid>
+    </Viewbox>
+
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
 

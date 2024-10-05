@@ -18,6 +18,7 @@
 using DigitalAudioExperiment.Extensions;
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
+using DigitalAudioExperiment.View;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Serialization;
@@ -37,6 +38,7 @@ namespace DigitalAudioExperiment.ViewModel
         private PlaylistModel? _currentlyPlaying;
         private Func<string, string[]> _getFileCallback;
         private Func<string, string, string?> _getSaveFilePathCallback;
+        private Action _closeAction;
 
         #endregion
 
@@ -80,6 +82,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand AddFileCommand { get; private set; }
         public RelayCommand SavePlaylistCommand { get; private set; }
         public RelayCommand LoadPlaylistCommand { get; private set; }
+        public RelayCommand ExitPlaylistCommand { get; private set; }
 
         #endregion
 
@@ -94,6 +97,7 @@ namespace DigitalAudioExperiment.ViewModel
             AddFileCommand = new RelayCommand(AddFile, () => true);
             SavePlaylistCommand = new RelayCommand(SavePlaylist, () => true);
             LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
+            ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
         }
 
         #endregion
@@ -156,6 +160,11 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void HandleIsSelected(PlaylistModel model)
         {
+            if (_currentlyPlaying?.FullFilePathName == model.FullFilePathName)
+            {
+                return;
+            }
+
             foreach (var item in PlayList)
             {
                 item.IsSelected = false;
@@ -183,8 +192,19 @@ namespace DigitalAudioExperiment.ViewModel
 
             _playList.RemoveAt(_playList.IndexOf(item));
             _currentlyPlaying = null;
+            _listSelectedPlayModel = null;
+
+            UpdatePlaylistIndices();
 
             OnPropertyChanged(nameof(IsHasList));
+        }
+
+        private void UpdatePlaylistIndices()
+        {
+            for (int i = 0; i < PlayList.Count(); i++)
+            {
+                PlayList[i].UpdateSequenceId(i);
+            }
         }
 
         public bool IsCurrentPlayAvailable()
@@ -280,6 +300,21 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 PlayList.First().IsSelected = true;
             }
+        }
+
+        internal void SetPlaylistViewControl(Action closeAction)
+        {
+            _closeAction = closeAction;
+        }
+
+        private void ExitPlaylist()
+        {
+            if (_closeAction == null)
+            {
+                return; 
+            }
+
+            _closeAction();
         }
 
         #endregion

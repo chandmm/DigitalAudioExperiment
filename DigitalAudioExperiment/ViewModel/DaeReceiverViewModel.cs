@@ -373,23 +373,28 @@ namespace DigitalAudioExperiment.ViewModel
         private async Task PlayButton()
         {
             if ((_player != null && _player.IsStopped)
+                && !IsLoopPlayChecked
                 && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
                 && !viewModel.IsCurrentPlayAvailable()
                 && viewModel.PlayList.Any())
             {
 
                 ResetPlayer();
-                SetupWithAutoPlay(true);
+                SetupWithAutoPlay(autoPlayOverride: true);
             }
 
-            viewModel = _playlistPageView.DataContext as PlaylistPageViewModel;
-
             if (_player == null
-                && viewModel != null
-                && viewModel.PlayList.Any())
+                && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
+                && newViewModel != null
+                && newViewModel.PlayList.Any())
             {
                 ResetPlayer();
-                SetupWithAutoPlay(true);
+                SetupWithAutoPlay(autoPlayOverride: true);
+            }
+
+            if (_player == null)
+            {
+                return;
             }
 
             if (!_vuUpdateTimer.Enabled)
@@ -568,7 +573,8 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             if (IsLoopPlayChecked
-                && _canContinueLoopMode)
+                && _canContinueLoopMode
+                && _player.IsStopped)
             {
                 PlayButton();
             }

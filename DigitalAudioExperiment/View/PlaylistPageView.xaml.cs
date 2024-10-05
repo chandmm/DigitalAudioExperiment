@@ -44,6 +44,7 @@ namespace DigitalAudioExperiment.View
             {
                 viewModel.SetGetFileCallback(GetFile);
                 viewModel.SetGetSaveFileCallback(GetSaveFile);
+                viewModel.SetPlaylistViewControl(Close);
             }
         }
 

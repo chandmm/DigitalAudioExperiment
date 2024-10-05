@@ -43,5 +43,10 @@ namespace DigitalAudioExperiment.Model
                 commandMethodCallback(this);
             }, () => true);
         }
+
+        internal void UpdateSequenceId(int i)
+        {
+            SequenceId = i;
+        }
     }
 }

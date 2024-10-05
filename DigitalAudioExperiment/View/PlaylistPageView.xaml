@@ -52,6 +52,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button 
+                        ToolTip="Load playlist from file."
                         Style="{StaticResource PlaylistButtonStyle}"
                         Command="{Binding LoadPlaylistCommand}">
                         <Button.Content>
@@ -59,15 +60,7 @@
                         </Button.Content>
                     </Button>
                     <Button
-                        Style="{StaticResource PlaylistButtonStyle}"
-                        VerticalContentAlignment="Center"
-                        Grid.Column="7"
-                        Visibility="{Binding IsHasList, Converter={StaticResource BoolToVisibilityConvertor}}"
-                        Content="X" 
-                        FontSize="30" 
-                        FontWeight="Bold"
-                        Command="{Binding RemoveCommand}"/>
-                    <Button
+                        ToolTip="Add file to playlist."
                         Style="{StaticResource PlaylistButtonStyle}"
                         VerticalContentAlignment="Center"
                         Grid.Column="1"
@@ -79,6 +72,7 @@
                         </Button.Content>
                     </Button>
                     <Button
+                        ToolTip="Save current playlist."
                         Style="{StaticResource PlaylistButtonStyle}"
                         VerticalContentAlignment="Center"
                         Grid.Column="2"
@@ -87,6 +81,27 @@
                         Command="{Binding SavePlaylistCommand}">
                         <Button.Content>
                             <Viewbox Stretch="Uniform" Child="{StaticResource SavePlaylistViewBox}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        ToolTip="Remove selected item."
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        Grid.Column="3"
+                        Visibility="{Binding IsHasList, Converter={StaticResource BoolToVisibilityConvertor}}"
+                        Content="X" 
+                        FontSize="25" 
+                        FontWeight="Bold"
+                        Command="{Binding RemoveCommand}"/>
+                    <Button
+                        ToolTip="Close playlist window."
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        VerticalContentAlignment="Center"
+                        Grid.Column="7"
+                        FontSize="30" 
+                        FontWeight="Bold"
+                        Command="{Binding ExitPlaylistCommand}">
+                        <Button.Content>
+                            <Viewbox Stretch="Uniform" Child="{StaticResource ExitIconViewBox}"/>
                         </Button.Content>
                     </Button>
                 </Grid>
