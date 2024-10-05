@@ -43,7 +43,12 @@
                         <Viewbox Stretch="Uniform" Child="{StaticResource LoadViewBox}"/>
                     </Button.Content>
                 </Button>
-                <Button Content="X" FontSize="40" FontWeight="Bold" Command="{Binding RemoveCommand}"/>
+                <Button 
+                    IsEnabled="{Binding IsHasList}"
+                    Content="X" 
+                    FontSize="40" 
+                    FontWeight="Bold" 
+                    Command="{Binding RemoveCommand}"/>
             </StackPanel>
         </Grid>
     </Border>

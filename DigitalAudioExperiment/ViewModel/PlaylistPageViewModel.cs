@@ -39,6 +39,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         public bool IsLoop { get; private set; }
 
+        public bool IsHasList { get => PlayList.Any(); }
+
         private int _currentPlayIndex;
         public int CurrentPlayIndex
         {
@@ -78,7 +80,7 @@ namespace DigitalAudioExperiment.ViewModel
             CurrentPlayIndex = 0;
             PlayList = new ObservableCollection<PlaylistModel>();
 
-            RemoveCommand  = new RelayCommand(Remove, () => true);
+            RemoveCommand = new RelayCommand(Remove, () => true);
         }
 
         #endregion
@@ -95,23 +97,15 @@ namespace DigitalAudioExperiment.ViewModel
                     FullFilePathName = playlistItem,
                     FileName = Path.GetFileName(playlistItem)
                 });
-        }
 
-        public void Remove(string playlistItem)
-        {
-            var item = PlayList.FirstOrDefault(x => x.FullFilePathName == playlistItem);
-
-            if (item != null)
-            {
-                PlayList.Remove(item);
-            }
+            OnPropertyChanged(nameof(IsHasList));
         }
 
         public string GetNextFile()
         {
             _currentlyPlaying = _listSelectedPlayModel ?? PlayList
                 .Select(x => x)
-                .Except(new[] {_currentlyPlaying })?
+                .Except(new[] { _currentlyPlaying })?
                 .FirstOrDefault(x => x.SequenceId > CurrentPlayIndex);
 
 
@@ -166,8 +160,22 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void Remove()
         {
-            _playList.RemoveAt(_playList.IndexOf(_currentlyPlaying));
+            var item = _playList.FirstOrDefault(x => x.IsSelected);
+
+            if (!IsHasList
+                || item == null)
+            {
+                return;
+            }
+
+            _playList.RemoveAt(_playList.IndexOf(item));
+            _currentlyPlaying = null;
+
+            OnPropertyChanged(nameof(IsHasList));
         }
+
+        public bool IsCurrentPlayAvailable()
+            => _currentlyPlaying != null;
 
         #endregion
 
