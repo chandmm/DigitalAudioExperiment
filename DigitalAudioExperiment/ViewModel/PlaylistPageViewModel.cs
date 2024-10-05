@@ -20,6 +20,7 @@ using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -27,9 +28,15 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
 
+        private readonly string _fileFiltersAudio = "Mp3 Files (*.mp3)|*.mp3|Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
+        private readonly string _fileFiltersPlaylist = "Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
+        private readonly string _saveFileFilters = "Playlist Files (*.xml)|*.xml";
+
         private bool _isDisposed;
         private PlaylistModel? _listSelectedPlayModel = null;
         private PlaylistModel? _currentlyPlaying;
+        private Func<string, string[]> _getFileCallback;
+        private Func<string, string, string?> _getSaveFilePathCallback;
 
         #endregion
 
@@ -69,7 +76,10 @@ namespace DigitalAudioExperiment.ViewModel
 
         #region Commands
 
-        public RelayCommand RemoveCommand { get; set; }
+        public RelayCommand RemoveCommand { get; private set; }
+        public RelayCommand AddFileCommand { get; private set; }
+        public RelayCommand SavePlaylistCommand { get; private set; }
+        public RelayCommand LoadPlaylistCommand { get; private set; }
 
         #endregion
 
@@ -81,6 +91,9 @@ namespace DigitalAudioExperiment.ViewModel
             PlayList = new ObservableCollection<PlaylistModel>();
 
             RemoveCommand = new RelayCommand(Remove, () => true);
+            AddFileCommand = new RelayCommand(AddFile, () => true);
+            SavePlaylistCommand = new RelayCommand(SavePlaylist, () => true);
+            LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
         }
 
         #endregion
@@ -176,6 +189,98 @@ namespace DigitalAudioExperiment.ViewModel
 
         public bool IsCurrentPlayAvailable()
             => _currentlyPlaying != null;
+
+        public void SetGetFileCallback(Func<string, string[]> callback)
+        {
+            _getFileCallback = callback;
+        }
+
+        public void SetGetSaveFileCallback(Func<string, string, string> callback)
+        {
+            _getSaveFilePathCallback = callback;
+        }
+
+        private void AddFile()
+        {
+            if (_getFileCallback == null)
+            {
+                return;
+            }
+
+            var files = _getFileCallback(_fileFiltersAudio);
+
+            if (files == null
+                || !files.Any())
+            {
+                return;
+            }
+
+            foreach (var fileName in files)
+            {
+                Add(fileName);
+            }
+
+            if (!PlayList.Any(x => x.IsSelected))
+            {
+                PlayList.First().IsSelected = true;
+            }
+        }
+
+        private void SavePlaylist()
+        {
+            if (_getSaveFilePathCallback == null)
+            {
+                return;
+            }
+
+            var filePath = _getSaveFilePathCallback(".xml", _saveFileFilters);
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            var serialiser = new XmlSerializer(typeof(List<string>));
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            {
+                serialiser.Serialize(fs, PlayList.Select(x => x.FullFilePathName).ToList());
+            }
+        }
+
+        private void LoadPlaylist()
+        {
+            if (_getFileCallback == null)
+            {
+                return;
+            }
+
+            var filePath = _getFileCallback(_fileFiltersPlaylist)
+                ?.Where(x => x.EndsWith(".xml"))
+                .Select(x => x)
+                .First();
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            PlayList.Clear();
+
+            XmlSerializer serializer = new XmlSerializer(typeof(List<string>));
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Open))
+            {
+                List<string> fullPaths = (List<string>)serializer.Deserialize(fs);
+
+                fullPaths.ForEach(path => Add(path));
+            }
+
+            if (PlayList.Any())
+            {
+                PlayList.First().IsSelected = true;
+            }
+        }
 
         #endregion
 

@@ -16,7 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.ViewModel;
+using Microsoft.Win32;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace DigitalAudioExperiment.View
@@ -26,6 +28,61 @@ namespace DigitalAudioExperiment.View
         public PlaylistPageView()
         {
             InitializeComponent();
+
+            DataContextChanged += OnDataContextChanged;
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs args)
+        {
+            OnDataContextChanged(sender, default(DependencyPropertyChangedEventArgs));
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.SetGetFileCallback(GetFile);
+                viewModel.SetGetSaveFileCallback(GetSaveFile);
+            }
+        }
+
+        private string[] GetFile(string filter)
+        {
+            var openFileDialog = new OpenFileDialog()
+            {
+                Multiselect = true,
+                Filter = filter
+            };
+
+            var dialogResult = openFileDialog.ShowDialog();
+
+            if (dialogResult != null
+                && dialogResult == true)
+            {
+                return openFileDialog.FileNames;
+            }
+
+            return null;
+        }
+
+        private string GetSaveFile(string filters, string defaultExtension)
+        {
+            var saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Filter = filters;
+            saveFileDialog.FileName = "DaePlaylist";
+            saveFileDialog.DefaultExt = defaultExtension;
+
+            var dialogResult = saveFileDialog.ShowDialog();
+
+            if (dialogResult != null
+                && dialogResult == true)
+            {
+                return saveFileDialog.FileName;
+            }
+
+            return null;
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

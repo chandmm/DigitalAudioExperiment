@@ -23,33 +23,74 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border Style="{StaticResource DialogBorderStyle}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <Viewbox Stretch="Fill" Grid.RowSpan="2">
-                <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
-            </Viewbox>
-            <Grid Background="{StaticResource ComponentBackgroundColour}" Margin="20">
-                <ItemsControl 
-                    ItemTemplate="{StaticResource PlaylistItemsTemplate}" 
-                    ItemsSource="{Binding PlayList}"/>
+    <Grid>
+        <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
+            <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
+        </Viewbox>
+    
+        <Border Style="{StaticResource DialogBorderStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+            
+                <Grid Background="{StaticResource ComponentBackgroundColour}" Margin="20">
+                    <ItemsControl 
+                        ItemTemplate="{StaticResource PlaylistItemsTemplate}" 
+                        ItemsSource="{Binding PlayList}"/>
+                </Grid>
+                <Grid Grid.Row="1" Margin="20,0,20,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button 
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        Command="{Binding LoadPlaylistCommand}">
+                        <Button.Content>
+                            <Viewbox Stretch="Uniform" Child="{StaticResource LoadViewBox}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        VerticalContentAlignment="Center"
+                        Grid.Column="7"
+                        Visibility="{Binding IsHasList, Converter={StaticResource BoolToVisibilityConvertor}}"
+                        Content="X" 
+                        FontSize="30" 
+                        FontWeight="Bold"
+                        Command="{Binding RemoveCommand}"/>
+                    <Button
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        VerticalContentAlignment="Center"
+                        Grid.Column="1"
+                        FontSize="30" 
+                        FontWeight="Bold"
+                        Command="{Binding AddFileCommand}">
+                        <Button.Content>
+                            <Viewbox Stretch="Uniform" Child="{StaticResource AddFileViewBox}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        VerticalContentAlignment="Center"
+                        Grid.Column="2"
+                        FontSize="30" 
+                        FontWeight="Bold"
+                        Command="{Binding SavePlaylistCommand}">
+                        <Button.Content>
+                            <Viewbox Stretch="Uniform" Child="{StaticResource SavePlaylistViewBox}"/>
+                        </Button.Content>
+                    </Button>
+                </Grid>
             </Grid>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button>
-                    <Button.Content>
-                        <Viewbox Stretch="Uniform" Child="{StaticResource LoadViewBox}"/>
-                    </Button.Content>
-                </Button>
-                <Button 
-                    IsEnabled="{Binding IsHasList}"
-                    Content="X" 
-                    FontSize="40" 
-                    FontWeight="Bold" 
-                    Command="{Binding RemoveCommand}"/>
-            </StackPanel>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </Window>

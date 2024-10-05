@@ -373,13 +373,23 @@ namespace DigitalAudioExperiment.ViewModel
         private async Task PlayButton()
         {
             if ((_player != null && _player.IsStopped)
-                &&_playlistPageView.DataContext is PlaylistPageViewModel viewModel
+                && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
                 && !viewModel.IsCurrentPlayAvailable()
                 && viewModel.PlayList.Any())
             {
 
                 ResetPlayer();
-                SetupWithAutoPlay();
+                SetupWithAutoPlay(true);
+            }
+
+            viewModel = _playlistPageView.DataContext as PlaylistPageViewModel;
+
+            if (_player == null
+                && viewModel != null
+                && viewModel.PlayList.Any())
+            {
+                ResetPlayer();
+                SetupWithAutoPlay(true);
             }
 
             if (!_vuUpdateTimer.Enabled)

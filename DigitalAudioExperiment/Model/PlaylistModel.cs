@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.Infrastructure;
+using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.Model
 {
