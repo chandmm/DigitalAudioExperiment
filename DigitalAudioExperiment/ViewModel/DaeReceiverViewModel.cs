@@ -18,7 +18,9 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using DigitalAudioExperiment.View;
 using System.Timers;
+using System.Windows.Threading;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -26,7 +28,7 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
-        private readonly int _initialSafeVolume = 10;
+        private readonly int _initialSafeVolume = 5;
 
         private Func<string?> _getFile;
         private DaeAudioPlayer _player;
@@ -35,6 +37,7 @@ namespace DigitalAudioExperiment.ViewModel
         private double _vuHeartBeatInterval = 50;
         private double _heartBeatInterval = 200;
         private bool _canContinueLoopMode = true;
+        private PlaylistPageView _playlistPageView;
 
         #endregion
 
@@ -287,6 +290,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand SelectCommand { get; set; }
         public RelayCommand StopCommand { get; set; }
         public RelayCommand SkipToStartCommand { get; set; }
+        public RelayCommand OpenPlaylistCommand { get; set; }
 
         #endregion
 
@@ -304,6 +308,7 @@ namespace DigitalAudioExperiment.ViewModel
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
             SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
+            OpenPlaylistCommand = new RelayCommand(OpenPlaylist, () => true);
 
             Volume = _initialSafeVolume;
             VolumeLabel = "Volume";
@@ -312,12 +317,30 @@ namespace DigitalAudioExperiment.ViewModel
             _vuUpdateTimer.AutoReset = true;
             _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
 
-            _applicationHeartBeatTimer = new System.Timers.Timer(_heartBeatInterval);
-            _applicationHeartBeatTimer.AutoReset = true;
-            _applicationHeartBeatTimer.Elapsed += UpdateApplicationHeartBeat;
-            _applicationHeartBeatTimer.Start();
-
             RaisePropertyChangedEvents();
+        }
+
+        private void OpenPlaylist()
+        {
+            if (_playlistPageView != null
+                && (_playlistPageView.DataContext is PlaylistPageViewModel viewModel)
+                && viewModel.IsShowing)
+            {
+                _playlistPageView.Close();
+
+                return;
+            }
+
+            if (_playlistPageView == null)
+            {
+                _playlistPageView = new PlaylistPageView();
+                _playlistPageView.Owner = App.Current.MainWindow;
+            }
+
+            _playlistPageView.DataContext = _playlistPageView.DataContext == null || (_playlistPageView.DataContext is PlaylistPageViewModel) == null 
+                ? new PlaylistPageViewModel() 
+                : _playlistPageView.DataContext;
+            _playlistPageView.Show();
         }
 
         public DaeReceiverViewModel(Func<string?> callback)
@@ -338,16 +361,35 @@ namespace DigitalAudioExperiment.ViewModel
             _canContinueLoopMode = false;
             _player.Stop();
             _vuUpdateTimer.Stop();
+            _player.SetHardStop(true);
+            _player.Dispose();
+            _player = null;
         }
 
         private async Task PlayButton()
         {
+            if (_player == null
+                && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
+                && newViewModel != null
+                && newViewModel.PlayList.Any())
+            {
+                ResetPlayer();
+                SetupWithAutoPlay(autoPlayOverride: true);
+            }
+
+            if (_player == null)
+            {
+                return;
+            }
+
             if (!_vuUpdateTimer.Enabled)
             {
                 _vuUpdateTimer.Start();
             }
 
             _canContinueLoopMode = IsLoopPlayChecked;
+
+            _player.SetHardStop(false);
 
             await Task.Run(() =>
             {
@@ -386,7 +428,7 @@ namespace DigitalAudioExperiment.ViewModel
             OnFileSelected(fileName);
         }
 
-        private void OnFileSelected(string fileName)
+        private void ResetPlayer()
         {
             if (_player != null)
             {
@@ -394,9 +436,59 @@ namespace DigitalAudioExperiment.ViewModel
                 _player.Dispose();
             }
 
+            Value = 0;
+        }
+
+        private void OnFileSelected(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+
+            SetupPlayListControls(fileName);
+
+            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel
+                && playlistPageViewModel.PlayList.Count() == 1
+                && _player == null)
+            {
+                ResetPlayer();
+                SetupWithAutoPlay();
+            }
+        }
+
+        private void SetupPlayListControls(string fileName)
+        {
+            if (_playlistPageView == null)
+            {
+                _playlistPageView = new PlaylistPageView();
+                _playlistPageView.DataContext = new PlaylistPageViewModel();
+            }
+
+            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel)
+            {
+                playlistPageViewModel.Add(fileName);
+            }
+        }
+
+        private void SetupWithAutoPlay(bool autoPlayOverride = false)
+        {
+            if (!(_playlistPageView.DataContext is PlaylistPageViewModel viewModel))
+            {
+                return;
+            }
+
+            var fileName = viewModel.GetNextFile();
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+
             _player = new DaeAudioPlayer(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
             _player.SetUpdateCallback(Update);
+            _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
             Maximum = _player.GetFrameCount() ?? 0;
             _isMono = _player.GetIsMonoChannel();
             Value = 0;
@@ -411,7 +503,8 @@ namespace DigitalAudioExperiment.ViewModel
 
             RaisePropertyChangedEvents();
 
-            if (IsAutoPlayChecked)
+            if (IsAutoPlayChecked
+                && !autoPlayOverride)
             {
                 PlayButton();
             }
@@ -449,8 +542,14 @@ namespace DigitalAudioExperiment.ViewModel
             _volume = value;
             _player?.SetVolume(_volume);
         }
+
         private void Update()
         {
+            if (_player == null)
+            {
+                return;
+            }
+
             if (_player.IsStopped
                 && !IsLoopPlayChecked)
             {
@@ -459,12 +558,6 @@ namespace DigitalAudioExperiment.ViewModel
                 RightdB = 0;
 
                 return;
-            }
-
-            if (IsLoopPlayChecked
-                && _canContinueLoopMode)
-            {
-                PlayButton();
             }
 
             var duration = _player?.GetElapsed();
@@ -495,15 +588,42 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
+            if (!IsOn)
+            {
+                IsOn = true;
+            }
+
             var levels = _player?.GetVUMeterValues();
 
             LeftdB = levels.Value.Item1;
             RightdB = levels.Value.Item2;
         }
 
-        private void UpdateApplicationHeartBeat(object? sender, ElapsedEventArgs e)
+        private void PlaybackStoppedCallback()
         {
-            IsOn = _player == null ? false : !_player.IsStopped;
+            IsOn = false;
+
+            if (IsLoopPlayChecked
+                && _canContinueLoopMode
+                && _player.IsStopped)
+            {
+                PlayButton();
+
+                return;
+            }
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (IsAutoPlayChecked
+                    && _player != null
+                    && !_player.IsHardStop
+                    && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
+                    && !viewModel.IsLastItem())
+                {
+                    ResetPlayer();
+                    SetupWithAutoPlay();
+                }
+            });
         }
 
         #endregion
@@ -533,13 +653,15 @@ namespace DigitalAudioExperiment.ViewModel
                         _vuUpdateTimer?.Dispose();
                     }
 
-                    if (_applicationHeartBeatTimer.Enabled)
-                    {
-                        _applicationHeartBeatTimer.Stop();
-                        _applicationHeartBeatTimer?.Dispose();
-                    }
-
                     _player?.Dispose();
+
+                    _playlistPageView?.CloseExit();
+                    
+                    if (_playlistPageView?.DataContext is PlaylistPageViewModel viewModel)
+                    {
+                        viewModel.Dispose();
+                        _playlistPageView.DataContext = null;
+                    }
                 }
 
                 _isDisposed = true;

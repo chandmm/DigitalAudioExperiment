@@ -42,6 +42,8 @@ namespace DigitalAudioExperiment.Logic
         private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
+        private Action _playbackStoppedCallback;
+        private bool _hardStop;
 
         #endregion
 
@@ -49,6 +51,11 @@ namespace DigitalAudioExperiment.Logic
 
         public DaeAudioPlayer(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
             _fileName = fileName;
 
             _simpleDecoder = new SimpleDecoder(fileName, null);
@@ -63,6 +70,9 @@ namespace DigitalAudioExperiment.Logic
 
         public void SetUpdateCallback(Action updateCallback)
             => _updateCallback = updateCallback;
+
+        public void SetPlaybackStoppedCallback(Action playbackStopped)
+            => _playbackStoppedCallback = playbackStopped;
 
         #endregion
 
@@ -106,8 +116,9 @@ namespace DigitalAudioExperiment.Logic
                 {
                     using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
                     {
-                        waveOut.DesiredLatency = 150;
+                        waveOut.DesiredLatency = 100;
                         waveOut.PlaybackStopped += PlaybackStoppedCallback;
+                        waveOut.NumberOfBuffers = 4;
                         waveOut.Init(waveStream);
                         waveOut.Play();
 
@@ -274,6 +285,12 @@ namespace DigitalAudioExperiment.Logic
         public int? GetFrameCount()
             => _simpleDecoder?.GetFrameCount();
 
+        public void SetHardStop(bool hardStop)
+            => _hardStop = hardStop;
+
+        public bool IsHardStop
+            => _hardStop;
+
         #endregion
 
         #region Callback Methods
@@ -281,7 +298,8 @@ namespace DigitalAudioExperiment.Logic
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
-            _updateCallback.Invoke();
+            _updateCallback?.Invoke();
+            _playbackStoppedCallback?.Invoke();
         }
 
         private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
@@ -308,8 +326,12 @@ namespace DigitalAudioExperiment.Logic
                         _isPlaying = false;
                     }
 
-                    _stream?.Dispose();
-                    _stream = null;
+                    if (_stream != null)
+                    {
+                        _stream?.Dispose();
+                        _stream = null;
+                    }
+
                     _simpleDecoder?.Dispose();
                     _simpleDecoder = null;
                 }
