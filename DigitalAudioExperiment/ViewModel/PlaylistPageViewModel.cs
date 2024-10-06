@@ -35,11 +35,11 @@ namespace DigitalAudioExperiment.ViewModel
         private readonly string _saveFileFilters = "Playlist Files (*.xml)|*.xml";
 
         private bool _isDisposed;
-        private PlaylistModel? _listSelectedPlayModel = null;
         private PlaylistModel? _currentlyPlaying;
         private Func<string, string[]> _getFileCallback;
         private Func<string, string, string?> _getSaveFilePathCallback;
         private Action _closeAction;
+        private int _previousPlayIndex = -1;
 
         #endregion
 
@@ -47,21 +47,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public bool IsShowing { get; set; }
 
-        public bool IsLoop { get; private set; }
-
         public bool IsHasList { get => PlayList.Any(); }
-
-        private int _currentPlayIndex;
-        public int CurrentPlayIndex
-        {
-            get => _currentPlayIndex;
-            set
-            {
-                _currentPlayIndex = value;
-
-                OnPropertyChanged();
-            }
-        }
 
         private ObservableCollection<PlaylistModel> _playList;
         public ObservableCollection<PlaylistModel> PlayList
@@ -91,7 +77,6 @@ namespace DigitalAudioExperiment.ViewModel
 
         public PlaylistPageViewModel()
         {
-            CurrentPlayIndex = 0;
             PlayList = new ObservableCollection<PlaylistModel>();
 
             RemoveCommand = new RelayCommand(Remove, () => true);
@@ -123,68 +108,35 @@ namespace DigitalAudioExperiment.ViewModel
         {
             if (!PlayList.Any())
             {
+                _previousPlayIndex = -1;
                 return string.Empty;
             }
-
-            if (_listSelectedPlayModel == null
-                && PlayList.IndexOf(_currentlyPlaying) == PlayList.Count() - 1)
+            var item = PlayList.FirstOrDefault(x => x.IsSelected);
+            
+            if (item == null)
             {
-                return string.Empty; 
+                _previousPlayIndex = -1;
             }
 
-            var index = PlayList.IndexOf(_listSelectedPlayModel ?? _currentlyPlaying);
-
-            if (index < 0)
-            {
-                index = 0;
-            }
-            else if (_listSelectedPlayModel == null)
-            {
-                index++;
-            }
-
-            _listSelectedPlayModel = null;
-            _currentlyPlaying = PlayList.ElementAt(index);
-            HandleIsSelected(_currentlyPlaying, updateListSelected: false);
-
-            return _currentlyPlaying.FullFilePathName;
-        }
-
-
-        public string GetNextFile2()
-        {
-            _currentlyPlaying = _listSelectedPlayModel ?? PlayList
-                .Select(x => x)
-                .Except(new[] { _currentlyPlaying })?
-                .FirstOrDefault(x => x.SequenceId > CurrentPlayIndex);
-
-
-            if (_currentlyPlaying == null)
+            if (item != null
+                && _previousPlayIndex == PlayList.Count() - 1)
             {
                 return string.Empty;
             }
 
-            HandleIsSelected(_currentlyPlaying);
+            item = item != null && item.IsUserSelected ? item : PlayList.ElementAt(_previousPlayIndex + 1 );
 
-            _listSelectedPlayModel = null;
+            _previousPlayIndex = PlayList.IndexOf(item);
 
-            if (IsLoop
-                && CurrentPlayIndex == _currentlyPlaying.SequenceId)
+            if (!item.IsUserSelected)
             {
-                CurrentPlayIndex = PlayList.First().SequenceId;
-
-                return PlayList.First().FullFilePathName;
+                HandleIsSelected(item);
             }
 
-            _currentlyPlaying = _currentlyPlaying;
+            item.IsUserSelected = false;
 
-            CurrentPlayIndex = _currentlyPlaying.SequenceId;
-
-            return _currentlyPlaying.FullFilePathName;
+            return item.FullFilePathName;
         }
-
-        public void SetLoopPlay(bool loop)
-            => IsLoop = loop;
 
         private void HandleIsSelected(PlaylistModel model, bool updateListSelected = true)
         {
@@ -195,13 +147,13 @@ namespace DigitalAudioExperiment.ViewModel
 
             PlayList.ElementAt(_playList.IndexOf(model)).IsSelected = true;
 
-            _listSelectedPlayModel = updateListSelected ? model : null;
+            if (model.IsUserSelected)
+            {
+                _previousPlayIndex = -1;
+            }
 
             PlayList.Refresh();
         }
-
-        public string GetCurrentlyPlaying()
-            => _currentlyPlaying.FullFilePathName;
 
         private void Remove()
         {
@@ -213,9 +165,14 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
+            var itemIndex = _playList.IndexOf(item);
             _playList.RemoveAt(_playList.IndexOf(item));
-            _currentlyPlaying = null;
-            _listSelectedPlayModel = null;
+
+            if (item.IsSelected
+                && itemIndex < PlayList.Count())
+            {
+                HandleIsSelected(PlayList.ElementAt(itemIndex));
+            }
 
             UpdatePlaylistIndices();
 
@@ -229,9 +186,6 @@ namespace DigitalAudioExperiment.ViewModel
                 PlayList[i].UpdateSequenceId(i);
             }
         }
-
-        public bool IsCurrentPlayAvailable()
-            => _currentlyPlaying != null;
 
         public void SetGetFileCallback(Func<string, string[]> callback)
         {
@@ -276,7 +230,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            var filePath = _getSaveFilePathCallback(".xml", _saveFileFilters);
+            var filePath = _getSaveFilePathCallback(_saveFileFilters, ".xml");
 
             if (string.IsNullOrEmpty(filePath))
             {
@@ -330,9 +284,6 @@ namespace DigitalAudioExperiment.ViewModel
             _closeAction = closeAction;
         }
 
-        public bool IsEndOfList()
-            => (PlayList.Count() - 1) == PlayList.IndexOf(_currentlyPlaying);
-
         private void ExitPlaylist()
         {
             if (_closeAction == null)
@@ -342,6 +293,9 @@ namespace DigitalAudioExperiment.ViewModel
 
             _closeAction();
         }
+
+        public bool IsLastItem()
+            => _previousPlayIndex == PlayList.Count() - 1;
 
         #endregion
 

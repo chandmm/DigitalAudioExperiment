@@ -26,6 +26,7 @@ namespace DigitalAudioExperiment.Model
         public string FileName { get; set; }
         public int SequenceId { get; private set; }
         public bool IsSelected { get; set; }
+        public bool IsUserSelected { get; set; }
 
         public RelayCommand IsSelectedCommand { get; set; }
 
@@ -40,6 +41,7 @@ namespace DigitalAudioExperiment.Model
             
             IsSelectedCommand = new RelayCommand(() =>
             {
+                IsUserSelected = true;
                 commandMethodCallback(this, true);
             }, () => true);
         }
