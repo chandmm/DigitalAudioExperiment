@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Mp3DecoderSimple;
-using Mp3DecoderSimple.Data;
-using Mp3DecoderSimple.Logic;
+using SimpleMp3Decoder;
+using SimpleMp3Decoder.Data;
+using SimpleMp3Decoder.Logic;
 using NAudio.Wave;
 using System.IO;
 
