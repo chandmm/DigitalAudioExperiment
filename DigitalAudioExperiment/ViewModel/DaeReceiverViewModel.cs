@@ -316,6 +316,8 @@ namespace DigitalAudioExperiment.ViewModel
             _vuUpdateTimer = new System.Timers.Timer(_vuHeartBeatInterval);
             _vuUpdateTimer.AutoReset = true;
             _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
+            Value = 0;
+            Maximum = 1;
 
             RaisePropertyChangedEvents();
         }
@@ -359,15 +361,21 @@ namespace DigitalAudioExperiment.ViewModel
         private void StopButton()
         {
             _canContinueLoopMode = false;
-            _player.Stop();
+            _player?.Stop();
             _vuUpdateTimer.Stop();
-            _player.SetHardStop(true);
-            _player.Dispose();
+            _player?.SetHardStop(true);
+            _player?.Dispose();
             _player = null;
         }
 
         private async Task PlayButton()
         {
+            if (_player == null
+                && _playlistPageView == null)
+            {
+                return;
+            }
+
             if (_player == null
                 && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
                 && newViewModel != null
