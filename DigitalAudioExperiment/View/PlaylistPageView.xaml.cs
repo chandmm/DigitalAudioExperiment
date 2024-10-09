@@ -18,7 +18,6 @@
 using DigitalAudioExperiment.ViewModel;
 using Microsoft.Win32;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace DigitalAudioExperiment.View
