@@ -15,5 +15,5 @@ Mp3 decoding library currently work in progress to bring into public repository.
 
 
 ## TODO: 
-Bring private mp3 decoding library into public repository - currently work in progress.
-Add more content to this readme file.
+- [Done] Bring private mp3 decoding library into public repository - currently work in progress.
+- Add more content to this readme file.
