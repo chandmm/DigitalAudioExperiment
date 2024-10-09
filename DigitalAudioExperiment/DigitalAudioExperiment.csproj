@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Mp3DecoderSimple">
-      <HintPath>..\..\AudioDecoderLabs\Mp3DecoderSimple\bin\Release\net8.0\Mp3DecoderSimple.dll</HintPath>
+    <Reference Include="SimpleDecoder">
+      <HintPath>..\..\SimpleDecoder\SimpleDecoder\bin\Release\net8.0\SimpleDecoder.dll</HintPath>
     </Reference>
     <Reference Include="WpfAudioControlLibrary">
       <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Debug\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
