@@ -27,7 +27,7 @@
       <HintPath>..\..\SimpleDecoder\SimpleDecoder\bin\Release\net8.0\SimpleDecoder.dll</HintPath>
     </Reference>
     <Reference Include="WpfAudioControlLibrary">
-      <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Debug\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
+      <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Release\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 
