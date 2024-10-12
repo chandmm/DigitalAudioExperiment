@@ -58,7 +58,7 @@
     <!--Templates-->
     <DataTemplate x:Key="PlaylistItemsTemplate">
         <Grid>
-            <ToggleButton Content="{Binding FileName}" Command="{Binding IsSelectedCommand}" >
+            <ToggleButton Command="{Binding IsSelectedCommand}" >
                 <ToggleButton.Resources>
                     <Style TargetType="ToggleButton">
                         <Setter Property="Background" Value="{StaticResource ComponentBackgroundColour}"/>
@@ -70,6 +70,11 @@
                         </Style.Triggers>
                     </Style>
                 </ToggleButton.Resources>
+                <ToggleButton.Content>
+                    <Grid>
+                        <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                    </Grid>
+                </ToggleButton.Content>
             </ToggleButton>
         </Grid>
     </DataTemplate>

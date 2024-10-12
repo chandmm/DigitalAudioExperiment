@@ -297,6 +297,19 @@ namespace DigitalAudioExperiment.ViewModel
         public bool IsLastItem()
             => _previousPlayIndex == PlayList.Count() - 1;
 
+        public void ResetToSelectedPlayed()
+        {
+            var item = PlayList.FirstOrDefault(x => x.IsSelected);
+
+            if (item == null)
+            {
+                return;
+
+            }
+            
+            _previousPlayIndex = PlayList.IndexOf(item) - 1;
+        }
+
         #endregion
 
         #region Dispose
