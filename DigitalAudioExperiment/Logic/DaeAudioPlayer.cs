@@ -20,6 +20,8 @@ using SimpleMp3Decoder.Data;
 using SimpleMp3Decoder.Logic;
 using NAudio.Wave;
 using System.IO;
+using NAudio.Wave.SampleProviders;
+using System.Linq.Expressions;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -44,6 +46,10 @@ namespace DigitalAudioExperiment.Logic
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
         private bool _hardStop;
+        private (float, float, float) _dbRMSValues;
+        private (float left, float right) _dbVuValues;
+        private WaveOutEvent _waveOut;
+        private WaveStream _waveStream;
 
         #endregion
 
@@ -112,27 +118,114 @@ namespace DigitalAudioExperiment.Logic
             { 
                 _stream.SetBitrateCallback(UpdateInfoFromStreamCallback);
 
-                using (WaveOutEvent waveOut = new WaveOutEvent())
-                {
-                    using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
+                ResourceCleanUp();
+
+                _waveOut = new WaveOutEvent();
+                _waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels()));
+
+                
+                    //var aggregator = OutsideStreamMeteringSampleProviderTesting(waveStream, waveOut); // DEBUG and TESTING only. To DELETE
+                    var aggregator = OutsideStreamSampleAggregatorProviderTesting(_waveStream, _waveOut); // DEBUG and TESTING only. To DELETE
+
+                    if (aggregator != null)
                     {
-                        waveOut.DesiredLatency = 100;
-                        waveOut.PlaybackStopped += PlaybackStoppedCallback;
-                        waveOut.NumberOfBuffers = 4;
-                        waveOut.Init(waveStream);
-                        waveOut.Play();
+                        _waveOut.DesiredLatency = 100;
+                        _waveOut.PlaybackStopped += PlaybackStoppedCallback;
+                        _waveOut.NumberOfBuffers = 4;
+                        _waveOut.Init(aggregator);
+                        _waveOut.Play();
 
-                        while (waveOut.PlaybackState == PlaybackState.Playing
-                            || waveOut.PlaybackState == PlaybackState.Paused)
+                        while (_waveOut.PlaybackState == PlaybackState.Playing
+                            || _waveOut.PlaybackState == PlaybackState.Paused)
                         {
-                            HandlePlaybackStates(waveOut);
+                            HandlePlaybackStates(_waveOut);
 
-                            Thread.Sleep(75);
+                            Thread.Sleep(100);
                         }
+
                     }
-                }
+                    //aggregator.StreamVolume -= OnStreamVolume;
+                    aggregator.RmsCalculated -= OnSampleReady;
             }
         }
+
+        private MeteringSampleProvider OutsideStreamMeteringSampleProviderTesting(WaveStream waveStream, WaveOutEvent waveOut)
+        {
+            ISampleProvider sampleProvider = waveStream.ToSampleProvider();
+
+            //var aggregator = new SampleAggregator(sampleProvider)
+            //{
+            //    NotificationCount = 1024,    // Adjust as needed
+            //    PerformRmsCalculation = true
+            //};
+
+            var meteringProvider = new MeteringSampleProvider(sampleProvider)
+            {
+                SamplesPerNotification = 1152
+            };
+
+            meteringProvider.StreamVolume += OnStreamVolume;
+
+            return meteringProvider;
+        }
+
+        private SampleAggregator OutsideStreamSampleAggregatorProviderTesting(WaveStream waveStream, WaveOutEvent waveOut)
+        {
+            ISampleProvider sampleProvider = waveStream.ToSampleProvider();
+
+            if (sampleProvider == null)
+            {
+                return null;
+            }
+
+            var aggregator = new SampleAggregator(sampleProvider)
+            {
+                NotificationCount = 1152,    // Adjust as needed
+                PerformRmsCalculation = true
+            };
+
+            aggregator.RmsCalculated += OnSampleReady;
+
+            return aggregator;
+        }
+
+        private void OnSampleReady(object? sender, RmsEventArgs args)
+        {
+            var rmsSamples = args.RmsValues;
+
+            var maxDbLeft = (float)(20 * Math.Log10(rmsSamples[0]));
+            var maxDbRight = rmsSamples.Length > 1
+                ? (float)(20 * Math.Log10(rmsSamples[1]))
+                : maxDbLeft;
+            var difference = rmsSamples.Length > 1
+                ? maxDbLeft - maxDbRight
+                : 0;
+
+            var dbValues = CalculateDBLevels(maxDbLeft, maxDbRight, difference);
+
+            //var result = GetVuAdjustedValues(rawSampleBytes);
+            //var dbValues = CalculateDBLevels(result.Item1, result.Item2, result.Item3);
+
+            _dbVuValues = (dbValues.Item1, dbValues.Item2);
+        }
+
+        private void OnStreamVolume(object? sender, StreamVolumeEventArgs args)
+        {
+            var maxDbLeft = (float)(20 * Math.Log10(args.MaxSampleValues[0]));
+            var maxDbRight = args.MaxSampleValues.Length > 2 
+                ? (float)(20 * Math.Log10(args.MaxSampleValues[1]))
+                : maxDbLeft;
+            var difference = args.MaxSampleValues.Length > 2
+                ? maxDbLeft - maxDbRight
+                : 0;
+
+            var dbValues = CalculateDBLevels(maxDbLeft, maxDbRight, difference);
+
+            _dbVuValues = (dbValues.Item1,  dbValues.Item2);
+        }
+
+        public (float left, float right) GetDbVuValues()
+            => _dbVuValues;
 
         private void HandlePlaybackStates (WaveOutEvent waveOut)
         {
@@ -201,7 +294,7 @@ namespace DigitalAudioExperiment.Logic
         public void SetVolume(int volume)
             => _volume = volume;
 
-        public (double, double) GetVUMeterValues()
+        public (double left, double right) GetVUMeterValues()
         {
             var level = _stream.GetRmsValues();
             return CalculateDBLevels(level.Item1, level.Item2, level.Item3);
@@ -236,6 +329,12 @@ namespace DigitalAudioExperiment.Logic
 
         public bool IsStopped
             => !_isPlaying;
+
+        #endregion
+
+        #region DB RMS value calculations
+
+        public (float, float, float) GetRmsValues() => _dbRMSValues;
 
         #endregion
 
@@ -298,6 +397,7 @@ namespace DigitalAudioExperiment.Logic
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
+            ResourceCleanUp();
             _updateCallback?.Invoke();
             _playbackStoppedCallback?.Invoke();
         }
@@ -313,7 +413,32 @@ namespace DigitalAudioExperiment.Logic
 
         #endregion
 
-        #region Dispose
+        #region Cleanup and Dispose
+
+        // Disposing this way as unsafe thread operation
+        // may cause attempts to read disposed stream after 'using' block exits.
+        private void ResourceCleanUp()
+        {
+            try
+            {
+                if (_waveOut != null)
+                {
+                    _waveOut.Dispose();
+                }
+
+                if (_waveStream != null)
+                {
+                    _waveStream.Dispose();
+                }
+            }
+            catch(Exception exception)
+            {
+                _ = exception.Message;
+
+                _waveOut = null;
+                _waveStream = null;
+            }
+        }
 
         private void Dispose(bool _isDisposing)
         {
@@ -325,6 +450,8 @@ namespace DigitalAudioExperiment.Logic
                     {
                         _isPlaying = false;
                     }
+
+                    ResourceCleanUp();
 
                     if (_stream != null)
                     {
