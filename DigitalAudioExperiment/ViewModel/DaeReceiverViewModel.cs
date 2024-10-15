@@ -31,7 +31,7 @@ namespace DigitalAudioExperiment.ViewModel
         private readonly int _initialSafeVolume = 5;
 
         private Func<string?> _getFile;
-        private DaeAudioPlayer _player;
+        private AudioPlayerBase _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
         private double _vuHeartBeatInterval = 50;
@@ -506,7 +506,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            _player = new DaeAudioPlayer(fileName);
+            _player = new AudioPlayerBase(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
             _player.SetUpdateCallback(Update);
             _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
