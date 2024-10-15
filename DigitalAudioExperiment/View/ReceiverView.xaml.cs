@@ -22,9 +22,9 @@ using System.Windows.Controls;
 
 namespace DigitalAudioExperiment.View
 {
-    public partial class DaeReceiverView : UserControl
+    public partial class ReceiverView : UserControl
     {
-        public DaeReceiverView()
+        public ReceiverView()
         {
             InitializeComponent();
 
@@ -39,7 +39,7 @@ namespace DigitalAudioExperiment.View
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
-            if (DataContext is DaeReceiverViewModel viewModel)
+            if (DataContext is ReceiverViewModel viewModel)
             {
                 viewModel.SetGetFileCallback(GetFile);
             }

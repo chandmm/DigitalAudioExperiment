@@ -24,14 +24,14 @@ using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
 {
-    public class DaeReceiverViewModel : BaseViewModel
+    public class ReceiverViewModel : BaseViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
         private readonly int _initialSafeVolume = 5;
 
         private Func<string?> _getFile;
-        private AudioPlayerBase _player;
+        private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
         private double _vuHeartBeatInterval = 50;
@@ -331,7 +331,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         #region Initialisation
 
-        public DaeReceiverViewModel()
+        public ReceiverViewModel()
         {
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
@@ -506,7 +506,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            _player = new AudioPlayerBase(fileName);
+            _player = AudioPlayerFactory.GetAudioPlayerInterface(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
             _player.SetUpdateCallback(Update);
             _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
@@ -594,7 +594,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            if (_player.IsStopped
+            if (_player.IsStopped()
                 && !IsLoopPlayChecked)
             {
                 _vuUpdateTimer.Stop();
@@ -627,7 +627,7 @@ namespace DigitalAudioExperiment.ViewModel
         private void UpdateVuMeterControls(object? sender, ElapsedEventArgs e)
         {
             if (_player == null
-                || _player.IsStopped)
+                || _player.IsStopped())
             {
                 return;
             }
@@ -650,7 +650,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             if (IsLoopPlayChecked
                 && _canContinueLoopMode
-                && _player.IsStopped)
+                && _player.IsStopped())
             {
                 PlayButton();
 
@@ -661,7 +661,7 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 if (IsAutoPlayChecked
                     && _player != null
-                    && !_player.IsHardStop
+                    && !_player.IsHardStop()
                     && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
                     && !viewModel.IsLastItem())
                 {
@@ -671,7 +671,7 @@ namespace DigitalAudioExperiment.ViewModel
                 else if (_player != null
                         && _playlistPageView.DataContext is PlaylistPageViewModel playListViewModel
                         && playListViewModel.IsLastItem()
-                        && _player.IsStopped)
+                        && _player.IsStopped())
                 {
                     StopButton();
                     playListViewModel.ResetToSelectedPlayed();

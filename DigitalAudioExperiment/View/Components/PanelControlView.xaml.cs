@@ -30,7 +30,7 @@ namespace DigitalAudioExperiment.View.Components
 
         private void SeekSiderControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is DaeReceiverViewModel viewModel)
+            if (DataContext is ReceiverViewModel viewModel)
             {
                 viewModel.StartIsSeeking(true);
             }
@@ -38,7 +38,7 @@ namespace DigitalAudioExperiment.View.Components
 
         private void SeekSiderControl_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is DaeReceiverViewModel viewModel)
+            if (DataContext is ReceiverViewModel viewModel)
             {
                 viewModel.SetSeekValue();
             }
