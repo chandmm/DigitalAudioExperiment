@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using NAudio.Wave;
+using System.IO;
+using System.Reflection.Metadata;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -42,6 +44,24 @@ namespace DigitalAudioExperiment.Logic
             _stream = _reader;
 
             base.PlayStream(_reader.WaveFormat);
+        }
+
+        protected override void HandlePlaybackStates(WaveOutEvent waveOut)
+        {
+            base.HandlePlaybackStates(waveOut);
+
+            if (_isSeeking)
+            {
+                _isSeeking = false;
+                _isPaused = false;
+                _stream?.Seek(_seekPosition, SeekOrigin.Begin);
+            }
+
+            if (waveOut.PlaybackState != PlaybackState.Paused
+                && waveOut.PlaybackState != PlaybackState.Stopped)
+            {
+                _seekPositionCallback?.Invoke((int)_reader.Position);
+            }
         }
 
         public override string GetAudioFileInfo()

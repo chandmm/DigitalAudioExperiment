@@ -114,7 +114,7 @@ namespace DigitalAudioExperiment.Logic
                 return 0;
             }
 
-            return _decoderPcmStream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
+            return _decoderPcmStream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex ?? 0));
         }
 
         public override int? GetFrameCount()

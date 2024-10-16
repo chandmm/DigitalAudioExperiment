@@ -27,7 +27,6 @@ namespace DigitalAudioExperiment.Logic
 
         private bool _isDisposed;
         private int _bitRate;
-        private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
@@ -35,12 +34,13 @@ namespace DigitalAudioExperiment.Logic
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
 
+        protected Action<int> _seekPositionCallback;
         protected bool _isPlaying;
         protected bool _isPaused;
         protected Stream _stream;
         protected bool _isSeeking; 
         protected (int, int) _duration;
-        protected int _frameIndex;
+        protected int? _frameIndex;
         protected int _seekPosition;
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
@@ -195,7 +195,8 @@ namespace DigitalAudioExperiment.Logic
                 return;
             }
 
-            if (_isSeeking)
+            if (_isSeeking
+                && _frameIndex != null)
             {
                 _isSeeking = false;
                 _isPaused = false;
@@ -208,9 +209,10 @@ namespace DigitalAudioExperiment.Logic
                 waveOut.Play();
             }
 
-            if (waveOut.PlaybackState != PlaybackState.Paused)
+            if (waveOut.PlaybackState != PlaybackState.Paused
+                && _frameIndex != null)
             {
-                _seekPositionCallback?.Invoke(_frameIndex);
+                _seekPositionCallback?.Invoke(_frameIndex ?? 0);
             }
 
             if ((waveOut.Volume * _volumeScaler) != _volume)
