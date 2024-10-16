@@ -19,20 +19,18 @@
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.View;
-using System.IO;
-using System.Numerics;
 using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
 {
-    public class DaeReceiverViewModel : BaseViewModel
+    public class ReceiverViewModel : BaseViewModel
     {
         #region Fields
         private readonly double _tickPercentage = 0.01;
         private readonly int _initialSafeVolume = 5;
 
         private Func<string?> _getFile;
-        private DaeAudioPlayer _player;
+        private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
         private double _vuHeartBeatInterval = 50;
@@ -93,6 +91,29 @@ namespace DigitalAudioExperiment.ViewModel
             set
             {
                 _maximum = value;
+
+                OnPropertyChanged();
+            }
+        }
+        private double _minimum;
+        public double Minimum
+        {
+            get => _minimum;
+            set
+            {
+                _minimum = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double _sliderMaximum = 100;
+        public double SliderMaximum
+        {
+            get => _sliderMaximum;
+            set
+            {
+                _sliderMaximum = value;
 
                 OnPropertyChanged();
             }
@@ -281,6 +302,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private string _vuLabel;
+        public string VuLabel
+        {
+            get => _vuLabel;
+            set
+            {
+                _vuLabel = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -297,10 +330,12 @@ namespace DigitalAudioExperiment.ViewModel
 
         #region Initialisation
 
-        public DaeReceiverViewModel()
+        public ReceiverViewModel()
         {
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
+            VuLabel = "DB RMS Power";
+            VolumeLabel = "Volume";
             _isMono = true;
 
             ExitCommand = new RelayCommand(() => Exit(), () => true);
@@ -312,13 +347,14 @@ namespace DigitalAudioExperiment.ViewModel
             OpenPlaylistCommand = new RelayCommand(OpenPlaylist, () => true);
 
             Volume = _initialSafeVolume;
-            VolumeLabel = "Volume";
             IsAutoPlayChecked = true;
             _vuUpdateTimer = new System.Timers.Timer(_vuHeartBeatInterval);
             _vuUpdateTimer.AutoReset = true;
             _vuUpdateTimer.Elapsed += UpdateVuMeterControls;
+            SliderMaximum = 1;
+            Maximum = 100;
+            Minimum = 0;
             Value = 0;
-            Maximum = 1;
 
             RaisePropertyChangedEvents();
         }
@@ -338,6 +374,10 @@ namespace DigitalAudioExperiment.ViewModel
             _player?.SetHardStop(true);
             _player?.Dispose();
             _player = null;
+
+            Value = 0;
+            LeftdB = Minimum;
+            RightdB = Minimum;
         }
 
         private async Task PlayButton()
@@ -465,11 +505,11 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            _player = new DaeAudioPlayer(fileName);
+            _player = AudioPlayerFactory.GetAudioPlayerInterface(fileName);
             _player.SetSeekPositionCallback(UpdatePosition);
             _player.SetUpdateCallback(Update);
             _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
-            Maximum = _player.GetFrameCount() ?? 0;
+            SliderMaximum = _player.GetFrameCount() ?? 0;
             _isMono = _player.GetIsMonoChannel();
             Value = 0;
             _player.SetVolume(Volume);
@@ -492,7 +532,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void SetTickFrequency()
         {
-            TickFrequency = Maximum * _tickPercentage;
+            TickFrequency = SliderMaximum * _tickPercentage;
         }
 
         private void UpdatePosition(int position)
@@ -553,7 +593,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            if (_player.IsStopped
+            if (_player.IsStopped()
                 && !IsLoopPlayChecked)
             {
                 _vuUpdateTimer.Stop();
@@ -586,7 +626,7 @@ namespace DigitalAudioExperiment.ViewModel
         private void UpdateVuMeterControls(object? sender, ElapsedEventArgs e)
         {
             if (_player == null
-                || _player.IsStopped)
+                || _player.IsStopped())
             {
                 return;
             }
@@ -596,10 +636,11 @@ namespace DigitalAudioExperiment.ViewModel
                 IsOn = true;
             }
 
-            var levels = _player?.GetVUMeterValues();
-
-            LeftdB = levels.Value.Item1;
-            RightdB = levels.Value.Item2;
+            //var levels = _player?.GetVUMeterValues();
+            var levels = _player?.GetDbVuValues();
+            
+            LeftdB = levels.Value.left;
+            RightdB = levels.Value.right;
         }
 
         private void PlaybackStoppedCallback()
@@ -608,7 +649,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             if (IsLoopPlayChecked
                 && _canContinueLoopMode
-                && _player.IsStopped)
+                && _player.IsStopped())
             {
                 PlayButton();
 
@@ -619,7 +660,7 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 if (IsAutoPlayChecked
                     && _player != null
-                    && !_player.IsHardStop
+                    && !_player.IsHardStop()
                     && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
                     && !viewModel.IsLastItem())
                 {
@@ -629,7 +670,7 @@ namespace DigitalAudioExperiment.ViewModel
                 else if (_player != null
                         && _playlistPageView.DataContext is PlaylistPageViewModel playListViewModel
                         && playListViewModel.IsLastItem()
-                        && _player.IsStopped)
+                        && _player.IsStopped())
                 {
                     StopButton();
                     playListViewModel.ResetToSelectedPlayed();

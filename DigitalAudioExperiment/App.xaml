@@ -5,6 +5,6 @@
              xmlns:viewmodel="clr-namespace:DigitalAudioExperiment.ViewModel"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <viewmodel:DaeReceiverViewModel x:Key="DaeReceiverViewModelKey"/>
+        <viewmodel:ReceiverViewModel x:Key="ReceiverViewModelKey"/>
     </Application.Resources>
 </Application>

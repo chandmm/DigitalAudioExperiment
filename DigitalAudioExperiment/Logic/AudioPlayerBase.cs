@@ -15,41 +15,43 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using SimpleMp3Decoder;
-using SimpleMp3Decoder.Data;
-using SimpleMp3Decoder.Logic;
 using NAudio.Wave;
 using System.IO;
 
 namespace DigitalAudioExperiment.Logic
 {
-    public class DaeAudioPlayer : IDisposable
+    public abstract class AudioPlayerBase : IAudioPlayer
     {
         #region Fields
         private readonly int _volumeScaler = 100;
 
-        private DecoderSimplePcmStream? _stream;
         private bool _isDisposed;
-        private string _fileName;
-        private SimpleDecoder? _simpleDecoder;
         private int _bitRate;
-        private int _frameIndex;
-        private (int, int) _duration;
-        private bool _isPlaying;
-        private bool _isSeeking;
-        private int _seekPosition;
-        private bool _isPaused;
         private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
         private bool _hardStop;
+        private (float, float, float) _dbRMSValues;
+        private (float left, float right) _dbVuValues;
+
+        protected bool _isPlaying;
+        protected bool _isPaused;
+        protected Stream _stream;
+        protected bool _isSeeking; 
+        protected (int, int) _duration;
+        protected int _frameIndex;
+        protected int _seekPosition;
+        protected WaveOutEvent _waveOut;
+        protected WaveStream _waveStream;
+        protected string _fileName;
+        protected int _rmsSampleLength = 288;
 
         #endregion
 
         #region Initialisation
 
-        public DaeAudioPlayer(string fileName)
+        public AudioPlayerBase(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -57,34 +59,25 @@ namespace DigitalAudioExperiment.Logic
             }
 
             _fileName = fileName;
-
-            _simpleDecoder = new SimpleDecoder(fileName, null);
-
-            _stream = _simpleDecoder.GetStream();
-            _stream.Position = 0;
-            _duration = (_stream.DurationMinutes, _stream.DurationSeconds);
         }
 
-        public void SetSeekPositionCallback(Action<int> seekPositionCallback)
+        public abstract void Initialise();
+
+        public virtual void SetSeekPositionCallback(Action<int> seekPositionCallback)
             => _seekPositionCallback = seekPositionCallback;
 
-        public void SetUpdateCallback(Action updateCallback)
+        public virtual void SetUpdateCallback(Action updateCallback)
             => _updateCallback = updateCallback;
 
-        public void SetPlaybackStoppedCallback(Action playbackStopped)
+        public virtual void SetPlaybackStoppedCallback(Action playbackStopped)
             => _playbackStoppedCallback = playbackStopped;
 
         #endregion
 
         #region Logic
 
-        public void Play()
+        public virtual void Play()
         {
-            if (_simpleDecoder == null)
-            {
-                return;
-            }
-
             if (_isPlaying)
             {
                 return;
@@ -93,48 +86,101 @@ namespace DigitalAudioExperiment.Logic
             InternalPlay();
         }
 
-        private void InternalPlay()
+        protected virtual void InternalPlay()
         {
             _isPlaying = true;
             _isPaused = false;
 
-            PlayStream();
+            PlayStream(0, 0, 0);
         }
 
-        private void PlayStream()
+        protected virtual void PlayStream(int sampleRate, int bits, int numberOfChannels)
         {
-            if (_simpleDecoder == null)
+            if (_stream == null)
             {
                 return;
             }
 
-            using (_stream = _simpleDecoder.GetStream())
-            { 
-                _stream.SetBitrateCallback(UpdateInfoFromStreamCallback);
+            if (sampleRate == 0
+                && bits == 0
+                && numberOfChannels == 0)
+            {
+                return;
+            }
+             
+            ResourceCleanUp();
 
-                using (WaveOutEvent waveOut = new WaveOutEvent())
+            _stream.Position = 0;
+            _waveOut = new WaveOutEvent();
+            _waveStream = new RawSourceWaveStream(_stream, new WaveFormat(sampleRate, bits, numberOfChannels));
+
+            var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
+
+            if (aggregator != null)
+            {
+                _waveOut.DesiredLatency = 100;
+                _waveOut.PlaybackStopped += PlaybackStoppedCallback;
+                _waveOut.NumberOfBuffers = 4;
+                _waveOut.Init(aggregator);
+                _waveOut.Play();
+
+                while (_waveOut.PlaybackState == PlaybackState.Playing
+                    || _waveOut.PlaybackState == PlaybackState.Paused)
                 {
-                    using (WaveStream waveStream = new RawSourceWaveStream(_stream, new WaveFormat(_stream.GetSampleRate(), 16, _stream.GetNumberOfChannels())))
-                    {
-                        waveOut.DesiredLatency = 100;
-                        waveOut.PlaybackStopped += PlaybackStoppedCallback;
-                        waveOut.NumberOfBuffers = 4;
-                        waveOut.Init(waveStream);
-                        waveOut.Play();
+                    HandlePlaybackStates(_waveOut);
 
-                        while (waveOut.PlaybackState == PlaybackState.Playing
-                            || waveOut.PlaybackState == PlaybackState.Paused)
-                        {
-                            HandlePlaybackStates(waveOut);
-
-                            Thread.Sleep(75);
-                        }
-                    }
+                    Thread.Sleep(100);
                 }
+
+            }
+
+            if (aggregator != null)
+            {
+                aggregator.RmsCalculated -= OnSampleReady;
             }
         }
 
-        private void HandlePlaybackStates (WaveOutEvent waveOut)
+        protected virtual SampleAggregator OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
+        {
+            ISampleProvider sampleProvider = waveStream.ToSampleProvider();
+
+            if (sampleProvider == null)
+            {
+                return null;
+            }
+
+            var aggregator = new SampleAggregator(sampleProvider)
+            {
+                NotificationCount = _rmsSampleLength,    // Adjust as needed
+                PerformRmsCalculation = true
+            };
+
+            aggregator.RmsCalculated += OnSampleReady;
+
+            return aggregator;
+        }
+
+        protected virtual void OnSampleReady(object? sender, RmsEventArgs args)
+        {
+            var rmsSamples = args.RmsValues;
+
+            var maxDbLeft = (float)(20 * Math.Log10(rmsSamples[0]));
+            var maxDbRight = rmsSamples.Length > 1
+                ? (float)(20 * Math.Log10(rmsSamples[1]))
+                : maxDbLeft;
+            var difference = rmsSamples.Length > 1
+                ? maxDbLeft - maxDbRight
+                : 0;
+
+            var dbValues = CalculateDBLevels(maxDbLeft, maxDbRight, difference);
+
+            _dbVuValues = (dbValues.Item1, dbValues.Item2);
+        }
+
+        public (float left, float right) GetDbVuValues()
+            => _dbVuValues;
+
+        protected virtual void HandlePlaybackStates (WaveOutEvent waveOut)
         {
             if (!_isPlaying)
             {
@@ -182,7 +228,7 @@ namespace DigitalAudioExperiment.Logic
             _isPlaying = false;
         }
 
-        public void Seek(int seekPosition)
+        public virtual void Seek(int seekPosition)
         {
             _seekPosition = seekPosition;
             _isSeeking = true;
@@ -201,11 +247,13 @@ namespace DigitalAudioExperiment.Logic
         public void SetVolume(int volume)
             => _volume = volume;
 
-        public (double, double) GetVUMeterValues()
-        {
-            var level = _stream.GetRmsValues();
-            return CalculateDBLevels(level.Item1, level.Item2, level.Item3);
-        }
+
+        public bool IsStopped()
+            => !_isPlaying;
+
+        #endregion
+
+        #region DB RMS value calculations
 
         private float MapDbToMeterValue(float dBValue, float dBMin, float dBMax, float MeterMin, float MeterMax)
         {
@@ -218,10 +266,10 @@ namespace DigitalAudioExperiment.Logic
             return MeterValue;
         }
 
-        private (float, float) CalculateDBLevels(float dBLeft, float dBRight, float difference)
+        protected virtual (float, float) CalculateDBLevels(float dBLeft, float dBRight, float difference)
         {
 
-            // Define your dB range and VU meter range
+            // Define dB range and VU meter range
             float dBMin = -60.0f;  // The minimum dB value
             float dBMax = 0.0f;    // The maximum dB value
             float MeterMin = 0.0f; // The minimum meter value
@@ -234,61 +282,33 @@ namespace DigitalAudioExperiment.Logic
             return (meterLeft, meterRight);
         }
 
-        public bool IsStopped
-            => !_isPlaying;
+        public (float, float, float) GetRmsValues() => _dbRMSValues;
 
         #endregion
 
         #region Fetch File Information Logic
 
-        public SimpleDecoder? GetDecoder()
-            => _simpleDecoder;
+        public abstract string GetAudioFileInfo();
 
-        public string GetAudioFileInfo()
-        {
-            if (_simpleDecoder == null)
-            {
-                throw new NullReferenceException("Decoder is not initialised.");
-            }
-
-            if (_simpleDecoder.GetFrameCount() == 0)
-            {
-                throw new ApplicationException("No frames present or invalid audio file format.");
-            }
-
-            return _simpleDecoder.GetFrames().First().ToStringShort();
-        }
-
-        public int GetBitRate()
-            => _stream.GetBitRate();
-
-        public int GetBitratePerFrame()
+        public virtual int GetBitRate()
             => _bitRate;
 
-        public bool GetIsMonoChannel()
-            => HeaderInfoUtils.GetNumberOfChannels(_simpleDecoder?.GetFrames().First().Header)  < 2;
+        public virtual int GetBitratePerFrame()
+            => _bitRate;
 
-        public (int, int) Duration()
+        public abstract bool GetIsMonoChannel();
+
+        public virtual (int, int) Duration()
             => _duration;
 
-        public double GetElapsed()
-        {
-            if (_stream == null
-                || _simpleDecoder == null)
-            {
-                return 0;
-            }
+        public abstract double GetElapsed();
 
-            return _stream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
-        }
+        public abstract int? GetFrameCount();
 
-        public int? GetFrameCount()
-            => _simpleDecoder?.GetFrameCount();
-
-        public void SetHardStop(bool hardStop)
+        public virtual void SetHardStop(bool hardStop)
             => _hardStop = hardStop;
 
-        public bool IsHardStop
+        public virtual bool IsHardStop()
             => _hardStop;
 
         #endregion
@@ -298,22 +318,47 @@ namespace DigitalAudioExperiment.Logic
         private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
+            ResourceCleanUp();
             _updateCallback?.Invoke();
             _playbackStoppedCallback?.Invoke();
         }
 
-        private void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
+        protected virtual void UpdateInfoFromStreamCallback(int bitRate, int frameIndex)
         {
             _bitRate = bitRate;
             _frameIndex = frameIndex;
         }
 
-        public string GetMetadata()
-            => string.Join("\r\n",_simpleDecoder?.GetMetadata());
+        public abstract string GetMetadata();
 
         #endregion
 
-        #region Dispose
+        #region Cleanup and Dispose
+
+        // Disposing this way instea of 'using' block as unsafe thread operation
+        // may cause attempts to read disposed stream after 'using' block exits.
+        protected virtual void ResourceCleanUp()
+        {
+            try
+            {
+                if (_waveOut != null)
+                {
+                    _waveOut.Dispose();
+                }
+
+                if (_waveStream != null)
+                {
+                    _waveStream.Dispose();
+                }
+            }
+            catch(Exception exception)
+            {
+                _ = exception.Message;
+
+                _waveOut = null;
+                _waveStream = null;
+            }
+        }
 
         private void Dispose(bool _isDisposing)
         {
@@ -326,14 +371,13 @@ namespace DigitalAudioExperiment.Logic
                         _isPlaying = false;
                     }
 
+                    ResourceCleanUp();
+
                     if (_stream != null)
                     {
                         _stream?.Dispose();
                         _stream = null;
                     }
-
-                    _simpleDecoder?.Dispose();
-                    _simpleDecoder = null;
                 }
 
                 _isDisposed = true;

@@ -15,33 +15,34 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using DigitalAudioExperiment.ViewModel;
-using System.Windows.Controls;
-using System.Windows.Input;
+using System.IO;
 
-namespace DigitalAudioExperiment.View.Components
+namespace DigitalAudioExperiment.Logic
 {
-    public partial class PanelControlView : UserControl
+    public static class AudioPlayerFactory
     {
-        public PanelControlView()
+        public static IAudioPlayer GetAudioPlayerInterface(string fileName)
         {
-            InitializeComponent();
-        }
+            var extension = Path.GetExtension(fileName).ToLower();
+            IAudioPlayer player = null;
 
-        private void SeekSiderControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (DataContext is ReceiverViewModel viewModel)
+            switch (extension)
             {
-                viewModel.StartIsSeeking(true);
+                case ".mp3":
+                    {
+                        player = new AudioPlayerMp3(fileName);
+                        break;
+                    }
             }
-        }
 
-        private void SeekSiderControl_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (DataContext is ReceiverViewModel viewModel)
+            if (player == null)
             {
-                viewModel.SetSeekValue();
+                throw new ApplicationException($"No suitable player found for audio file extension {extension}");
             }
+
+            player.Initialise();
+
+            return player;
         }
     }
 }
