@@ -91,19 +91,17 @@ namespace DigitalAudioExperiment.Logic
             _isPlaying = true;
             _isPaused = false;
 
-            PlayStream(0, 0, 0);
+            PlayStream(null);
         }
 
-        protected virtual void PlayStream(int sampleRate, int bits, int numberOfChannels)
+        protected virtual void PlayStream(WaveFormat? waveFormat)
         {
             if (_stream == null)
             {
                 return;
             }
 
-            if (sampleRate == 0
-                && bits == 0
-                && numberOfChannels == 0)
+            if (waveFormat == null)
             {
                 return;
             }
@@ -112,7 +110,7 @@ namespace DigitalAudioExperiment.Logic
 
             _stream.Position = 0;
             _waveOut = new WaveOutEvent();
-            _waveStream = new RawSourceWaveStream(_stream, new WaveFormat(sampleRate, bits, numberOfChannels));
+            _waveStream = new RawSourceWaveStream(_stream, waveFormat);
 
             var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
 
@@ -315,7 +313,7 @@ namespace DigitalAudioExperiment.Logic
 
         #region Callback Methods
 
-        private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
+        protected virtual void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
             ResourceCleanUp();
