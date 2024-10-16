@@ -19,7 +19,6 @@
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.View;
-using System.Security.Cryptography;
 using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel

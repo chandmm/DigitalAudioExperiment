@@ -15,10 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using SimpleMp3Decoder;
 using NAudio.Wave;
 using System.IO;
-using NAudio.Wave.SampleProviders;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -29,8 +27,6 @@ namespace DigitalAudioExperiment.Logic
 
         private bool _isDisposed;
         private int _bitRate;
-        private bool _isPlaying;
-        private bool _isPaused;
         private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
@@ -39,6 +35,8 @@ namespace DigitalAudioExperiment.Logic
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
 
+        protected bool _isPlaying;
+        protected bool _isPaused;
         protected Stream _stream;
         protected bool _isSeeking; 
         protected (int, int) _duration;
@@ -47,7 +45,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 1152 * 2;
+        protected int _rmsSampleLength = 288;
 
         #endregion
 
@@ -88,7 +86,7 @@ namespace DigitalAudioExperiment.Logic
             InternalPlay();
         }
 
-        private void InternalPlay()
+        protected virtual void InternalPlay()
         {
             _isPlaying = true;
             _isPaused = false;
@@ -112,10 +110,11 @@ namespace DigitalAudioExperiment.Logic
              
             ResourceCleanUp();
 
+            _stream.Position = 0;
             _waveOut = new WaveOutEvent();
             _waveStream = new RawSourceWaveStream(_stream, new WaveFormat(sampleRate, bits, numberOfChannels));
 
-            var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut); // DEBUG and TESTING only. To DELETE
+            var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
 
             if (aggregator != null)
             {
@@ -270,7 +269,7 @@ namespace DigitalAudioExperiment.Logic
         protected virtual (float, float) CalculateDBLevels(float dBLeft, float dBRight, float difference)
         {
 
-            // Define your dB range and VU meter range
+            // Define dB range and VU meter range
             float dBMin = -60.0f;  // The minimum dB value
             float dBMax = 0.0f;    // The maximum dB value
             float MeterMin = 0.0f; // The minimum meter value
@@ -336,7 +335,7 @@ namespace DigitalAudioExperiment.Logic
 
         #region Cleanup and Dispose
 
-        // Disposing this way as unsafe thread operation
+        // Disposing this way instea of 'using' block as unsafe thread operation
         // may cause attempts to read disposed stream after 'using' block exits.
         protected virtual void ResourceCleanUp()
         {
