@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using NAudio.Wave;
 using SimpleMp3Decoder;
 using SimpleMp3Decoder.Data;
 using SimpleMp3Decoder.Logic;
@@ -60,7 +61,7 @@ namespace DigitalAudioExperiment.Logic
             base.Play();
         }
 
-        protected override void PlayStream(int sampleRate, int bits, int numberOfChannels)
+        protected override void PlayStream(WaveFormat waveFormatNotUsed)
         {
             if (_simpleDecoder == null)
             {
@@ -73,7 +74,7 @@ namespace DigitalAudioExperiment.Logic
 
                 _stream = _decoderPcmStream;
 
-                base.PlayStream(_decoderPcmStream.GetSampleRate(), 16, _decoderPcmStream.GetNumberOfChannels());
+                base.PlayStream(new WaveFormat(_decoderPcmStream.GetSampleRate(), 16, _decoderPcmStream.GetNumberOfChannels()));
             }
         }
 
@@ -113,7 +114,7 @@ namespace DigitalAudioExperiment.Logic
                 return 0;
             }
 
-            return _decoderPcmStream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex));
+            return _decoderPcmStream.CalculateDuration(_simpleDecoder.GetFrames().GetRange(0, _frameIndex ?? 0));
         }
 
         public override int? GetFrameCount()

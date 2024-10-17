@@ -276,6 +276,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (PlayList.Any())
             {
                 PlayList.First().IsSelected = true;
+                ResetToSelectedPlayed();
             }
         }
 

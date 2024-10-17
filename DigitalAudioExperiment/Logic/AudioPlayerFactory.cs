@@ -29,10 +29,15 @@ namespace DigitalAudioExperiment.Logic
             switch (extension)
             {
                 case ".mp3":
-                    {
-                        player = new AudioPlayerMp3(fileName);
-                        break;
-                    }
+                {
+                    player = new AudioPlayerMp3(fileName);
+                    break;
+                }
+                case ".flac":
+                {
+                    player = new AudioPlayerFlac(fileName);
+                    break;
+                }
             }
 
             if (player == null)

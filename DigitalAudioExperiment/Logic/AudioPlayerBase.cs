@@ -26,8 +26,6 @@ namespace DigitalAudioExperiment.Logic
         private readonly int _volumeScaler = 100;
 
         private bool _isDisposed;
-        private int _bitRate;
-        private Action<int> _seekPositionCallback;
         private int _volume;
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
@@ -35,12 +33,14 @@ namespace DigitalAudioExperiment.Logic
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
 
+        protected int _bitRate;
+        protected Action<int> _seekPositionCallback;
         protected bool _isPlaying;
         protected bool _isPaused;
         protected Stream _stream;
         protected bool _isSeeking; 
         protected (int, int) _duration;
-        protected int _frameIndex;
+        protected int? _frameIndex;
         protected int _seekPosition;
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
@@ -91,19 +91,17 @@ namespace DigitalAudioExperiment.Logic
             _isPlaying = true;
             _isPaused = false;
 
-            PlayStream(0, 0, 0);
+            PlayStream(null);
         }
 
-        protected virtual void PlayStream(int sampleRate, int bits, int numberOfChannels)
+        protected virtual void PlayStream(WaveFormat? waveFormat)
         {
             if (_stream == null)
             {
                 return;
             }
 
-            if (sampleRate == 0
-                && bits == 0
-                && numberOfChannels == 0)
+            if (waveFormat == null)
             {
                 return;
             }
@@ -112,7 +110,7 @@ namespace DigitalAudioExperiment.Logic
 
             _stream.Position = 0;
             _waveOut = new WaveOutEvent();
-            _waveStream = new RawSourceWaveStream(_stream, new WaveFormat(sampleRate, bits, numberOfChannels));
+            _waveStream = new RawSourceWaveStream(_stream, waveFormat);
 
             var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
 
@@ -197,7 +195,8 @@ namespace DigitalAudioExperiment.Logic
                 return;
             }
 
-            if (_isSeeking)
+            if (_isSeeking
+                && _frameIndex != null)
             {
                 _isSeeking = false;
                 _isPaused = false;
@@ -210,9 +209,10 @@ namespace DigitalAudioExperiment.Logic
                 waveOut.Play();
             }
 
-            if (waveOut.PlaybackState != PlaybackState.Paused)
+            if (waveOut.PlaybackState != PlaybackState.Paused
+                && _frameIndex != null)
             {
-                _seekPositionCallback?.Invoke(_frameIndex);
+                _seekPositionCallback?.Invoke(_frameIndex ?? 0);
             }
 
             if ((waveOut.Volume * _volumeScaler) != _volume)
@@ -315,7 +315,7 @@ namespace DigitalAudioExperiment.Logic
 
         #region Callback Methods
 
-        private void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
+        protected virtual void PlaybackStoppedCallback(object? sender, StoppedEventArgs e)
         {
             _isPlaying = false;
             ResourceCleanUp();
