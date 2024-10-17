@@ -30,7 +30,7 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
 
-        private readonly string _fileFiltersAudio = "Mp3 Files (*.mp3)|*.mp3|Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
+        private readonly string _fileFiltersAudio = "Mp3 Files (*.mp3)|*.mp3|Flac Files (*.flac)|*.flac|Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
         private readonly string _fileFiltersPlaylist = "Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
         private readonly string _saveFileFilters = "Playlist Files (*.xml)|*.xml";
 
@@ -276,6 +276,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (PlayList.Any())
             {
                 PlayList.First().IsSelected = true;
+                ResetToSelectedPlayed();
             }
         }
 
