@@ -26,7 +26,6 @@ namespace DigitalAudioExperiment.Logic
         private readonly int _volumeScaler = 100;
 
         private bool _isDisposed;
-        private int _bitRate;
         private int _volume;
         private Action _updateCallback;
         private Action _playbackStoppedCallback;
@@ -34,6 +33,7 @@ namespace DigitalAudioExperiment.Logic
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
 
+        protected int _bitRate;
         protected Action<int> _seekPositionCallback;
         protected bool _isPlaying;
         protected bool _isPaused;
