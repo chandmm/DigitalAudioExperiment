@@ -324,6 +324,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand SelectCommand { get; set; }
         public RelayCommand StopCommand { get; set; }
         public RelayCommand SkipToStartCommand { get; set; }
+        public RelayCommand SkipToEndCommand { get; set; }
         public RelayCommand OpenPlaylistCommand { get; set; }
 
         #endregion
@@ -344,6 +345,7 @@ namespace DigitalAudioExperiment.ViewModel
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
             SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
+            SkipToEndCommand = new RelayCommand(SkipToEndButton, () => true);
             OpenPlaylistCommand = new RelayCommand(OpenPlaylist, () => true);
 
             Volume = _initialSafeVolume;
@@ -428,6 +430,12 @@ namespace DigitalAudioExperiment.ViewModel
         private async void SkipToStartButton()
         {
             Value = 0;
+            SetSeekValue();
+        }
+
+        private void SkipToEndButton()
+        {
+            Value = (int)_player?.GetFrameCount() - 1;
             SetSeekValue();
         }
 

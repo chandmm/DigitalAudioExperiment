@@ -24,31 +24,23 @@ namespace DigitalAudioExperiment.Model
     {
         public string FullFilePathName { get; set; }
         public string FileName { get; set; }
-        public int SequenceId { get; private set; }
         public bool IsSelected { get; set; }
         public bool IsUserSelected { get; set; }
 
         public RelayCommand IsSelectedCommand { get; set; }
 
-        public PlaylistModel(int maxId, Action<PlaylistModel, bool> commandMethodCallback)
+        public PlaylistModel(Action<PlaylistModel, bool> commandMethodCallback)
         {
             if (commandMethodCallback == null)
             {
                 throw new ArgumentNullException(nameof(commandMethodCallback));
             }
-
-            SequenceId = maxId + 1;
             
             IsSelectedCommand = new RelayCommand(() =>
             {
                 IsUserSelected = true;
                 commandMethodCallback(this, true);
             }, () => true);
-        }
-
-        internal void UpdateSequenceId(int i)
-        {
-            SequenceId = i;
         }
     }
 }
