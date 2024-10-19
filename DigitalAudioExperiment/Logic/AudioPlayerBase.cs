@@ -46,7 +46,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 288;
+        protected int _rmsSampleLength = 576;
 
         #endregion
 
@@ -148,7 +148,7 @@ namespace DigitalAudioExperiment.Logic
                 return null;
             }
            
-            var aggregator = new SampleAggregatorButterworthFilter(sampleProvider, 250f, 1000f, 4)
+            var aggregator = new SampleAggregatorButterworthFilter(sampleProvider, 80f, 800f, 4)
             //var aggregator = new SampleAggregator(sampleProvider,250f, 800)
             {
                 NotificationCount = _rmsSampleLength,    // Adjust as needed
