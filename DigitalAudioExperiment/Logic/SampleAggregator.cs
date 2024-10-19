@@ -87,7 +87,7 @@ namespace DigitalAudioExperiment.Logic
                     if (_channels == 2
                         && samplesProcessed + 1 < samplesRead)
                     {
-                        _sumSquares[1] += Math.Pow(_filters[1].Transform(buffer[samplesProcessed]), 2);
+                        _sumSquares[1] += Math.Pow(_filters[1].Transform(buffer[samplesProcessed + 1]), 2);
                     }
 
                     // Handle for multichannel pcm data.
@@ -95,7 +95,7 @@ namespace DigitalAudioExperiment.Logic
                     {
                         for (int channel = 2; channel < samplesRead; channel++)
                         {
-                            _sumSquares[channel] += Math.Pow(_filters[channel].Transform(buffer[samplesProcessed]), 2);
+                            _sumSquares[channel] += Math.Pow(_filters[channel].Transform(buffer[samplesProcessed + channel]), 2);
                         }
                     }
 

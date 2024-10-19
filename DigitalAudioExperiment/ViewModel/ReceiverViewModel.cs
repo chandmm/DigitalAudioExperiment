@@ -33,7 +33,7 @@ namespace DigitalAudioExperiment.ViewModel
         private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
-        private double _vuHeartBeatInterval = 25;
+        private double _vuHeartBeatInterval = 30;
         private bool _canContinueLoopMode = true;
         private PlaylistPageView _playlistPageView;
 
