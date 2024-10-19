@@ -21,18 +21,18 @@ namespace DigitalAudioExperiment.Logic
 {
     public class SampleAggregator : ISampleProvider
     {
-        private readonly ISampleProvider source;
-        private readonly int channels;
-        private int notificationCount;
-        private int count;
-        private double[] sumSquares; // Sum of squares for each channel
+        private readonly ISampleProvider _source;
+        private readonly int _channels;
+        private int _notificationCount;
+        private int _count;
+        private double[] _sumSquares; // Sum of squares for each channel
 
         public WaveFormat WaveFormat { get; }
 
         public int NotificationCount
         {
-            get => notificationCount;
-            set => notificationCount = value;
+            get => _notificationCount;
+            set => _notificationCount = value;
         }
 
         public bool PerformRmsCalculation { get; set; }
@@ -41,15 +41,15 @@ namespace DigitalAudioExperiment.Logic
 
         public SampleAggregator(ISampleProvider source)
         {
-            this.source = source;
+            this._source = source;
             this.WaveFormat = source.WaveFormat;
-            this.channels = source.WaveFormat.Channels;
-            this.sumSquares = new double[channels];
+            this._channels = source.WaveFormat.Channels;
+            this._sumSquares = new double[_channels];
         }
 
         public int Read(float[] buffer, int offset, int sampleCount)
         {
-            int samplesRead = source.Read(buffer, offset, sampleCount);
+            int samplesRead = _source.Read(buffer, offset, sampleCount);
 
             if (PerformRmsCalculation)
             {
@@ -57,33 +57,33 @@ namespace DigitalAudioExperiment.Logic
 
                 while (samplesProcessed < samplesRead)
                 {
-                    for (int ch = 0; ch < channels; ch++)
+                    for (int ch = 0; ch < _channels; ch++)
                     {
                         if (samplesProcessed + ch < samplesRead)
                         {
                             float sample = buffer[offset + samplesProcessed + ch];
-                            sumSquares[ch] += sample * sample;
+                            _sumSquares[ch] += sample * sample;
                         }
                     }
 
-                    samplesProcessed += channels;
-                    count++;
+                    samplesProcessed += _channels;
+                    _count++;
 
-                    if (count >= notificationCount)
+                    if (_count >= _notificationCount)
                     {
                         // Calculate RMS for each channel
-                        double[] rmsValues = new double[channels];
-                        for (int ch = 0; ch < channels; ch++)
+                        double[] rmsValues = new double[_channels];
+                        for (int ch = 0; ch < _channels; ch++)
                         {
-                            double meanSquare = sumSquares[ch] / count;
+                            double meanSquare = _sumSquares[ch] / _count;
                             rmsValues[ch] = Math.Sqrt(meanSquare);
                         }
 
                         RmsCalculated?.Invoke(this, new RmsEventArgs(rmsValues));
 
                         // Reset counters for the next block
-                        count = 0;
-                        Array.Clear(sumSquares, 0, sumSquares.Length);
+                        _count = 0;
+                        Array.Clear(_sumSquares, 0, _sumSquares.Length);
                     }
                 }
             }

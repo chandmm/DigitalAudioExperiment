@@ -45,7 +45,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 288;
+        protected int _rmsSampleLength = 1152;
 
         #endregion
 
