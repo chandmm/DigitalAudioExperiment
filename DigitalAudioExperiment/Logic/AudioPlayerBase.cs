@@ -18,7 +18,6 @@
 using DigitalAudioExperiment.Events;
 using NAudio.Wave;
 using System.IO;
-using System.Threading.Channels;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -140,7 +139,7 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        protected virtual SampleAggregator OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
+        protected virtual SampleAggregatorButterworthFilter OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
         {
             ISampleProvider sampleProvider = waveStream.ToSampleProvider();
 
@@ -148,8 +147,9 @@ namespace DigitalAudioExperiment.Logic
             {
                 return null;
             }
-
-            var aggregator = new SampleAggregator(sampleProvider,250f, 800)
+           
+            var aggregator = new SampleAggregatorButterworthFilter(sampleProvider, 250f, 1000f, 4)
+            //var aggregator = new SampleAggregator(sampleProvider,250f, 800)
             {
                 NotificationCount = _rmsSampleLength,    // Adjust as needed
                 PerformRmsCalculation = true
