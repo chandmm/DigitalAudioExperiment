@@ -15,8 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Events;
 using NAudio.Wave;
 using System.IO;
+using System.Threading.Channels;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -45,7 +47,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 1152;
+        protected int _rmsSampleLength = 72;
 
         #endregion
 
@@ -160,6 +162,8 @@ namespace DigitalAudioExperiment.Logic
 
         protected virtual void OnSampleReady(object? sender, RmsEventArgs args)
         {
+            //CalculateRmsValues(args);
+            //----------------------------
             var rmsSamples = args.RmsValues;
 
             var maxDbLeft = (float)(20 * Math.Log10(rmsSamples[0]));
@@ -174,6 +178,43 @@ namespace DigitalAudioExperiment.Logic
 
             _dbVuValues = (dbValues.Item1, dbValues.Item2);
         }
+
+        //private void CalculateRmsValues(RmsEventArgs args)
+        //{
+        //    int samplesProcessed = 0;
+
+        //    while (samplesProcessed < samplesRead)
+        //    {
+        //        for (int ch = 0; ch < _channels; ch++)
+        //        {
+        //            if (samplesProcessed + ch < samplesRead)
+        //            {
+        //                float sample = buffer[offset + samplesProcessed + ch];
+        //                _sumSquares[ch] += sample * sample;
+        //            }
+        //        }
+
+        //        samplesProcessed += _channels;
+        //        _count++;
+
+        //        if (_count >= _notificationCount)
+        //        {
+        //            // Calculate RMS for each channel
+        //            double[] rmsValues = new double[_channels];
+        //            for (int ch = 0; ch < _channels; ch++)
+        //            {
+        //                double meanSquare = _sumSquares[ch] / _count;
+        //                rmsValues[ch] = Math.Sqrt(meanSquare);
+        //            }
+
+        //            RmsCalculated?.Invoke(this, new RmsEventArgs(rmsValues));
+
+        //            // Reset counters for the next block
+        //            _count = 0;
+        //            Array.Clear(_sumSquares, 0, _sumSquares.Length);
+        //        }
+        //    }
+        //}
 
         public (float left, float right) GetDbVuValues()
             => _dbVuValues;

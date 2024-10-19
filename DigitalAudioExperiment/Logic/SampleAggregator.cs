@@ -2,6 +2,10 @@
     Digital Audio Experiement: Plays mp3 files and may be others in the future.
     Copyright (C) 2024  Michael Chand
 
+    This class is a data stream intercepter so that samples being played
+    can be used for calculating db values. This class returns the calculated RMS
+    component part.
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -15,6 +19,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Events;
 using NAudio.Wave;
 
 namespace DigitalAudioExperiment.Logic
@@ -25,7 +30,7 @@ namespace DigitalAudioExperiment.Logic
         private readonly int _channels;
         private int _notificationCount;
         private int _count;
-        private double[] _sumSquares; // Sum of squares for each channel
+        private double[] _sumSquares;
 
         public WaveFormat WaveFormat { get; }
 
@@ -51,54 +56,56 @@ namespace DigitalAudioExperiment.Logic
         {
             int samplesRead = _source.Read(buffer, offset, sampleCount);
 
+            Task.Run(() => CalculateRms(samplesRead, buffer, offset))
+                .ConfigureAwait(false);
+
+            return samplesRead;
+        }
+
+        private void CalculateRms(int samplesRead, float[] buffer, int offset)
+        {
             if (PerformRmsCalculation)
             {
-                int samplesProcessed = 0;
-
-                while (samplesProcessed < samplesRead)
+                for (int samplesProcessed = 0; samplesProcessed < samplesRead; samplesProcessed += _channels)
                 {
-                    for (int ch = 0; ch < _channels; ch++)
+                    if (samplesProcessed < samplesRead)
                     {
-                        if (samplesProcessed + ch < samplesRead)
+                        _sumSquares[0] += Math.Pow(buffer[offset + samplesProcessed], 2);
+                    }
+
+                    if (_channels == 2
+                        && samplesProcessed + 1 < samplesRead)
+                    {
+                        _sumSquares[1] += Math.Pow(buffer[offset + samplesProcessed + 1], 2);
+                    }
+
+                    // Handle for multichannel pcm data.
+                    if (_channels > 2)
+                    {
+                        for (int channel = 2; channel < samplesRead; channel++)
                         {
-                            float sample = buffer[offset + samplesProcessed + ch];
-                            _sumSquares[ch] += sample * sample;
+                            _sumSquares[1] += Math.Pow(buffer[offset + samplesProcessed + channel], 2);
                         }
                     }
 
-                    samplesProcessed += _channels;
                     _count++;
 
                     if (_count >= _notificationCount)
                     {
-                        // Calculate RMS for each channel
                         double[] rmsValues = new double[_channels];
-                        for (int ch = 0; ch < _channels; ch++)
+
+                        for (int channel = 0; channel < _channels; channel++)
                         {
-                            double meanSquare = _sumSquares[ch] / _count;
-                            rmsValues[ch] = Math.Sqrt(meanSquare);
+                            rmsValues[channel] = Math.Sqrt(_sumSquares[channel] / _count);
                         }
 
                         RmsCalculated?.Invoke(this, new RmsEventArgs(rmsValues));
 
-                        // Reset counters for the next block
                         _count = 0;
                         Array.Clear(_sumSquares, 0, _sumSquares.Length);
                     }
                 }
             }
-
-            return samplesRead;
-        }
-    }
-
-    public class RmsEventArgs : EventArgs
-    {
-        public double[] RmsValues { get; }
-
-        public RmsEventArgs(double[] rmsValues)
-        {
-            RmsValues = rmsValues;
         }
     }
 }
