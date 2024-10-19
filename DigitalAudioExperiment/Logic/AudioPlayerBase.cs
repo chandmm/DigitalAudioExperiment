@@ -149,7 +149,7 @@ namespace DigitalAudioExperiment.Logic
                 return null;
             }
 
-            var aggregator = new SampleAggregator(sampleProvider)
+            var aggregator = new SampleAggregator(sampleProvider, 50f, 80f)
             {
                 NotificationCount = _rmsSampleLength,    // Adjust as needed
                 PerformRmsCalculation = true
@@ -314,7 +314,7 @@ namespace DigitalAudioExperiment.Logic
             float dBMin = -60.0f;  // The minimum dB value
             float dBMax = 0.0f;    // The maximum dB value
             float MeterMin = 0.0f; // The minimum meter value
-            float MeterMax = 96.0f; // The maximum meter value
+            float MeterMax = 100.0f; // The maximum meter value
 
             // Map the dB values to the meter range
             float meterLeft = MapDbToMeterValue(dBLeft, dBMin, dBMax, MeterMin, MeterMax);

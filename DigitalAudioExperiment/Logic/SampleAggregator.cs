@@ -20,7 +20,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.Events;
+using NAudio.Dsp;
 using NAudio.Wave;
+using System;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -31,6 +33,8 @@ namespace DigitalAudioExperiment.Logic
         private int _notificationCount;
         private int _count;
         private double[] _sumSquares;
+
+        private BiQuadFilter[] _filters;
 
         public WaveFormat WaveFormat { get; }
 
@@ -44,12 +48,19 @@ namespace DigitalAudioExperiment.Logic
 
         public event EventHandler<RmsEventArgs> RmsCalculated;
 
-        public SampleAggregator(ISampleProvider source)
+        public SampleAggregator(ISampleProvider source, float lowerCutoffFrequency, float upperCutoffFrequency)
         {
-            this._source = source;
-            this.WaveFormat = source.WaveFormat;
-            this._channels = source.WaveFormat.Channels;
-            this._sumSquares = new double[_channels];
+            _source = source;
+            WaveFormat = source.WaveFormat;
+            _channels = WaveFormat.Channels;
+            _sumSquares = new double[_channels];
+
+            // Initialize band-pass filters for each channel
+            _filters = new BiQuadFilter[_channels];
+            for (int ch = 0; ch < _channels; ch++)
+            {
+                _filters[ch] = CreateBandPassFilter(WaveFormat.SampleRate, lowerCutoffFrequency, upperCutoffFrequency);
+            }
         }
 
         public int Read(float[] buffer, int offset, int sampleCount)
@@ -70,13 +81,13 @@ namespace DigitalAudioExperiment.Logic
                 {
                     if (samplesProcessed < samplesRead)
                     {
-                        _sumSquares[0] += Math.Pow(buffer[offset + samplesProcessed], 2);
+                        _sumSquares[0] += Math.Pow(_filters[0].Transform(buffer[samplesProcessed]), 2);
                     }
 
                     if (_channels == 2
                         && samplesProcessed + 1 < samplesRead)
                     {
-                        _sumSquares[1] += Math.Pow(buffer[offset + samplesProcessed + 1], 2);
+                        _sumSquares[1] += Math.Pow(_filters[1].Transform(buffer[samplesProcessed]), 2);
                     }
 
                     // Handle for multichannel pcm data.
@@ -84,7 +95,7 @@ namespace DigitalAudioExperiment.Logic
                     {
                         for (int channel = 2; channel < samplesRead; channel++)
                         {
-                            _sumSquares[1] += Math.Pow(buffer[offset + samplesProcessed + channel], 2);
+                            _sumSquares[channel] += Math.Pow(_filters[channel].Transform(buffer[samplesProcessed]), 2);
                         }
                     }
 
@@ -106,6 +117,19 @@ namespace DigitalAudioExperiment.Logic
                     }
                 }
             }
+        }
+
+        private BiQuadFilter CreateBandPassFilter(int sampleRate, float lowerCutoff, float upperCutoff)
+        {
+            // Calculate center frequency and bandwidth
+            float centerFrequency = (lowerCutoff + upperCutoff) / 2.0f;
+            float bandwidth = upperCutoff - lowerCutoff;
+
+            // Calculate Q factor
+            float q = centerFrequency / bandwidth;
+
+            // Create band-pass filter with constant peak gain
+            return BiQuadFilter.BandPassFilterConstantPeakGain(sampleRate, centerFrequency, q);
         }
     }
 }
