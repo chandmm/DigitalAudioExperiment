@@ -20,18 +20,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.Events;
+using DigitalAudioExperiment.Filters;
 using NAudio.Dsp;
 using NAudio.Wave;
 
 namespace DigitalAudioExperiment.Logic
 {
-    public class SampleAggregatorButterworthFilter : ISampleProvider
+    public class SampleAggregatorFiltered : ISampleProvider
     {
         private readonly ISampleProvider _source;
         private readonly int _channels;
         private int _notificationCount;
         private int _count;
         private double[] _sumSquares;
+        private IFilter _filter;
 
         // Arrays of filters for cascading (one per channel)
         private BiQuadFilter[][] _lowPassFilters;
@@ -61,45 +63,19 @@ namespace DigitalAudioExperiment.Logic
         /// <param name="lowCutoffFrequency">The lower cutoff frequency for the band-pass filter.</param>
         /// <param name="highCutoffFrequency">The upper cutoff frequency for the band-pass filter.</param>
         /// <param name="filterOrder">The order of the Butterworth filter (must be a multiple of 2).</param>
-        public SampleAggregatorButterworthFilter(ISampleProvider source, float lowCutoffFrequency, float highCutoffFrequency, int filterOrder = 4)
+        public SampleAggregatorFiltered(ISampleProvider source, IFilter filter)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             WaveFormat = source.WaveFormat;
             _channels = WaveFormat.Channels;
             _sumSquares = new double[_channels];
 
-            _lowCutoffFrequency = lowCutoffFrequency;
-            _highCutoffFrequency = highCutoffFrequency;
-            _filterOrder = filterOrder;
+            _filter = filter;
+        }
 
-            // Ensure filterOrder is a multiple of 2
-            if (_filterOrder % 2 != 0)
-                throw new ArgumentException("Filter order must be a multiple of 2.", nameof(filterOrder));
-
-            // Initialize cascaded high-pass filters for each channel
-            int stages = _filterOrder / 2;
-            _highPassFilters = new BiQuadFilter[_channels][];
-            for (int ch = 0; ch < _channels; ch++)
-            {
-                _highPassFilters[ch] = new BiQuadFilter[stages];
-                for (int stage = 0; stage < stages; stage++)
-                {
-                    // Initialize each stage of the high-pass filter
-                    _highPassFilters[ch][stage] = BiQuadFilter.HighPassFilter(WaveFormat.SampleRate, _lowCutoffFrequency, 1.0f);
-                }
-            }
-
-            // Initialize cascaded low-pass filters for each channel
-            _lowPassFilters = new BiQuadFilter[_channels][];
-            for (int ch = 0; ch < _channels; ch++)
-            {
-                _lowPassFilters[ch] = new BiQuadFilter[stages];
-                for (int stage = 0; stage < stages; stage++)
-                {
-                    // Initialize each stage of the low-pass filter
-                    _lowPassFilters[ch][stage] = BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, _highCutoffFrequency, 1.0f);
-                }
-            }
+        public SampleAggregatorFiltered(ISampleProvider source, FilterAbstractBase filter)
+        {
+            _source = source;
         }
 
         public int Read(float[] buffer, int offset, int sampleCount)
@@ -120,19 +96,7 @@ namespace DigitalAudioExperiment.Logic
                 {
                     if (samplesProcessed < samplesRead)
                     {
-                        float sample = buffer[samplesProcessed];
-
-                        // Pass the sample through high-pass filter stages
-                        foreach (var filter in _highPassFilters[0])
-                        {
-                            sample = filter.Transform(sample);
-                        }
-
-                        // Pass the sample through low-pass filter stages
-                        foreach (var filter in _lowPassFilters[0])
-                        {
-                            sample = filter.Transform(sample);
-                        }
+                        float sample = _filter.Transform(buffer[samplesProcessed], 0);
 
                         _sumSquares[0] += Math.Pow(sample, 2);
                     }
@@ -140,18 +104,7 @@ namespace DigitalAudioExperiment.Logic
                     if (_channels == 2
                         && samplesProcessed + 1 < samplesRead)
                     {
-                        float sample = buffer[samplesProcessed + 1];
-
-                        foreach (var filter in _highPassFilters[1])
-                        {
-                            sample = filter.Transform(sample);
-                        }
-
-                        // Pass the sample through low-pass filter stages
-                        foreach (var filter in _lowPassFilters[1])
-                        {
-                            sample = filter.Transform(sample);
-                        }
+                        float sample = _filter.Transform(buffer[samplesProcessed + 1], 1);
 
                         _sumSquares[1] += Math.Pow(sample, 2);
                     }
@@ -161,18 +114,7 @@ namespace DigitalAudioExperiment.Logic
                     {
                         for (int channel = 2; channel < samplesRead; channel++)
                         {
-                            float sample = buffer[samplesProcessed + channel];
-
-                            foreach (var filter in _highPassFilters[channel])
-                            {
-                                sample = filter.Transform(sample);
-                            }
-
-                            // Pass the sample through low-pass filter stages
-                            foreach (var filter in _lowPassFilters[channel])
-                            {
-                                sample = filter.Transform(sample);
-                            }
+                            float sample = _filter.Transform(buffer[samplesProcessed + channel], channel);
 
                             _sumSquares[channel] += Math.Pow(sample, 2);
                         }
@@ -197,19 +139,6 @@ namespace DigitalAudioExperiment.Logic
                     }
                 }
             }
-        }
-
-        private BiQuadFilter CreateBandPassFilter(int sampleRate, float lowerCutoff, float upperCutoff)
-        {
-            // Calculate center frequency and bandwidth
-            float centerFrequency = (lowerCutoff + upperCutoff) / 2.0f;
-            float bandwidth = upperCutoff - lowerCutoff;
-
-            // Calculate Q factor
-            float q = centerFrequency / bandwidth;
-
-            // Create band-pass filter with constant peak gain
-            return BiQuadFilter.BandPassFilterConstantPeakGain(sampleRate, centerFrequency, q);
         }
     }
 }
