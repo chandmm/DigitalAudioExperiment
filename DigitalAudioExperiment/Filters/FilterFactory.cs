@@ -7,7 +7,7 @@ namespace DigitalAudioExperiment.Filters
         LowPass,
         HighPass,
         BandPass,
-        Butterworth
+        ButterworthBandpass
     }
 
     public static class FilterFactory
@@ -21,9 +21,9 @@ namespace DigitalAudioExperiment.Filters
                 case FilterType.HighPass:
                     throw new NotImplementedException();
                 case FilterType.BandPass:
+                    return new FilterBandpass(waveFormat, lowPassCutoff, highPassCutoff);
+                case FilterType.ButterworthBandpass:
                     return new FilterButterworthBandpass(waveFormat, lowPassCutoff, highPassCutoff);
-                case FilterType.Butterworth:
-                    throw new NotImplementedException();
             }
 
             throw new NotImplementedException();

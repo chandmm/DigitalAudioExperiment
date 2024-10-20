@@ -151,7 +151,7 @@ namespace DigitalAudioExperiment.Logic
             }
 
             var aggregator = new SampleAggregatorFiltered(sampleProvider
-                , FilterFactory.GetFilterInterface(FilterType.BandPass, waveStream.WaveFormat, 40f, 1000f, 2))
+                , FilterFactory.GetFilterInterface(FilterType.ButterworthBandpass, waveStream.WaveFormat, 40f, 1000f, 2))
             {
                 NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
