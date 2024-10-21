@@ -137,6 +137,39 @@
         </Grid>
     </Viewbox>
 
+    <Viewbox Stretch="Uniform" x:Key="PlaylistViewBoxClearAll" Margin="2">
+        <Grid>
+            <Grid>
+                <Path Data="m 1.9913053,0.05439099 9.9985767,0.01354751 2.018813,1.977935 V 15.945609 H 1.9913053 Z" Stroke="DarkGray"/>
+                <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="DarkGray"/>
+                <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="DarkGray"/>
+                <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="DarkGray"/>
+                <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="DarkGray"/>
+                <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="DarkGray"/>
+            </Grid>
+        </Grid>
+    </Viewbox>
+
+    <Viewbox Stretch="Uniform" x:Key="MoveUpViewBoxIcon">
+        <Label Content="^"
+            FontWeight="Bold"
+            FontSize="48"
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center" 
+            HorizontalContentAlignment="Center" 
+            VerticalContentAlignment="Center"/>
+    </Viewbox>
+
+    <Viewbox Stretch="Fill" x:Key="MoveDownViewBoxIcon" Margin="2">
+        <Label Content="^"
+            FontWeight="Bold"
+            FontSize="48"
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center" 
+            HorizontalContentAlignment="Center" 
+            VerticalContentAlignment="Center"/>
+    </Viewbox>
+
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
 

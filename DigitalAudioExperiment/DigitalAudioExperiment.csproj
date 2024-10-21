@@ -25,21 +25,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SimpleDecoder">
-      <HintPath>..\..\SimpleDecoder\SimpleDecoder\bin\Release\net8.0\SimpleDecoder.dll</HintPath>
-    </Reference>
-    <Reference Include="WpfAudioControlLibrary">
-      <HintPath>..\..\WpfAudioControlLibrary\WpfAudioControlLibrary\bin\Release\net8.0-windows\WpfAudioControlLibrary.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Resources\HuffmanTables.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\ScalefactorBandTables.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ExternalDependencies\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SimpleDecoder">
+      <HintPath>ExternalDependencies\SimpleDecoder.dll</HintPath>
+    </Reference>
+    <Reference Include="WpfAudioControlLibrary">
+      <HintPath>ExternalDependencies\WpfAudioControlLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

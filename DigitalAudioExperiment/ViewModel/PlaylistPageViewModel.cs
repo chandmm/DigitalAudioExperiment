@@ -70,6 +70,9 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand SavePlaylistCommand { get; private set; }
         public RelayCommand LoadPlaylistCommand { get; private set; }
         public RelayCommand ExitPlaylistCommand { get; private set; }
+        public RelayCommand RemoveAllCommand { get; private set; }
+        public RelayCommand MoveUpCommand { get; private set; }
+        public RelayCommand MoveDownCommand { get; private set; }
 
         #endregion
 
@@ -79,10 +82,14 @@ namespace DigitalAudioExperiment.ViewModel
         {
             PlayList = new ObservableCollection<PlaylistModel>();
 
+            RemoveAllCommand = new RelayCommand(RemoveAll, () => true);
             RemoveCommand = new RelayCommand(Remove, () => true);
             AddFileCommand = new RelayCommand(AddFile, () => true);
             SavePlaylistCommand = new RelayCommand(SavePlaylist, () => true);
             LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
+            MoveUpCommand = new RelayCommand(() => MoveItem(false), () => true);
+            MoveDownCommand = new RelayCommand(MoveItemDown, () => true);
+
             ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
         }
 
@@ -93,9 +100,7 @@ namespace DigitalAudioExperiment.ViewModel
         public void Add(string playlistItem)
         {
             PlayList.Add(
-                new PlaylistModel(
-                    PlayList.Any() ? PlayList.Max(x => x.SequenceId) : 0,
-                    HandleIsSelected)
+                new PlaylistModel(HandleIsSelected)
                 {
                     FullFilePathName = playlistItem,
                     FileName = Path.GetFileName(playlistItem)
@@ -143,9 +148,14 @@ namespace DigitalAudioExperiment.ViewModel
             foreach (var item in PlayList)
             {
                 item.IsSelected = false;
+
+                if (item.FullFilePathName != model.FullFilePathName)
+                {
+                    item.IsUserSelected = false;
+                }
             }
 
-            PlayList.ElementAt(_playList.IndexOf(model)).IsSelected = true;
+            model.IsSelected = true;
 
             if (model.IsUserSelected)
             {
@@ -174,17 +184,19 @@ namespace DigitalAudioExperiment.ViewModel
                 HandleIsSelected(PlayList.ElementAt(itemIndex));
             }
 
-            UpdatePlaylistIndices();
-
             OnPropertyChanged(nameof(IsHasList));
         }
 
-        private void UpdatePlaylistIndices()
+        private void RemoveAll()
         {
-            for (int i = 0; i < PlayList.Count(); i++)
+            if (!IsHasList)
             {
-                PlayList[i].UpdateSequenceId(i);
+                return;
             }
+
+            PlayList.Clear();
+
+            OnPropertyChanged(nameof(IsHasList));
         }
 
         public void SetGetFileCallback(Func<string, string[]> callback)
@@ -310,6 +322,59 @@ namespace DigitalAudioExperiment.ViewModel
             
             _previousPlayIndex = PlayList.IndexOf(item) - 1;
         }
+
+        private void MoveItem(bool isDown = false)
+        {
+            if (PlayList == null
+                || !PlayList.Any())
+            {
+                return;
+            }
+
+            var items = PlayList.Where(x => x.IsSelected || x.IsUserSelected).Select(x => x);
+
+            if (items == null
+                || !items.Any())
+            {
+                return;
+            }
+
+            var item = items.Count() > 1 ? items.FirstOrDefault(x => x.IsUserSelected) : items.FirstOrDefault();
+
+            if (item == null)
+            {
+                return;
+            }
+
+            var index = PlayList.IndexOf(item);
+
+            if (isDown)
+            {
+                if (index == PlayList.Count() - 1)
+                {
+                    return;
+                }
+
+                PlayList.RemoveAt(index);
+                PlayList.Insert(index + 1, item);
+
+                _previousPlayIndex = index + 1;
+
+                return;
+            }
+            
+            if (index == 0)
+            {
+                return;
+            }
+
+            PlayList.RemoveAt(index);
+            PlayList.Insert(index - 1, item);
+
+            _previousPlayIndex = index - 1;
+        }
+        private void MoveItemDown()
+            => MoveItem(true);
 
         #endregion
 

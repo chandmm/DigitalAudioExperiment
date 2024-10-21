@@ -15,6 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Events;
+using DigitalAudioExperiment.Filters;
 using NAudio.Wave;
 using System.IO;
 
@@ -24,6 +26,7 @@ namespace DigitalAudioExperiment.Logic
     {
         #region Fields
         private readonly int _volumeScaler = 100;
+        private static object _lock = new object();
 
         private bool _isDisposed;
         private int _volume;
@@ -45,7 +48,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 288;
+        protected int _rmsSampleLength = 1152;
 
         #endregion
 
@@ -138,7 +141,7 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        protected virtual SampleAggregator OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
+        protected virtual SampleAggregatorFiltered OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
         {
             ISampleProvider sampleProvider = waveStream.ToSampleProvider();
 
@@ -147,9 +150,10 @@ namespace DigitalAudioExperiment.Logic
                 return null;
             }
 
-            var aggregator = new SampleAggregator(sampleProvider)
+            var aggregator = new SampleAggregatorFiltered(sampleProvider
+                , FilterFactory.GetFilterInterface(FilterType.ButterworthBandpass, waveStream.WaveFormat, 40f, 1000f, 2))
             {
-                NotificationCount = _rmsSampleLength,    // Adjust as needed
+                NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
             };
 
@@ -160,19 +164,22 @@ namespace DigitalAudioExperiment.Logic
 
         protected virtual void OnSampleReady(object? sender, RmsEventArgs args)
         {
-            var rmsSamples = args.RmsValues;
+            lock (_lock)
+            {
+                var rmsSamples = args.RmsValues;
 
-            var maxDbLeft = (float)(20 * Math.Log10(rmsSamples[0]));
-            var maxDbRight = rmsSamples.Length > 1
-                ? (float)(20 * Math.Log10(rmsSamples[1]))
-                : maxDbLeft;
-            var difference = rmsSamples.Length > 1
-                ? maxDbLeft - maxDbRight
-                : 0;
+                var maxDbLeft = (float)(20 * Math.Log10(rmsSamples[0]));
+                var maxDbRight = rmsSamples.Length > 1
+                    ? (float)(20 * Math.Log10(rmsSamples[1]))
+                    : maxDbLeft;
+                var difference = rmsSamples.Length > 1
+                    ? maxDbLeft - maxDbRight
+                    : 0;
 
-            var dbValues = CalculateDBLevels(maxDbLeft, maxDbRight, difference);
+                var dbValues = CalculateDBLevels(maxDbLeft, maxDbRight, difference);
 
-            _dbVuValues = (dbValues.Item1, dbValues.Item2);
+                _dbVuValues = (dbValues.Item1, dbValues.Item2);
+            }
         }
 
         public (float left, float right) GetDbVuValues()
@@ -273,7 +280,7 @@ namespace DigitalAudioExperiment.Logic
             float dBMin = -60.0f;  // The minimum dB value
             float dBMax = 0.0f;    // The maximum dB value
             float MeterMin = 0.0f; // The minimum meter value
-            float MeterMax = 96.0f; // The maximum meter value
+            float MeterMax = 100.0f; // The maximum meter value
 
             // Map the dB values to the meter range
             float meterLeft = MapDbToMeterValue(dBLeft, dBMin, dBMax, MeterMin, MeterMax);
