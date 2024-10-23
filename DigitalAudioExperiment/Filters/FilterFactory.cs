@@ -4,26 +4,26 @@ namespace DigitalAudioExperiment.Filters
 {
     public enum FilterType
     {
-        LowPass,
-        HighPass,
-        BandPass,
+        Lowpass,
+        Highpass,
+        Bandpass,
         ButterworthBandpass
     }
 
     public static class FilterFactory
     {
-        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowPassCutoff, float highPassCutoff, int filterORder)
+        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterORder)
         {
             switch (filterType)
             {
-                case FilterType.LowPass:
-                    throw new NotImplementedException();
-                case FilterType.HighPass:
-                    throw new NotImplementedException();
-                case FilterType.BandPass:
-                    return new FilterBandpass(waveFormat, lowPassCutoff, highPassCutoff);
+                case FilterType.Lowpass:
+                    return new FilterLowpass(waveFormat, lowpassCutoffFrequency);
+                case FilterType.Highpass:
+                    return new FilterHighpass(waveFormat, highpassCutoffFrequency);
+                case FilterType.Bandpass:
+                    return new FilterBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
                 case FilterType.ButterworthBandpass:
-                    return new FilterButterworthBandpass(waveFormat, lowPassCutoff, highPassCutoff);
+                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
             }
 
             throw new NotImplementedException();

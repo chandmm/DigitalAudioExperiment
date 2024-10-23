@@ -3,6 +3,7 @@
                     xmlns:convertors="clr-namespace:DigitalAudioExperiment.Convertors">
 
     <SolidColorBrush x:Key="ComponentBackgroundColour" Color="#62e3f6"/>
+    <SolidColorBrush x:Key="ComponentForegroundColour" Color="White"/>
 
     <!--Styles-->
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
@@ -48,11 +49,18 @@
         </Setter>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Background" Value="DodgerBlue"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource ComponentBackgroundColour}"/>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Label" x:Key="DialogLabelStyle">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource ComponentForegroundColour}"/>
+        <Setter Property="Padding" Value="5"/>
     </Style>
     
     <!--Templates-->
@@ -168,6 +176,9 @@
             HorizontalAlignment="Center" 
             HorizontalContentAlignment="Center" 
             VerticalContentAlignment="Center"/>
+    </Viewbox>
+    <Viewbox Stretch="Fill" x:Key="FilterIconViewbox" Margin="5">
+        <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{StaticResource ComponentBackgroundColour}"/>
     </Viewbox>
 
     <!--Convetors-->

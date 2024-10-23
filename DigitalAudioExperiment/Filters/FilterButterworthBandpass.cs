@@ -170,5 +170,11 @@ namespace DigitalAudioExperiment.Filters
 
             return filteredSample;
         }
+
+        public override FilterType GetFilterType()
+            => FilterType.ButterworthBandpass;
+
+        public override void UpdateFilterSettings(float lowepassCutoffFrequency, float highepassCutoffFrequency, int filterOrder)
+            => CreateFilter(_waveFormat, lowepassCutoffFrequency, highepassCutoffFrequency, filterOrder);
     }
 }

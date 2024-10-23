@@ -8,15 +8,17 @@ namespace DigitalAudioExperiment.Filters
     {
         private BiQuadFilter[] _filters;
         private int _channels;
+        private WaveFormat _waveFormat;
 
         public FilterBandpass(WaveFormat waveFormat, float lowerCutoffFrequency, float upperCutoffFrequency)
         {
-            _channels = waveFormat.Channels;
+            _waveFormat = waveFormat;
+            _channels = _waveFormat.Channels;
             // Initialize band-pass filters for each channel
             _filters = new BiQuadFilter[_channels];
 
             
-            CreateFilter(waveFormat, lowerCutoffFrequency, upperCutoffFrequency, 0);
+            CreateFilter(_waveFormat, lowerCutoffFrequency, upperCutoffFrequency, 0);
         }
 
         public override void CalculateRms(int samplesRead, float[] buffer, int offset, int filterOrder)
@@ -46,5 +48,11 @@ namespace DigitalAudioExperiment.Filters
                 _filters[channel] =  BiQuadFilter.BandPassFilterConstantPeakGain(waveFormat.SampleRate, centerFrequency, q);
             }
         }
+
+        public override void UpdateFilterSettings(float lowepassCutoffFrequency, float highepassCutoffFrequency, int filterOrder)
+            => CreateFilter(_waveFormat, lowepassCutoffFrequency, highepassCutoffFrequency, filterOrder);
+
+        public override FilterType GetFilterType()
+            => FilterType.Bandpass;
     }
 }

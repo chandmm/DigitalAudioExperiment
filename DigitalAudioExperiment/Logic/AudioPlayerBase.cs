@@ -17,6 +17,7 @@
 */
 using DigitalAudioExperiment.Events;
 using DigitalAudioExperiment.Filters;
+using DigitalAudioExperiment.ViewModel;
 using NAudio.Wave;
 using System.IO;
 
@@ -35,6 +36,7 @@ namespace DigitalAudioExperiment.Logic
         private bool _hardStop;
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
+        private ISampleProvider _sampleAggregator;
 
         protected int _bitRate;
         protected Action<int> _seekPositionCallback;
@@ -115,14 +117,14 @@ namespace DigitalAudioExperiment.Logic
             _waveOut = new WaveOutEvent();
             _waveStream = new RawSourceWaveStream(_stream, waveFormat);
 
-            var aggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
+            _sampleAggregator = OutsideStreamSampleAggregatorProvider(_waveStream, _waveOut);
 
-            if (aggregator != null)
+            if (_sampleAggregator != null)
             {
                 _waveOut.DesiredLatency = 100;
                 _waveOut.PlaybackStopped += PlaybackStoppedCallback;
                 _waveOut.NumberOfBuffers = 4;
-                _waveOut.Init(aggregator);
+                _waveOut.Init(_sampleAggregator);
                 _waveOut.Play();
 
                 while (_waveOut.PlaybackState == PlaybackState.Playing
@@ -135,13 +137,15 @@ namespace DigitalAudioExperiment.Logic
 
             }
 
-            if (aggregator != null)
+            if (_sampleAggregator != null)
             {
-                aggregator.RmsCalculated -= OnSampleReady;
+                (_sampleAggregator as SampleAggregator).RmsCalculated -= OnSampleReady;
+
+                _sampleAggregator = null;
             }
         }
 
-        protected virtual SampleAggregatorFiltered OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
+        protected virtual SampleAggregator OutsideStreamSampleAggregatorProvider(WaveStream waveStream, WaveOutEvent waveOut)
         {
             ISampleProvider sampleProvider = waveStream.ToSampleProvider();
 
@@ -150,8 +154,8 @@ namespace DigitalAudioExperiment.Logic
                 return null;
             }
 
-            var aggregator = new SampleAggregatorFiltered(sampleProvider
-                , FilterFactory.GetFilterInterface(FilterType.ButterworthBandpass, waveStream.WaveFormat, 40f, 1000f, 2))
+            var aggregator = new SampleAggregator(sampleProvider
+                , FilterFactory.GetFilterInterface(FilterType.Bandpass, waveStream.WaveFormat, 40f, 1000f, 4))
             {
                 NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
@@ -290,6 +294,17 @@ namespace DigitalAudioExperiment.Logic
         }
 
         public (float, float, float) GetRmsValues() => _dbRMSValues;
+
+        public void UpdateFilterSettings(FilterSettingsViewModel filterSettingsViewModel)
+        {
+            if ( _sampleAggregator == null)
+            {
+                return;
+            }
+
+            (_sampleAggregator as SampleAggregator).UpdateFilterSettings(filterSettingsViewModel.CutoffFrequency, filterSettingsViewModel.Bandwidth, filterSettingsViewModel.FilterOrder);
+            // TODO Filter change code.
+        }
 
         #endregion
 
