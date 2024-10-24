@@ -364,6 +364,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             _filterSettingsView = new FilterSettingsView();
             _filterSettingsView.DataContext = _filterSettingsViewModel = new FilterSettingsViewModel();
+            _filterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
 
             RaisePropertyChangedEvents();
         }
@@ -419,6 +420,8 @@ namespace DigitalAudioExperiment.ViewModel
             _canContinueLoopMode = IsLoopPlayChecked;
 
             _player.SetHardStop(false);
+
+            OnFilterSettingsApplied(_filterSettingsViewModel);
 
             await Task.Run(() =>
             {
@@ -640,9 +643,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            _filterSettingsView.ShowDialog();
-
-            _player?.UpdateFilterSettings(_filterSettingsViewModel);
+            _filterSettingsView.Show();
         }
 
         private void Exit()
@@ -655,6 +656,11 @@ namespace DigitalAudioExperiment.ViewModel
         #endregion
 
         #region Callbacks
+
+        private void OnFilterSettingsApplied(FilterSettingsViewModel filterSettingsViewModel)
+        {
+            _player?.UpdateFilterSettings(filterSettingsViewModel);
+        }
 
         private void UpdateVuMeterControls(object? sender, ElapsedEventArgs e)
         {
@@ -747,6 +753,10 @@ namespace DigitalAudioExperiment.ViewModel
                         viewModel.Dispose();
                         _playlistPageView.DataContext = null;
                     }
+
+                    _filterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;
+                    _filterSettingsViewModel?.Dispose();
+                    _filterSettingsView?.Dispose();
                 }
 
                 _isDisposed = true;

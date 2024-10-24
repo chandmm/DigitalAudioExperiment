@@ -86,6 +86,10 @@
             </ToggleButton>
         </Grid>
     </DataTemplate>
+
+    <DataTemplate x:Key="ComboBoxTemplate">
+        <TextBlock Text="{Binding Path=Description}" Foreground="Black"/>
+    </DataTemplate>
     
     <!--ViewBox Implementations-->
     <Viewbox Stretch="Fill" x:Key="LoadViewBox">

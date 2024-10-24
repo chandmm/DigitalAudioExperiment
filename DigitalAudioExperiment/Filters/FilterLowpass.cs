@@ -1,6 +1,22 @@
-﻿using NAudio.Dsp;
+﻿/*
+    Digital Audio Experiement: Plays mp3 files and may be others in the future.
+    Copyright (C) 2024  Michael Chand.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+using NAudio.Dsp;
 using NAudio.Wave;
-using System.Runtime.CompilerServices;
 
 namespace DigitalAudioExperiment.Filters
 {
@@ -45,6 +61,24 @@ namespace DigitalAudioExperiment.Filters
         public override void UpdateFilterSettings(float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterOrder)
         {
             CreateFilter(_waveFormat, lowpassCutoffFrequency);
+        }
+
+        protected override void Dispose(bool isDisposing)
+        {
+            if (!_isDisposed)
+            {
+                if (isDisposing)
+                {
+                    for (int i = 0; i < _filters.Count(); i++)
+                    {
+                        _filters[i] = null;
+                    }
+
+                    _filters = null;
+                }
+
+                _isDisposed = true;
+            }
         }
     }
 }

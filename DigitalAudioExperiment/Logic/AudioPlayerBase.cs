@@ -51,6 +51,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveStream _waveStream;
         protected string _fileName;
         protected int _rmsSampleLength = 1152;
+        protected FilterType _setFilterType;
 
         #endregion
 
@@ -155,7 +156,7 @@ namespace DigitalAudioExperiment.Logic
             }
 
             var aggregator = new SampleAggregator(sampleProvider
-                , FilterFactory.GetFilterInterface(FilterType.Bandpass, waveStream.WaveFormat, 40f, 1000f, 4))
+                , FilterFactory.GetFilterInterface(_setFilterType, waveStream.WaveFormat, 40f, 1000f, 4))
             {
                 NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
@@ -297,6 +298,8 @@ namespace DigitalAudioExperiment.Logic
 
         public void UpdateFilterSettings(FilterSettingsViewModel filterSettingsViewModel)
         {
+            _setFilterType = filterSettingsViewModel.FilterTypeSet.FilterTypeValue;
+
             if ( _sampleAggregator == null)
             {
                 return;
@@ -379,6 +382,12 @@ namespace DigitalAudioExperiment.Logic
 
                 _waveOut = null;
                 _waveStream = null;
+            }
+
+            if ((_sampleAggregator as SampleAggregator) != null)
+            {
+                (_sampleAggregator as SampleAggregator).RmsCalculated -= OnSampleReady;
+                (_sampleAggregator as SampleAggregator)?.Dispose();
             }
         }
 

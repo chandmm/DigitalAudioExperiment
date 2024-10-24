@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DigitalAudioExperiment.View"
+        xmlns:behaviours="clr-namespace:DigitalAudioExperiment.Behaviours"
         mc:Ignorable="d"
         Title="FilterSettingsView" 
         Height="200" 
@@ -40,6 +41,23 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+                <Grid Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="175"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Filter Type" 
+                           Style="{StaticResource DialogLabelStyle}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding FilterTypes}"
+                          ItemTemplate="{StaticResource ComboBoxTemplate}"
+                          SelectedItem="{Binding FilterTypeSet}"
+                          VerticalContentAlignment="Center"
+                          HorizontalContentAlignment="Center"
+                          Grid.Column="1"
+                          Margin="5"/>
+                </Grid>
                 <Grid Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition MaxWidth="50"/>
@@ -60,13 +78,14 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Style="{StaticResource DialogLabelStyle}"/>
-                <Slider Grid.Row="1" 
+                <Slider Grid.Row="1"
                     x:Name="cutoffFrequencySetting"
                     Minimum="20"
                     Maximum="22000"
-                    Value="{Binding CutoffFrequency, FallbackValue=500}"
+                    Value="{Binding CutoffFrequency, UpdateSourceTrigger=Explicit}"
                     TickFrequency="1000"
                     TickPlacement="Both"
+                    behaviours:SliderBehaviour.UpdateValueOnDragCompleted="True"
                     Grid.Column="1"  
                     VerticalAlignment="Center" 
                     Margin="5"/>
@@ -86,9 +105,10 @@
                     x:Name="bandwidthSetting" 
                     Minimum="0"
                     Maximum="11000"
-                    Value="{Binding Bandwidth, FallbackValue=500}"
+                    Value="{Binding Bandwidth, UpdateSourceTrigger=Explicit}"
                     TickFrequency="1000"
                     TickPlacement="Both"
+                    behaviours:SliderBehaviour.UpdateValueOnDragCompleted="True"
                     Grid.Row="2" 
                     Grid.Column="1" 
                     VerticalAlignment="Center"
@@ -110,9 +130,10 @@
                     Minimum="2"
                     Maximum="10"
                     IsSnapToTickEnabled="True"
-                    Value="{Binding FilterOrder, FallbackValue=4}"
+                    Value="{Binding FilterOrder, UpdateSourceTrigger=Explicit}"
                     TickFrequency="2"
                     TickPlacement="Both"
+                    behaviours:SliderBehaviour.UpdateValueOnDragCompleted="True"
                     Grid.Row="3" 
                     Grid.Column="1" 
                     VerticalAlignment="Center"

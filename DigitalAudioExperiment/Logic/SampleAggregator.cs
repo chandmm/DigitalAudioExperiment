@@ -26,10 +26,12 @@ using NAudio.Wave;
 
 namespace DigitalAudioExperiment.Logic
 {
-    public class SampleAggregator : ISampleProvider
+    public class SampleAggregator : ISampleProvider, IDisposable
     {
         private readonly ISampleProvider _source;
         private readonly int _channels;
+
+        private bool _isDisposed;
         private int _notificationCount;
         private int _count;
         private double[] _sumSquares;
@@ -150,5 +152,30 @@ namespace DigitalAudioExperiment.Logic
                     break;
             }
         }
+
+
+        #region Dispose
+
+        private void Dispose(bool isDisposing)
+        {
+            if(!_isDisposed)
+            {
+                if (isDisposing)
+                {
+                    _filter.Dispose();
+
+                    _filter = null;
+                }
+
+                _isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
 }
