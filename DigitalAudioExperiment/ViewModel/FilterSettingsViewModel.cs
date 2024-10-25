@@ -135,14 +135,14 @@ namespace DigitalAudioExperiment.ViewModel
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Lowpass, Description = "Lowpass" },
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Highpass, Description = "Highpass" },
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Bandpass, Description = "Bandpass" },
-                new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.ButterworthBandpass, Description = "Butterworth Bandpass" },
+                new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.ButterworthBandpass, Description = "Butterworth bandpass" },
             };
 
-            FilterTypeSet = FilterTypes.Last();
+            FilterTypeSet = FilterTypes.First(x => x.FilterTypeValue == FilterType.Bandpass);
 
             CutoffFrequency = 500;
-            Bandwidth = 500;
-            FilterOrder = 4;
+            Bandwidth = 600;
+            FilterOrder = 2;
         }
 
         #endregion
