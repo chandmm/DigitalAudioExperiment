@@ -18,9 +18,7 @@
 using DigitalAudioExperiment.Extensions;
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
-using DigitalAudioExperiment.View;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -30,7 +28,8 @@ namespace DigitalAudioExperiment.ViewModel
     {
         #region Fields
 
-        private readonly string _fileFiltersAudio = "Mp3 Files (*.mp3)|*.mp3|Flac Files (*.flac)|*.flac|Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
+        public const string FileFiltersAudio = "Audio Files |*.mp3;*.flac;*.wav|Mp3 Files (*.mp3)|*.mp3|Flac Files (*.flac)|*.flac|Wave Files (*.wav)|*.wav|Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
+
         private readonly string _fileFiltersPlaylist = "Playlist Files (*.xml)|*.xml|All files (*.*)|*.*";
         private readonly string _saveFileFilters = "Playlist Files (*.xml)|*.xml";
 
@@ -216,7 +215,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            var files = _getFileCallback(_fileFiltersAudio);
+            var files = _getFileCallback(FileFiltersAudio);
 
             if (files == null
                 || !files.Any())

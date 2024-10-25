@@ -68,6 +68,7 @@
                 Grid.RowSpan="3" 
                 Grid.ColumnSpan="2" />
             <Button
+                ToolTip="Open playlist"
                 Width="30"
                 BorderThickness="0"
                 Background="Silver"
