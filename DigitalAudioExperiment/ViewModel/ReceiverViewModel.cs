@@ -19,7 +19,6 @@
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.View;
-using System.IO;
 using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -27,10 +26,11 @@ namespace DigitalAudioExperiment.ViewModel
     public class ReceiverViewModel : BaseViewModel
     {
         #region Fields
+
         private readonly double _tickPercentage = 0.01;
         private readonly int _initialSafeVolume = 5;
 
-        private Func<string?> _getFile;
+        private Func<string?, string> _getFile;
         private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
@@ -345,7 +345,7 @@ namespace DigitalAudioExperiment.ViewModel
             _isMono = true;
 
             ExitCommand = new RelayCommand(() => Exit(), () => true);
-            PlayCommand = new RelayCommand(async () => await PlayButton(), () => true);
+            PlayCommand = new RelayCommand(async () => PlayButtonFromCommand(), () => true);
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
             SelectCommand = new RelayCommand(SelectFile, () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
@@ -373,7 +373,7 @@ namespace DigitalAudioExperiment.ViewModel
             RaisePropertyChangedEvents();
         }
 
-        public void SetGetFileCallback(Func<string> callback)
+        public void SetGetFileCallback(Func<string, string> callback)
             => _getFile = callback;
 
         #endregion
@@ -394,12 +394,25 @@ namespace DigitalAudioExperiment.ViewModel
             RightdB = Minimum;
         }
 
-        private async Task PlayButton()
+        private async void PlayButtonFromCommand()
+        {
+            await PlayInternal(true);
+        }
+
+        private async Task PlayInternal(bool fromPlayButton = false)
         {
             if (_player == null
                 && _playlistPageView == null)
             {
                 return;
+            }
+
+            if (_player != null
+                && !_player.IsStopped())
+            {
+                _player.Stop();
+                _player.Dispose();
+                _player = null;
             }
 
             if (_player == null
@@ -408,7 +421,7 @@ namespace DigitalAudioExperiment.ViewModel
                 && newViewModel.PlayList.Any())
             {
                 ResetPlayer();
-                SetupWithAutoPlay(autoPlayOverride: true);
+                SetupWithAutoPlay(autoPlayOverride: true, fromPlayButton);
             }
 
             if (_player == null)
@@ -427,6 +440,11 @@ namespace DigitalAudioExperiment.ViewModel
 
             OnFilterSettingsApplied(_filterSettingsViewModel);
 
+            Play();
+        }
+
+        private async void Play()
+        {
             await Task.Run(() =>
             {
                 _player?.Play();
@@ -460,7 +478,7 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            var fileName = _getFile.Invoke();
+            var fileName = _getFile.Invoke(PlaylistPageViewModel.FileFiltersAudio);
 
             if (string.IsNullOrEmpty(fileName))
             {
@@ -513,7 +531,7 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-        private void SetupWithAutoPlay(bool autoPlayOverride = false)
+        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false)
         {
             if (!(_playlistPageView.DataContext is PlaylistPageViewModel viewModel))
             {
@@ -521,6 +539,14 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             var fileName = viewModel.GetNextFile();
+
+            if (string.IsNullOrEmpty(fileName)
+                && fromPlayButton)
+            {
+                viewModel.ResetToSelectedPlayed();
+
+                fileName = viewModel.GetNextFile();
+            }
 
             if (string.IsNullOrEmpty(fileName))
             {
@@ -548,7 +574,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (IsAutoPlayChecked
                 && !autoPlayOverride)
             {
-                PlayButton();
+                PlayInternal();
             }
         }
 
@@ -704,7 +730,7 @@ namespace DigitalAudioExperiment.ViewModel
                 && _canContinueLoopMode
                 && _player.IsStopped())
             {
-                PlayButton();
+                PlayInternal();
 
                 return;
             }

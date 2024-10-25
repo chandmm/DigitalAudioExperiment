@@ -45,11 +45,11 @@ namespace DigitalAudioExperiment.View
             }
         }
 
-        private string? GetFile()
+        private string? GetFile(string filter)
         {
             var openFileDialog = new OpenFileDialog();
 
-            openFileDialog.Filter = "Mp3 Files|*.mp3";
+            openFileDialog.Filter = filter;
             
             var dialogResult = openFileDialog.ShowDialog();
             var fileName = openFileDialog.FileName;
