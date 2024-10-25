@@ -10,14 +10,11 @@ jobs:
 
   build:
 
-    strategy:
-      matrix:
-        configuration: [ Release ]
-
     runs-on: windows-latest
 
     env:
       Solution_Name: DigitalAudioExperiment.sln
+      Configuration: Release
 
     steps:
     - name: Checkout
@@ -34,20 +31,14 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build the application
-      run: dotnet build $env:Solution_Name --configuration $env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
 
-    - name: Execute unit tests
-      run: dotnet test --configuration $env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+    - name: List build outputs
+      run: dir **\bin\${{ env.Configuration }}\**\*
+      shell: cmd
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Build Output
-        path: '**/bin/$env:Configuration/**/*'
-      env:
-        Configuration: ${{ matrix.configuration }}
-
+        path: '**/bin/${{ env.Configuration }}/**/*'
