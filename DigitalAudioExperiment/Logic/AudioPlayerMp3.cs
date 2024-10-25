@@ -78,12 +78,6 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        public override void Seek(int seekPosition)
-        {
-            _seekPosition = seekPosition;
-            _isSeeking = true;
-        }
-
         #endregion
 
         #region Fetch File Information Logic

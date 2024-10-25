@@ -329,6 +329,8 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand SkipToEndCommand { get; set; }
         public RelayCommand OpenPlaylistCommand { get; set; }
         public RelayCommand OpenVisualisationFilterSettingsCommand { get; set; }
+        public RelayCommand SetAutoplayModeToggleCommand { get; set; }
+        public RelayCommand SetLoopPlayModeToggleCommand { get; set; }
 
         #endregion
 
@@ -351,6 +353,8 @@ namespace DigitalAudioExperiment.ViewModel
             SkipToEndCommand = new RelayCommand(SkipToEndButton, () => true);
             OpenPlaylistCommand = new RelayCommand(OpenPlaylist, () => true);
             OpenVisualisationFilterSettingsCommand = new RelayCommand(OpenVisualisationFilterSettings, () => true);
+            SetAutoplayModeToggleCommand = new RelayCommand(SetAutoplayModeToggle, () => true);
+            SetLoopPlayModeToggleCommand = new RelayCommand(SetLoopPlayModeToggle, () => true);
 
             Volume = _initialSafeVolume;
             IsAutoPlayChecked = true;
@@ -569,6 +573,16 @@ namespace DigitalAudioExperiment.ViewModel
         public void SetSeekValue()
         {
             _player?.Seek((int)Value);
+        }
+
+        private void SetAutoplayModeToggle()
+        {
+            IsAutoPlayChecked = !IsAutoPlayChecked;
+        }
+
+        private void SetLoopPlayModeToggle()
+        {
+            IsLoopPlayChecked = !IsLoopPlayChecked;
         }
 
         #endregion
