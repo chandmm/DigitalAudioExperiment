@@ -20,51 +20,44 @@ using NAudio.Wave;
 
 namespace DigitalAudioExperiment.Filters
 {
-    public class FilterBandpass : FilterAbstractBase, IFilter
+    public class FilterLowpass : FilterAbstractBase, IFilter
     {
         private BiQuadFilter[] _filters;
-        private int _channels;
         private WaveFormat _waveFormat;
 
-        public FilterBandpass(WaveFormat waveFormat, float lowerCutoffFrequency, float upperCutoffFrequency)
+        public FilterLowpass(WaveFormat waveFormat, float lowpassCutoffFrequency)
         {
             _waveFormat = waveFormat;
-            _channels = _waveFormat.Channels;
-            // Initialize band-pass filters for each channel
-            _filters = new BiQuadFilter[_channels];
+            _filters = new BiQuadFilter[_waveFormat.Channels];
 
-            
-            CreateFilter(_waveFormat, lowerCutoffFrequency, upperCutoffFrequency, 0);
+            CreateFilter(waveFormat, lowpassCutoffFrequency);
         }
 
         public override float Transform(float sample, int channel)
             => _filters[channel].Transform(sample);
 
-        protected override BiQuadFilter CreateFilter(WaveFormat waveFormat, float lowPassCutoff)
+        protected override BiQuadFilter CreateFilter(WaveFormat waveFormat, float lowPassCutoffFrequency)
+        {
+            for (int channel = 0; channel < waveFormat.Channels; channel++)
+            {
+                _filters[channel] = BiQuadFilter.LowPassFilter(waveFormat.SampleRate, lowPassCutoffFrequency, 1.0f);
+            }
+
+            return null;
+        }
+
+        protected override void CreateFilter(WaveFormat waveFormat, float lowPassCutoff, float highPassCutoff, int filterOrder)
         {
             throw new NotImplementedException();
         }
 
-        protected override void CreateFilter(WaveFormat waveFormat, float lowPassCutoffFrequency, float highPassCutoffFrequency, int filterOrder)
-        {
-            for (int channel = 0; channel < _channels; channel++)
-            {
-                float centerFrequency = (lowPassCutoffFrequency + highPassCutoffFrequency) / 2.0f;
-                float bandwidth = highPassCutoffFrequency - lowPassCutoffFrequency;
-
-                // Calculate Q factor
-                float q = centerFrequency / bandwidth;
-
-                // Create band-pass filter with constant peak gain
-                _filters[channel] =  BiQuadFilter.BandPassFilterConstantPeakGain(waveFormat.SampleRate, centerFrequency, q);
-            }
-        }
-
-        public override void UpdateFilterSettings(float lowepassCutoffFrequency, float highepassCutoffFrequency, int filterOrder)
-            => CreateFilter(_waveFormat, lowepassCutoffFrequency, highepassCutoffFrequency, filterOrder);
-
         public override FilterType GetFilterType()
-            => FilterType.Bandpass;
+            => FilterType.Lowpass;
+
+        public override void UpdateFilterSettings(float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterOrder)
+        {
+            CreateFilter(_waveFormat, lowpassCutoffFrequency);
+        }
 
         protected override void Dispose(bool isDisposing)
         {
