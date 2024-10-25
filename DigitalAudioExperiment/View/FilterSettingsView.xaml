@@ -96,7 +96,7 @@
                 <Slider Grid.Row="1"
                     x:Name="cutoffFrequencySetting"
                     Minimum="20"
-                    Maximum="22000"
+                    Maximum="24000"
                     Value="{Binding CutoffFrequency, UpdateSourceTrigger=Explicit}"
                     TickFrequency="1000"
                     TickPlacement="Both"
@@ -119,7 +119,7 @@
                 <Slider 
                     x:Name="bandwidthSetting" 
                     Minimum="0"
-                    Maximum="11000"
+                    Maximum="24000"
                     Value="{Binding Bandwidth, UpdateSourceTrigger=Explicit}"
                     TickFrequency="1000"
                     TickPlacement="Both"
