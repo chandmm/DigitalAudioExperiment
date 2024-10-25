@@ -19,55 +19,55 @@ using NAudio.Wave;
 using System.IO;
 using System.Text;
 using System.Windows;
+using TagLib.Flac;
 
 namespace DigitalAudioExperiment.Logic
 {
-    public class AudioPlayerFlac : AudioPlayerBase, IAudioPlayer
+    public class AudioPlayerPcm : AudioPlayerBase, IAudioPlayer
     {
         private bool _isDisposed;
         private AudioFileReader? _reader;
         private StringBuilder _metaData = new StringBuilder();
         private StringBuilder _fileInfo = new StringBuilder();
 
-        public AudioPlayerFlac(string fileName) 
-            : base(fileName)
+        public AudioPlayerPcm(string fileName) : base(fileName)
         {
         }
-        
+
         public override void Initialise()
         {
             try
             {
-                FetchFileMetadata();
                 _reader = new AudioFileReader(_fileName);
                 _duration = ((int)_reader.TotalTime.Minutes, (int)(_reader.TotalTime.TotalSeconds % 60));
+
+                FetchFileMetadata();
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 _reader?.Dispose();
                 _reader = null;
 
                 MessageBox.Show(exception.Message);
+
+                _isPlaying = false;
             }
         }
 
         private void FetchFileMetadata()
         {
-            using (var tagLibFile = TagLib.File.Create(_fileName))
+            _metaData.AppendLine($"File: {Path.GetFileName(_fileName)}");
+
+            if (_reader == null
+                || _reader.WaveFormat == null)
             {
-                var metaData = tagLibFile.GetTag(TagLib.TagTypes.FlacMetadata, true);
-
-                _metaData.AppendLine($"Title: {metaData.Title}");
-                _metaData.AppendLine($"Genres: {metaData.JoinedGenres}");
-                _metaData.AppendLine($"Artists: {metaData.JoinedAlbumArtists}");
-                _metaData.AppendLine($"Performers: {metaData.JoinedPerformers}");
-                _metaData.AppendLine($"Description: {metaData.Description}");
-
-                _bitRate = tagLibFile.Properties.AudioBitrate;
-
-                _fileInfo.AppendLine($"Sample rate: {tagLibFile.Properties.AudioSampleRate}");
-                _fileInfo.AppendLine($"Bits per sample: {tagLibFile.Properties.BitsPerSample}");
+                return;
             }
+
+            var waveFormat = _reader.WaveFormat;
+
+            _fileInfo.AppendLine($"Sample Rate: {waveFormat.SampleRate}");
+            _fileInfo.AppendLine($"Bits: {waveFormat.BitsPerSample}");
         }
 
         protected override void PlayStream(WaveFormat? waveFormatNotUsed)
@@ -116,31 +116,5 @@ namespace DigitalAudioExperiment.Logic
 
         public override string GetMetadata()
             => _metaData.ToString();
-
-        #region Cleanup and Dispose
-
-        private void Dispose(bool _isDisposing)
-        {
-            if (!_isDisposed)
-            {
-                if (_isDisposing)
-                {
-                    if (_reader != null)
-                    {
-                        _reader.Dispose();
-                        _reader = null;
-                    }
-                }
-
-                _isDisposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
 }

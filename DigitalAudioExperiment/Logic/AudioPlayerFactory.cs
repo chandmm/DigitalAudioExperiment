@@ -38,6 +38,9 @@ namespace DigitalAudioExperiment.Logic
                     player = new AudioPlayerFlac(fileName);
                     break;
                 }
+                case ".wav":
+                    player = new AudioPlayerPcm(fileName);
+                    break;
             }
 
             if (player == null)

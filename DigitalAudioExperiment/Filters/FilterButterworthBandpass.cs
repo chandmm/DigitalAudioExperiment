@@ -115,24 +115,30 @@ namespace DigitalAudioExperiment.Filters
             {
                 if (isDisposing)
                 {
-                    for (int i = 0; i < _lowPassFilters.Count(); i++)
+                    if (_lowPassFilters != null)
                     {
-                        for (int j = 0; j < _lowPassFilters[i].Count(); j++)
+                        for (int i = 0; i < _lowPassFilters.Count(); i++)
                         {
-                            _lowPassFilters[i][j] = null;
-                        }
+                            for (int j = 0; j < _lowPassFilters[i].Count(); j++)
+                            {
+                                _lowPassFilters[i][j] = null;
+                            }
 
-                        _lowPassFilters[i] = null;
+                            _lowPassFilters[i] = null;
+                        }
                     }
 
-                    for (int i = 0; i < _highPassFilters.Count(); i++)
+                    if (_highPassFilters != null)
                     {
-                        for (int j = 0; j < _highPassFilters[i].Count(); j++)
+                        for (int i = 0; i < _highPassFilters.Count(); i++)
                         {
-                            _highPassFilters[i][j] = null;
-                        }
+                            for (int j = 0; j < _highPassFilters[i].Count(); j++)
+                            {
+                                _highPassFilters[i][j] = null;
+                            }
 
-                        _highPassFilters[i] = null;
+                            _highPassFilters[i] = null;
+                        }
                     }
 
                     _lowPassFilters = null;
