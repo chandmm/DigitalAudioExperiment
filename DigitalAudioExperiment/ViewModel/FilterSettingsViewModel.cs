@@ -96,6 +96,19 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 _filterTypeSet = value;
                 OnPropertyChanged();
+                InvokeApplySettingsEvent();
+            }
+        }
+
+        private bool _isFilterOutput;
+        public bool IsFilterOutput
+        {
+            get => _isFilterOutput;
+            set
+            {
+                _isFilterOutput = value;
+                OnPropertyChanged();
+                InvokeApplySettingsEvent();
             }
         }
 
@@ -122,7 +135,7 @@ namespace DigitalAudioExperiment.ViewModel
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Lowpass, Description = "Lowpass" },
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Highpass, Description = "Highpass" },
                 new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.Bandpass, Description = "Bandpass" },
-                new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.ButterworthBandpass, Description = "ButterworthBandpass" },
+                new FilterTypeDescriptionModel() {FilterTypeValue = FilterType.ButterworthBandpass, Description = "Butterworth Bandpass" },
             };
 
             FilterTypeSet = FilterTypes.Last();

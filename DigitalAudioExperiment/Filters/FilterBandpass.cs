@@ -37,11 +37,6 @@ namespace DigitalAudioExperiment.Filters
             CreateFilter(_waveFormat, lowerCutoffFrequency, upperCutoffFrequency, 0);
         }
 
-        public override void CalculateRms(int samplesRead, float[] buffer, int offset, int filterOrder)
-        {
-            throw new NotImplementedException();
-        }
-
         public override float Transform(float sample, int channel)
             => _filters[channel].Transform(sample);
 

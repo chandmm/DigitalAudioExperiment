@@ -51,7 +51,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveStream _waveStream;
         protected string _fileName;
         protected int _rmsSampleLength = 1152;
-        protected FilterType _setFilterType;
+        protected FilterSettingsViewModel _filterSettingsViewModel;
 
         #endregion
 
@@ -156,7 +156,11 @@ namespace DigitalAudioExperiment.Logic
             }
 
             var aggregator = new SampleAggregator(sampleProvider
-                , FilterFactory.GetFilterInterface(_setFilterType, waveStream.WaveFormat, 40f, 1000f, 4))
+                , FilterFactory.GetFilterInterface(_filterSettingsViewModel.FilterTypeSet.FilterTypeValue, 
+                waveStream.WaveFormat, 
+                _filterSettingsViewModel.CutoffFrequency - (_filterSettingsViewModel.Bandwidth/2),
+                _filterSettingsViewModel.CutoffFrequency + (_filterSettingsViewModel.Bandwidth/2), 
+                _filterSettingsViewModel.FilterOrder), _filterSettingsViewModel.IsFilterOutput)
             {
                 NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
@@ -298,14 +302,14 @@ namespace DigitalAudioExperiment.Logic
 
         public void UpdateFilterSettings(FilterSettingsViewModel filterSettingsViewModel)
         {
-            _setFilterType = filterSettingsViewModel.FilterTypeSet.FilterTypeValue;
+            _filterSettingsViewModel = filterSettingsViewModel;
 
             if ( _sampleAggregator == null)
             {
                 return;
             }
 
-            (_sampleAggregator as SampleAggregator).UpdateFilterSettings(filterSettingsViewModel.CutoffFrequency, filterSettingsViewModel.Bandwidth, filterSettingsViewModel.FilterOrder);
+            (_sampleAggregator as SampleAggregator).UpdateFilterSettings(_filterSettingsViewModel.CutoffFrequency, _filterSettingsViewModel.Bandwidth, _filterSettingsViewModel.FilterOrder, _filterSettingsViewModel.IsFilterOutput);
             // TODO Filter change code.
         }
 

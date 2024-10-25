@@ -45,6 +45,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="175"/>
                         <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Filter Type" 
                            Style="{StaticResource DialogLabelStyle}"
@@ -57,6 +58,18 @@
                           HorizontalContentAlignment="Center"
                           Grid.Column="1"
                           Margin="5"/>
+                    <ToggleButton IsChecked="{Binding IsFilterOutput}" Grid.Column="2">
+                        <ToggleButton.Resources>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Content" Value="VU Only Mode"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsFilterOutput}" Value="True">
+                                        <Setter Property="Content" Value="Output and VU Mode"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Resources>
+                    </ToggleButton>
                 </Grid>
                 <Grid Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>

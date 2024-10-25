@@ -23,6 +23,7 @@ using DigitalAudioExperiment.Events;
 using DigitalAudioExperiment.Filters;
 using NAudio.Dsp;
 using NAudio.Wave;
+using System.Security.Policy;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -54,6 +55,8 @@ namespace DigitalAudioExperiment.Logic
             set => _notificationCount = value;
         }
 
+        public bool IsFilterOutput { get; set; }
+
         public bool PerformRmsCalculation { get; set; }
 
         public event EventHandler<RmsEventArgs> RmsCalculated;
@@ -65,12 +68,13 @@ namespace DigitalAudioExperiment.Logic
         /// <param name="lowCutoffFrequency">The lower cutoff frequency for the band-pass filter.</param>
         /// <param name="highCutoffFrequency">The upper cutoff frequency for the band-pass filter.</param>
         /// <param name="filterOrder">The order of the Butterworth filter (must be a multiple of 2).</param>
-        public SampleAggregator(ISampleProvider source, IFilter filter)
+        public SampleAggregator(ISampleProvider source, IFilter filter, bool isFilterOutput = false)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             WaveFormat = source.WaveFormat;
             _channels = WaveFormat.Channels;
             _sumSquares = new double[_channels];
+            IsFilterOutput = isFilterOutput;
 
             _filter = filter;
         }
@@ -84,10 +88,30 @@ namespace DigitalAudioExperiment.Logic
         {
             int samplesRead = _source.Read(buffer, offset, sampleCount);
 
-            Task.Run(() => CalculateRms(samplesRead, buffer, offset))
-                .ConfigureAwait(false);
+            //Task.Run(() => CalculateRms(samplesRead, buffer, offset))
+            //    .ConfigureAwait(false);
+
+            CalculateRms(samplesRead, buffer, offset);
+            FilterOutput(samplesRead, buffer, offset);
 
             return samplesRead;
+        }
+
+        private void FilterOutput(int samplesRead, float[] buffer, int offset)
+        {
+            if (IsFilterOutput)
+            {
+                for (int samplesProcessed = 0; samplesProcessed < samplesRead; samplesProcessed += _channels)
+                {
+                    for (int channel = 0; channel < _channels; channel++)
+                    {
+                        if ((samplesProcessed + channel) < samplesRead)
+                        {
+                            buffer[samplesProcessed + channel] = _filter.Transform(buffer[samplesProcessed + channel], channel);
+                        }
+                    }
+                }
+            }
         }
 
         private void CalculateRms(int samplesRead, float[] buffer, int offset)
@@ -96,21 +120,10 @@ namespace DigitalAudioExperiment.Logic
             {
                 for (int samplesProcessed = 0; samplesProcessed < samplesRead; samplesProcessed += _channels)
                 {
-                    if (samplesProcessed < samplesRead)
-                    {
-                        _sumSquares[0] += Math.Pow(_filter.Transform(buffer[samplesProcessed], 0), 2);
-                    }
-
-                    if (_channels == 2
-                        && samplesProcessed + 1 < samplesRead)
-                    {
-                        _sumSquares[1] += Math.Pow(_filter.Transform(buffer[samplesProcessed + 1], 1), 2);
-                    }
-
                     // Handle for multichannel pcm data.
-                    if (_channels > 2)
+                    for (int channel = 0; channel < _channels; channel++)
                     {
-                        for (int channel = 2; channel < samplesRead; channel++)
+                        if ((samplesProcessed + channel) < samplesRead)
                         {
                             _sumSquares[channel] += Math.Pow(_filter.Transform(buffer[samplesProcessed + channel], channel), 2);
                         }
@@ -136,8 +149,10 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
-        public void UpdateFilterSettings(float centreFrequency, float bandwidth, int filterOrder)
+        public void UpdateFilterSettings(float centreFrequency, float bandwidth, int filterOrder, bool isFilterOutput = false)
         {
+            IsFilterOutput = isFilterOutput;
+
             switch (_filter.GetFilterType())
             {
                 case FilterType.Lowpass:
