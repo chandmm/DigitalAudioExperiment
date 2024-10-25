@@ -15,65 +15,68 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.ViewModel;
+
 namespace DigitalAudioExperiment.Logic
 {
     public interface IAudioPlayer: IDisposable
     {
-        public void Initialise();
+        void Initialise();
 
         #region Playback control
-        public void SetSeekPositionCallback(Action<int> seekPositionCallback);
+        void SetSeekPositionCallback(Action<int> seekPositionCallback);
 
-        public void SetUpdateCallback(Action updateCallback);
+        void SetUpdateCallback(Action updateCallback);
 
-        public void SetPlaybackStoppedCallback(Action playbackStopped);
+        void SetPlaybackStoppedCallback(Action playbackStopped);
 
         #endregion
 
         #region Logic
 
-        public void Play();
+        void Play();
 
-        public (float left, float right) GetDbVuValues();
+        (float left, float right) GetDbVuValues();
 
-        public void Stop();
+        void Stop();
 
-        public void Seek(int seekPosition);
+        void Seek(int seekPosition);
 
-        public void Pause();
+        void Pause();
 
-        public void SetVolume(int volume);
+        void SetVolume(int volume);
 
-        public bool IsStopped();
+        bool IsStopped();
 
         #endregion
 
         #region DB RMS value calculations
 
-        public (float, float, float) GetRmsValues();
+        (float, float, float) GetRmsValues();
+        void UpdateFilterSettings(FilterSettingsViewModel filterSettingsViewModel);
 
         #endregion
 
         #region Fetch File Information Logic
 
-        public string GetAudioFileInfo();
+        string GetAudioFileInfo();
 
-        public int GetBitRate();
+        int GetBitRate();
 
-        public int GetBitratePerFrame();
+        int GetBitratePerFrame();
 
-        public bool GetIsMonoChannel();
-        public (int, int) Duration();
+        bool GetIsMonoChannel();
+        (int, int) Duration();
 
-        public double GetElapsed();
+        double GetElapsed();
 
-        public int? GetFrameCount();
+        int? GetFrameCount();
 
-        public void SetHardStop(bool hardStop);
+        void SetHardStop(bool hardStop);
 
-        public bool IsHardStop();
+        bool IsHardStop();
 
-        public string GetMetadata();
+        string GetMetadata();
 
         #endregion
 

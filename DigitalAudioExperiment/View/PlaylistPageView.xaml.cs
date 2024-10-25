@@ -120,6 +120,10 @@ namespace DigitalAudioExperiment.View
         }
 
         public void CloseExit()
-            => base.Close();
+        {
+            DataContextChanged -= OnDataContextChanged;
+
+            base.Close();
+        }
     }
 }

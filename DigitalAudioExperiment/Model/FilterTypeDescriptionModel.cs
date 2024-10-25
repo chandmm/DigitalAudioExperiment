@@ -1,6 +1,10 @@
 ﻿/*
     Digital Audio Experiement: Plays mp3 files and may be others in the future.
-    Copyright (C) 2024  Michael Chand.
+    Copyright (C) 2024  Michael Chand
+
+    This class is a data stream intercepter so that samples being played
+    can be used for calculating db values. This class returns the calculated RMS
+    component part.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,13 +19,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-namespace DigitalAudioExperiment.Filters
+using DigitalAudioExperiment.Filters;
+
+namespace DigitalAudioExperiment.Model
 {
-    public interface IFilter
+    public class FilterTypeDescriptionModel
     {
-        float Transform(float sample, int channel);
-        void UpdateFilterSettings(float lowepassCutoffFrequency,  float highepassCutoffFrequency, int filterOrder);
-        FilterType GetFilterType();
-        void Dispose();
+        public FilterType FilterTypeValue { get; set; }
+        public string Description { get; set; }
     }
 }

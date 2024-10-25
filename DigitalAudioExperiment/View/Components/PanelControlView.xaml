@@ -45,31 +45,44 @@
                     Grid.Column="9" 
                     IsMono="{Binding Path=DataContext.IsMono, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                     Margin="5"/>
-                <controls:VUControl 
-                    Mark1="-20"
-                    Mark2="-10"
-                    Mark3="0"
-                    Mark4="+3"
-                    Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Value="{Binding Path=DataContext.LeftdB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Grid.Row="6" 
-                    Grid.RowSpan="4" 
-                    Margin="5"/>
-                <controls:VUControl
-                    Mark1="-20"
-                    Mark2="-10"
-                    Mark3="0"
-                    Mark4="+3"
-                    Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Value="{Binding Path=DataContext.RightdB, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Grid.Row="6" 
-                    Grid.RowSpan="4" 
-                    Grid.Column="1" 
-                    Margin="5"/>
+                <Grid Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="3">
+                    <StackPanel Orientation="Horizontal">
+                        <controls:VUControl
+                            Mark1="-20"
+                            Mark2="-10"
+                            Mark3="0"
+                            Mark4="+3"
+                            Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            Value="{Binding Path=DataContext.LeftdB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                        />
+                        <controls:VUControl
+                            Mark1="-20"
+                            Mark2="-10"
+                            Mark3="0"
+                            Mark4="+3"
+                            Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            Value="{Binding Path=DataContext.RightdB, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            HorizontalAlignment="Left"
+                            Margin="2"
+                        />
+                        <Grid>
+                            <Button Margin="2" BorderThickness="0"
+                                    Background="Transparent"
+                                    HorizontalContentAlignment="Left"
+                                    Command="{Binding OpenVisualisationFilterSettingsCommand}">
+                                <Button.Content>
+                                    <Viewbox Stretch="Fill" Child="{StaticResource FilterIconViewbox}"/>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
                 <TextBox 
                     x:Name="playbackInfo"
                     IsReadOnly="True" 
@@ -121,8 +134,9 @@
                     DurationSeconds="{Binding Path=DataContext.DurationSeconds, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     Grid.Row="6"
                     Grid.RowSpan="4" 
-                    Grid.Column="2" 
-                    Grid.ColumnSpan="8"/>
+                    Grid.Column="3" 
+                    Grid.ColumnSpan="7"
+                    Margin="0,0,5,0"/>
             </Grid>
         </Border>
     </Grid>
