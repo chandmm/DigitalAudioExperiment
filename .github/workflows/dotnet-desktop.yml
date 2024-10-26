@@ -28,7 +28,7 @@ jobs:
     - name: Install Visual Studio Installer Projects Extension
       run: |
         # Download the extension VSIX file
-        Invoke-WebRequest -Uri "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/MicrosoftVisualStudio/vsextensions/Microsoft.VisualStudio2022InstallerProjects/2.0.226/vspackage" -OutFile "Microsoft.VisualStudio.InstallerProjects.vsix" -Headers @{ "Accept" = "application/octet-stream" }
+        Invoke-WebRequest -Uri "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/Microsoft.VisualStudio.InstallerProjects/2.0.226/vspackage" -OutFile "Microsoft.VisualStudio.InstallerProjects.vsix" -Headers @{ "Accept" = "application/octet-stream" }
         # Find the path to Visual Studio using vswhere
         $vsPath = &"C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         Write-Host "Visual Studio Path: $vsPath"
