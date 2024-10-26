@@ -58,8 +58,12 @@ namespace DigitalAudioExperiment.Filters
             throw new NotImplementedException();
         }
 
-        protected override void CreateFilter(WaveFormat waveFormat, float lowPassCutoff, float highPassCutoff, int filterOrder)
+        protected override void CreateFilter(WaveFormat waveFormat, float lowpassCutoff, float highpassCutoff, int filterOrder)
         {
+            // Set the member variables
+            _lowPassCutoffFrequency = lowpassCutoff; 
+            _highPassCutoffFrequency = highpassCutoff;
+
             // Initialize cascaded high-pass filters for each channel
             int stages = filterOrder / 2;
             _highPassFilters = new BiQuadFilter[_channels][];
@@ -69,7 +73,7 @@ namespace DigitalAudioExperiment.Filters
                 for (int stage = 0; stage < stages; stage++)
                 {
                     // Initialize each stage of the high-pass filter
-                    _highPassFilters[ch][stage] = BiQuadFilter.HighPassFilter(waveFormat.SampleRate, _lowPassCutoffFrequency, 1.0f);
+                    _highPassFilters[ch][stage] = BiQuadFilter.HighPassFilter(waveFormat.SampleRate, _highPassCutoffFrequency, 1.0f);
                 }
             }
 
@@ -81,13 +85,20 @@ namespace DigitalAudioExperiment.Filters
                 for (int stage = 0; stage < stages; stage++)
                 {
                     // Initialize each stage of the low-pass filter
-                    _lowPassFilters[ch][stage] = BiQuadFilter.LowPassFilter(waveFormat.SampleRate, _highPassCutoffFrequency, 1.0f);
+                    _lowPassFilters[ch][stage] = BiQuadFilter.LowPassFilter(waveFormat.SampleRate, _lowPassCutoffFrequency, 1.0f);
                 }
             }
         }
 
+
         public override float Transform(float sample, int channel)
         {
+            if (_highPassFilters[channel] == null
+                || _lowPassFilters[channel] == null)
+            {
+                return sample;
+            }
+
             float filteredSample = sample;
 
             foreach (var filter in _highPassFilters[channel])

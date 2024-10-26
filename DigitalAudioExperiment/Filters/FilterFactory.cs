@@ -29,7 +29,7 @@ namespace DigitalAudioExperiment.Filters
 
     public static class FilterFactory
     {
-        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterORder)
+        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterOrder)
         {
             switch (filterType)
             {
@@ -40,7 +40,7 @@ namespace DigitalAudioExperiment.Filters
                 case FilterType.Bandpass:
                     return new FilterBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
                 case FilterType.ButterworthBandpass:
-                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
+                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency, filterOrder);
             }
 
             throw new NotImplementedException();

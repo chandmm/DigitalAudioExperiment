@@ -45,16 +45,13 @@ namespace DigitalAudioExperiment.Filters
             throw new NotImplementedException();
         }
 
-        protected override void CreateFilter(WaveFormat waveFormat, float lowPassCutoffFrequency, float highPassCutoffFrequency, int filterOrder)
+        protected override void CreateFilter(WaveFormat waveFormat, float lowerCutoffFrequency, float upperCutoffFrequency, int filterOrder)
         {
+            float centerFrequency = (lowerCutoffFrequency + upperCutoffFrequency) / 2.0f;
+            float q = centerFrequency / (upperCutoffFrequency - lowerCutoffFrequency);
+
             for (int channel = 0; channel < _channels; channel++)
             {
-                float centerFrequency = (lowPassCutoffFrequency + highPassCutoffFrequency) / 2.0f;
-                float bandwidth = highPassCutoffFrequency - lowPassCutoffFrequency;
-
-                // Calculate Q factor
-                float q = centerFrequency / bandwidth;
-
                 // Create band-pass filter with constant peak gain
                 _filters[channel] =  BiQuadFilter.BandPassFilterConstantPeakGain(waveFormat.SampleRate, centerFrequency, q);
             }
