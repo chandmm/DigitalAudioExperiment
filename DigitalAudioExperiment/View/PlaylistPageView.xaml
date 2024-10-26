@@ -94,7 +94,7 @@
                         FontWeight="Bold"
                         Command="{Binding RemoveCommand}"/>
                     <Button
-                        ToolTip="Clear lsit of all items."
+                        ToolTip="Clear list of all items."
                         Style="{StaticResource PlaylistButtonStyle}"
                         Grid.Column="4"
                         Visibility="{Binding IsHasList, Converter={StaticResource BoolToVisibilityConvertor}}" 

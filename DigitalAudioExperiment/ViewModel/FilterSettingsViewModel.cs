@@ -117,15 +117,17 @@ namespace DigitalAudioExperiment.ViewModel
         #region Commands
 
         public RelayCommand ExitCommand { get; set; }
+        public RelayCommand DefaultCommand { get; set; }
 
         #endregion
 
         #region Initialisation
-        
+
         public FilterSettingsViewModel()
         {
             Initialisation();
-            ExitCommand = new RelayCommand(ExitFilterSettings, () => true);    
+            ExitCommand = new RelayCommand(ExitFilterSettings, () => true);
+            DefaultCommand = new RelayCommand(ResetToDefaultSettings, () => true);
         }
 
         private void Initialisation()
@@ -148,6 +150,31 @@ namespace DigitalAudioExperiment.ViewModel
         #endregion
 
         #region Application Logic
+
+        private void ResetToDefaultSettings()
+        {
+            switch(FilterTypeSet.FilterTypeValue)
+            {
+                case FilterType.Lowpass:
+                    CutoffFrequency = 1000;
+                    Bandwidth = 0;
+                    break;
+                case FilterType.Highpass:
+                    CutoffFrequency = 20;
+                    Bandwidth = 0;
+                    break;
+                case FilterType.Bandpass:
+                    CutoffFrequency = 500;
+                    Bandwidth = 600;
+                    FilterOrder = 2;
+                    break;
+                case FilterType.ButterworthBandpass:
+                    CutoffFrequency = 250;
+                    Bandwidth = 100;
+                    FilterOrder = 2;
+                    break;
+            }
+        }
 
         private void ExitFilterSettings()
         {

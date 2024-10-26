@@ -88,9 +88,6 @@ namespace DigitalAudioExperiment.Logic
         {
             int samplesRead = _source.Read(buffer, offset, sampleCount);
 
-            //Task.Run(() => CalculateRms(samplesRead, buffer, offset))
-            //    .ConfigureAwait(false);
-
             CalculateRms(samplesRead, buffer, offset);
             FilterOutput(samplesRead, buffer, offset);
 
