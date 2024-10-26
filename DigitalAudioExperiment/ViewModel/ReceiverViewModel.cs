@@ -408,7 +408,8 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             if (_player != null
-                && !_player.IsStopped())
+                && !_player.IsStopped()
+                && _player.IsDisposed())
             {
                 _player.Stop();
                 _player.Dispose();

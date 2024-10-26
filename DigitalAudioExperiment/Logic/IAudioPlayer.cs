@@ -78,6 +78,8 @@ namespace DigitalAudioExperiment.Logic
 
         string GetMetadata();
 
+        bool IsDisposed();
+
         #endregion
 
         #region Cleanup and Dispose

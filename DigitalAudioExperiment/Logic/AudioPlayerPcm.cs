@@ -51,6 +51,7 @@ namespace DigitalAudioExperiment.Logic
                 MessageBox.Show(exception.Message);
 
                 _isPlaying = false;
+                Dispose();
             }
         }
 

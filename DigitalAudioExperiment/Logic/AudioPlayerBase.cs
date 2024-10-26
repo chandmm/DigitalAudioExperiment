@@ -360,6 +360,9 @@ namespace DigitalAudioExperiment.Logic
 
         public abstract string GetMetadata();
 
+        public bool IsDisposed()
+            => _isDisposed;
+
         #endregion
 
         #region Cleanup and Dispose
