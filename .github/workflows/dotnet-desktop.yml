@@ -27,13 +27,13 @@ jobs:
 
     - name: Install Visual Studio Installer Projects Extension
       run: |
-        # Download the extension VSIX file
-        Invoke-WebRequest -Uri "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/MicrosoftVisualStudioClient/vsextensions/MicrosoftVisualStudioInstallerProjects/2022/2.0.96/vspackage" -OutFile "Microsoft.VisualStudio.InstallerProjects.vsix" -Headers @{ "Accept" = "application/octet-stream" }
+        # Download the extension VSIX file for version 2.0.1
+        Invoke-WebRequest -Uri "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudioInstallerProjects/2.0.1/vspackage" -OutFile "Microsoft.VisualStudio.InstallerProjects.vsix" -Headers @{ "Accept" = "application/octet-stream" }
         # Find the path to Visual Studio using vswhere
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        $vsPath = &"C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         Write-Host "Visual Studio Path: $vsPath"
         # Install the extension
-        Start-Process -FilePath "$vsPath\Common7\IDE\VSIXInstaller.exe" -ArgumentList '/q', '/a', 'Microsoft.VisualStudio.InstallerProjects.vsix' -Wait
+        Start-Process -FilePath "$vsPath\Common7\IDE\VSIXInstaller.exe" -ArgumentList '/quiet', '/admin', 'Microsoft.VisualStudio.InstallerProjects.vsix' -Wait
 
     - name: Build the .NET 8 Application
       run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
@@ -41,7 +41,7 @@ jobs:
     - name: Build the Installer Project
       run: |
         # Find the path to devenv.com
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        $vsPath = &"C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         Write-Host "Visual Studio Path: $vsPath"
         &"$vsPath\Common7\IDE\devenv.com" ${{ env.Solution_Name }} /Build "${{ env.Configuration }}|Any CPU"
 
