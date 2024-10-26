@@ -1,4 +1,4 @@
-name: Build and Package
+name: .NET Core Desktop
 
 on:
   push:
@@ -10,39 +10,33 @@ jobs:
 
   build:
 
-    runs-on: windows-2022  # Use Windows Server 2022 runner
+    runs-on: windows-latest
 
     env:
       Solution_Name: DigitalAudioExperiment.sln
       Configuration: Release
 
     steps:
-    - name: Checkout Source Code
+    - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Setup .NET SDK
+    - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Use .NET 8 SDK
+        dotnet-version: 8.0.x
 
-    - name: Install Visual Studio Installer Projects Extension
+    - name: Build the application
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }} --output BuildOutput
+
+    - name: List build outputs
+      shell: pwsh
       run: |
-        # Find the path to Visual Studio using vswhere
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-        # Install the Visual Studio Installer Projects extension
-        Start-Process -FilePath "$vsPath\Common7\IDE\VSIXInstaller.exe" -ArgumentList '/q', '/a', '"https://aka.ms/vs/17/release/vsipx"' -Wait
+        Get-ChildItem -Path "BuildOutput/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
 
-    - name: Build the .NET 8 Application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
-
-    - name: Build the Installer Project
-      run: |
-        # Find the path to devenv.com
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-        &"$vsPath\Common7\IDE\devenv.com" ${{ env.Solution_Name }} /Build "${{ env.Configuration }}|Any CPU"
-
-    - name: Upload MSI Installer Artifact
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MSI Installer
-        path: 'DigitalAudioExperimentInstaller\${{ env.Configuration }}\DigitalAudioExperimentInstaller.msi'
+        name: DigitalAudioExperiment
+        path: 'BuildOutput/**/*'
