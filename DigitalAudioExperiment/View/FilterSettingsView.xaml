@@ -14,7 +14,8 @@
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="CanResize"
-        ShowInTaskbar="True">
+        ShowInTaskbar="True"
+        x:Name="filterSettingsDialog">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -46,6 +47,7 @@
                         <ColumnDefinition Width="175"/>
                         <ColumnDefinition Width="200"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="175"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Filter Type" 
                            Style="{StaticResource DialogLabelStyle}"
@@ -72,6 +74,13 @@
                             </Style>
                         </ToggleButton.Resources>
                     </ToggleButton>
+                    <Button Content="Default" 
+                        Grid.Column="3"
+                        Style="{StaticResource PlaylistButtonStyle}" 
+                        FontSize="28"
+                        FontWeight="Bold"
+                        Background="{StaticResource ComponentBackgroundColour}"
+                        Command="{Binding DefaultCommand}"/>
                 </Grid>
                 <Grid Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
@@ -103,6 +112,7 @@
                     behaviours:SliderBehaviour.UpdateValueOnDragCompleted="True"
                     Grid.Column="1"  
                     VerticalAlignment="Center" 
+                    MouseWheel="SliderSetting_MouseWheel"
                     Margin="5"/>
                 <Label
                     Grid.Row="1" Grid.Column="2"
@@ -127,6 +137,7 @@
                     Grid.Row="2" 
                     Grid.Column="1" 
                     VerticalAlignment="Center"
+                    MouseWheel="SliderSetting_MouseWheel"
                     Margin="5"/>
                 <Label
                     Grid.Row="2" Grid.Column="2"
@@ -152,6 +163,7 @@
                     Grid.Row="3" 
                     Grid.Column="1" 
                     VerticalAlignment="Center"
+                    MouseWheel="SliderSetting_MouseWheel"
                     Margin="5"/>
                 <Label
                     Grid.Row="3" Grid.Column="2"

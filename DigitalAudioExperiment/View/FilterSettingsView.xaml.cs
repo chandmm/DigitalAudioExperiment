@@ -1,5 +1,6 @@
 ﻿using DigitalAudioExperiment.ViewModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace DigitalAudioExperiment.View
@@ -55,6 +56,48 @@ namespace DigitalAudioExperiment.View
         public void Dispose()
         {
             Dispose(true);
+        }
+
+        private void SliderSetting_MouseWheel(object sender, MouseWheelEventArgs args)
+        {
+            if (DataContext is FilterSettingsViewModel viewModel)
+            {
+                if (sender is Slider slider)
+                {
+                    switch (slider.Name)
+                    {
+                        case "cutoffFrequencySetting":
+                            viewModel.CutoffFrequency = UpdateSettingsFromSliderMousewheel(args.Delta, (int)cutoffFrequencySetting.Maximum, (int)cutoffFrequencySetting.Minimum, viewModel.CutoffFrequency);
+                            break;
+                        case "bandwidthSetting":
+                            viewModel.Bandwidth = UpdateSettingsFromSliderMousewheel(args.Delta, (int)bandwidthSetting.Maximum, (int)bandwidthSetting.Minimum, viewModel.Bandwidth);
+                            break;
+                        case "filterOrderSetting":
+                            viewModel.FilterOrder = UpdateSettingsFromSliderMousewheel(args.Delta, (int)filterOrderSetting.Maximum, (int)filterOrderSetting.Minimum, viewModel.FilterOrder, 2);
+                            break;
+                        default:
+                            args.Handled = true;
+                            return;
+                    }
+                }
+
+                args.Handled = true;
+            }
+        }
+
+        private int UpdateSettingsFromSliderMousewheel(int delta, int max, int min, int value, int multiplier = 1)
+        {
+            if (delta > 0)
+            {
+                value = (value + 1) > max ? max : value + multiplier;
+            }
+
+            if (delta < 0)
+            {
+                value = (value - 1) < min ? min : value - multiplier;
+            }
+
+            return value;
         }
     }
 }

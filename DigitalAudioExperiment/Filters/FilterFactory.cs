@@ -40,7 +40,7 @@ namespace DigitalAudioExperiment.Filters
                 case FilterType.Bandpass:
                     return new FilterBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
                 case FilterType.ButterworthBandpass:
-                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
+                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency, filterORder);
             }
 
             throw new NotImplementedException();
