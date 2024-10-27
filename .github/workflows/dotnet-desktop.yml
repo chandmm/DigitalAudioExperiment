@@ -27,8 +27,10 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Install Wix Toolset
-      run: choco install wixtoolset --version=3.11.2 --allow-downgrade
+    - name: Install WiX Toolset v3.11
+      run: |
+        Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe 
+        .\wix311.exe /install /quiet /norestart
 
     - name: Build the application
       run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
