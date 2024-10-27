@@ -27,13 +27,24 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Download NuGet.exe 5.8.x
+      run: |
+        Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/v5.8.0/nuget.exe -OutFile nuget.exe
+
+    - name: Restore NuGet packages with nuget.exe
+      run: |
+        .\nuget.exe restore ${{ env.Solution_Name }} -Verbosity detailed
+
     - name: Install WiX Toolset v3.11
       run: |
         Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe 
         .\wix311.exe /install /quiet /norestart
 
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
+
     - name: Build the application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
+      run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
 
     - name: List build outputs
       shell: pwsh
