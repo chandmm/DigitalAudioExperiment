@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>8dea0016-bbe1-4e05-ae96-5d4b0b6db4b0</ProjectGuid>
+    <ProjectGuid>613012e3-3333-44df-aa35-77a24778cd61</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>DigitalAudioExperimentInstaller</OutputName>
     <OutputType>Package</OutputType>
@@ -32,16 +32,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DaeIconResized.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LICENSE.rtf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
     </WixExtension>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DaeIconResized.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LICENSE.rtf" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
