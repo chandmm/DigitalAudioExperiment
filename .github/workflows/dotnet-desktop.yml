@@ -30,9 +30,9 @@ jobs:
 
     - name: Install Wix Toolset
       run: choco install wixtoolset -y
-
+      
     - name: Build the application
-      run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }} --output BuildOutput
 
     - name: List build outputs
       shell: pwsh
