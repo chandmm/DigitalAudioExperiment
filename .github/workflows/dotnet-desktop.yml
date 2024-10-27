@@ -1,4 +1,6 @@
-name: Build and Package
+name: .NET Core Desktop
+
+# Scripted with the assistance of ChatGPT.
 
 on:
   push:
@@ -10,39 +12,61 @@ jobs:
 
   build:
 
-    runs-on: windows-2022  # Use Windows Server 2022 runner
+    runs-on: windows-latest
 
     env:
       Solution_Name: DigitalAudioExperiment.sln
       Configuration: Release
 
     steps:
-    - name: Checkout Source Code
+    - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Setup .NET SDK
+    - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Use .NET 8 SDK
+        dotnet-version: 8.0.x
 
-    - name: Install Visual Studio Installer Projects Extension
+    - name: Download NuGet.exe 5.8.x
       run: |
-        # Find the path to Visual Studio using vswhere
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-        # Install the Visual Studio Installer Projects extension
-        Start-Process -FilePath "$vsPath\Common7\IDE\VSIXInstaller.exe" -ArgumentList '/q', '/a', '"https://aka.ms/vs/17/release/vsipx"' -Wait
-
-    - name: Build the .NET 8 Application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
-
-    - name: Build the Installer Project
+        Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/v5.8.0/nuget.exe -OutFile nuget.exe
+    - name: Restore NuGet packages with nuget.exe
       run: |
-        # Find the path to devenv.com
-        $vsPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-        &"$vsPath\Common7\IDE\devenv.com" ${{ env.Solution_Name }} /Build "${{ env.Configuration }}|Any CPU"
+        .\nuget.exe restore ${{ env.Solution_Name }} -Verbosity detailed
+        
+    - name: Install Wix Toolset
+      run: choco install wixtoolset -y
+        
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
 
-    - name: Upload MSI Installer Artifact
+    - name: Build the application
+      run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
+
+    - name: List build outputs
+      shell: pwsh
+      run: |
+        Get-ChildItem -Path "**/bin/${{ env.Configuration }}/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
+        
+    - name: Find MSI file
+      id: find_msi
+      shell: pwsh
+      run: |
+        $msi = Get-ChildItem -Path "**/bin/${{ env.Configuration }}/**/*.msi" -Recurse | Select-Object -First 1
+        if ($msi -ne $null) {
+          Write-Host "MSI file found: $($msi.FullName)"
+          echo "msi_path=$($msi.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "msi_directory=$($msi.DirectoryName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        } else {
+          Write-Error "MSI file not found"
+          exit 1
+        }
+        
+    - name: Upload MSI artifact
       uses: actions/upload-artifact@v3
       with:
-        name: MSI Installer
-        path: 'DigitalAudioExperimentInstaller\${{ env.Configuration }}\DigitalAudioExperimentInstaller.msi'
+        name: DigitalAudioExperiment
+        path: ${{ steps.find_msi.outputs.msi_path }}
+        root-directory: ${{ steps.find_msi.outputs.msi_directory }}
