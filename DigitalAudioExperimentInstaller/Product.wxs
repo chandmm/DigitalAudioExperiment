@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="DigitalAudioExperiment" Language="1033" Version="1.0.0.0" Manufacturer="DigitalCodence" UpgradeCode="1ad541cc-b8b4-4fba-932b-f453dfb9e6c4">
+	<Product Id="{52DFFACD-C2EA-483A-B8B2-C1022DED189A}" Name="DigitalAudioExperiment" Language="1033" Version="1.0.0.0" Manufacturer="DigitalCodence" UpgradeCode="1ad541cc-b8b4-4fba-932b-f453dfb9e6c4">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Icon Id="DaeIconResized.ico" SourceFile="$(var.ProjectDir)DaeIconResized.ico" />
+    <Property Id="ARPPRODUCTICON" Value="DaeIconResized.ico" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\license.rtf" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes"/>
@@ -11,7 +14,7 @@
 			<ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="ProductResourceComponents"/>
       <ComponentRef Id="ApplicationShortcut"/>
-      <ComponentRef Id="DesktopFolderComponent" />
+      <ComponentRef Id="ApplicationShortcutDesktop" />
 		</Feature>
 	</Product>
   
@@ -26,7 +29,7 @@
           </Directory>
 
           <!-- Desktop Shortcut Directory -->
-          <Directory Id="DesktopFolder" />
+          <Directory Id="DesktopFolder" Name="Desktop" />
 
           <!-- Resources Subdirectory -->
           <Directory Id="ResourcesFolder" Name="Resources" />
@@ -34,6 +37,23 @@
 			</Directory>
 		</Directory>
 	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="{8B3346B0-3C49-4521-82E2-6032CB2B4423}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="DigitalAudioExperiment" Description="DigitalAudioExperiment" Target="[INSTALLFOLDER]DigitalAudioExperiment.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\DigitalAudioExperiment" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="ApplicationShortcutDesktop" Guid="{F691C2DB-821B-433B-B519-C3CC6A86891C}">
+        <Shortcut Id="ApplicationDesktopShortcut" Name="DigitalAudioExperiment" Description="DigitalAudioExperiment" Target="[INSTALLFOLDER]DigitalAudioExperiment.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveDesktopFolder" Directory="DesktopFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\DigitalAudioExperiment" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
   
   <Fragment>
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
@@ -65,6 +85,14 @@
         <File
           Id="ScalefactorBandTablesJsonFile"
           Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\ScalefactorBandTables.json"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- DaeIconResized.ico Component -->
+      <Component Id="DaeIconResizedIcon" Guid="{CB9EFC2A-BAAA-4D62-A69C-D2689402000C}">
+        <File
+          Id="DaeIconResizedIconFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\DaeIconResized.ico"
           KeyPath="yes" />
       </Component>
     </ComponentGroup>
@@ -196,36 +224,4 @@
       </Component>
 		</ComponentGroup>
 	</Fragment>
-
-  <Fragment>
-    <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut" Guid="{B2F82627-354C-4F2B-9132-0873CA3D0B09}">
-        <Shortcut Id="ApplicationStartMenuShortcut"
-                  Name="DigitalAudioExperiment"
-                  Description="DigitalAudioExperiment"
-                  Target="[INSTALLFOLDER]DigitalAudioExperiment.exe"
-                  WorkingDirectory="INSTALLFOLDER"/>
-        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\CompanyName\ProductName" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-      </Component>
-    </DirectoryRef>
-    <DirectoryRef Id="DesktopFolder">
-      <!-- Component for DesktopFolder -->
-      <Component Id="DesktopFolderComponent" Guid="{678ACAC1-A162-4334-A593-40B28692A2CD}">
-        <!-- Remove the directory during uninstallation -->
-        <RemoveFolder Id="RemoveDesktopFolder" On="uninstall" />
-
-        <!-- KeyPath to ensure the component is tracked -->
-        <RegistryValue
-          Root="HKCU"
-          Key="Software\CompanyName\ProductName"
-          Name="installed"
-          Type="integer"
-          Value="1"
-          KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
-  </Fragment>
-  
-  
 </Wix>
