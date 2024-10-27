@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="{52DFFACD-C2EA-483A-B8B2-C1022DED189A}" Name="DigitalAudioExperiment" Language="1033" Version="1.0.0.0" Manufacturer="DigitalCodence" UpgradeCode="1ad541cc-b8b4-4fba-932b-f453dfb9e6c4">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Icon Id="DaeIconResized.ico" SourceFile="$(var.ProjectDir)DaeIconResized.ico" />
+    <Property Id="ARPPRODUCTICON" Value="DaeIconResized.ico" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\license.rtf" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+
+		<Feature Id="ProductFeature" Title="DigitalAudioExperiment" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ProductResourceComponents"/>
+      <ComponentRef Id="ApplicationShortcut"/>
+      <ComponentRef Id="ApplicationShortcutDesktop" />
+		</Feature>
+	</Product>
+  
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="DigitalAudioExperiment">
+
+          <!-- Start Menu Shortcut Directory -->
+          <Directory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="DigitalAudioExperiment"/>
+          </Directory>
+
+          <!-- Desktop Shortcut Directory -->
+          <Directory Id="DesktopFolder" Name="Desktop" />
+
+          <!-- Resources Subdirectory -->
+          <Directory Id="ResourcesFolder" Name="Resources" />
+        </Directory>
+			</Directory>
+		</Directory>
+	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="{8B3346B0-3C49-4521-82E2-6032CB2B4423}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="DigitalAudioExperiment" Description="DigitalAudioExperiment" Target="[INSTALLFOLDER]DigitalAudioExperiment.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\DigitalAudioExperiment" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="ApplicationShortcutDesktop" Guid="{F691C2DB-821B-433B-B519-C3CC6A86891C}">
+        <Shortcut Id="ApplicationDesktopShortcut" Name="DigitalAudioExperiment" Description="DigitalAudioExperiment" Target="[INSTALLFOLDER]DigitalAudioExperiment.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveDesktopFolder" Directory="DesktopFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\DigitalAudioExperiment" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  
+  <Fragment>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <!-- UI Configuration -->
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <!-- No need for custom <Publish> elements unless customizing UI flow -->
+    </UI>
+    
+    <ComponentGroup Id="ProductResourceComponents" Directory="ResourcesFolder">
+      <!-- AudioPlayerFacePlateRounded.png Component -->
+      <Component Id="AudioPlayerFacePlateRoundedPng" Guid="{CC164319-5F33-429B-9E72-95235FA5328B}">
+        <File
+          Id="AudioPlayerFacePlateRoundedPngFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\AudioPlayerFacePlateRounded.png"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- HuffmanTables.json Component -->
+      <Component Id="HuffmanTablesJson" Guid="{3093B3A8-5843-495A-94D7-456061D808E4}">
+        <File
+          Id="HuffmanTablesJsonFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\HuffmanTables.json"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- ScalefactorBandTables.json Component -->
+      <Component Id="ScalefactorBandTablesJson" Guid="{DF5E86AB-A7F7-4F68-896A-03BC73AF2ABE}">
+        <File
+          Id="ScalefactorBandTablesJsonFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\ScalefactorBandTables.json"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- DaeIconResized.ico Component -->
+      <Component Id="DaeIconResizedIcon" Guid="{CB9EFC2A-BAAA-4D62-A69C-D2689402000C}">
+        <File
+          Id="DaeIconResizedIconFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\DaeIconResized.ico"
+          KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			 <Component Id="ProductComponent">
+         <File Source="$(var.DigitalAudioExperiment.TargetPath)" />
+			 </Component>
+      <!-- Main Executable Component -->
+      <Component Id="MainExecutable" Guid="{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}">
+        <File
+          Id="DigitalAudioExperimentExe"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\DigitalAudioExperiment.exe"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- SimpleDecoder.dll Component -->
+      <Component Id="SimpleDecoderDLL" Guid="{B2C3D4E5-F6A7-8901-2345-6789ABCDEF01}">
+        <File
+          Id="SimpleDecoderDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\SimpleDecoder.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- DigitalAudioExperiment.deps.json Component -->
+      <Component Id="DigitalAudioExperimentDepsJson" Guid="{C3D4E5F6-A7B8-9012-3456-789ABCDEF012}" >
+        <File
+          Id="DigitalAudioExperimentDepsJsonFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\DigitalAudioExperiment.deps.json"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- DigitalAudioExperiment.pdb Component -->
+      <Component Id="DigitalAudioExperimentPdb" Guid="{E5F6A7B8-C9D0-1234-5678-9ABCDEF01234}">
+        <File
+          Id="DigitalAudioExperimentPdbFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\DigitalAudioExperiment.pdb"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- DigitalAudioExperiment.runtimeconfig.json Component -->
+      <Component Id="DigitalAudioExperimentRuntimeConfigJson" Guid="{F6A7B8C9-D0E1-2345-6789-ABCDEF012345}">
+        <File
+          Id="DigitalAudioExperimentRuntimeConfigJsonFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\DigitalAudioExperiment.runtimeconfig.json"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.Asio.dll Component -->
+      <Component Id="NAudioAsioDll" Guid="{12345678-90AB-CDEF-1234-567890ABCDEF}">
+        <File
+          Id="NAudioAsioDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.Asio.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.Core.dll Component -->
+      <Component Id="NAudioCoreDll" Guid="{23456789-0ABC-DEF1-2345-67890ABCDEF1}">
+        <File
+          Id="NAudioCoreDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.Core.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.dll Component -->
+      <Component Id="NAudioDll" Guid="{34567890-1BCD-EF12-3456-7890ABCDEF12}">
+        <File
+          Id="NAudioDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.Flac.dll Component -->
+      <Component Id="NAudioFlacDll" Guid="{45678901-2CDE-F123-4567-890ABCDEF123}">
+        <File
+          Id="NAudioFlacDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.Flac.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.Midi.dll Component -->
+      <Component Id="NAudioMidiDll" Guid="{56789012-3DEF-0123-5678-90ABCDEF1234}">
+        <File
+          Id="NAudioMidiDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.Midi.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.Wasapi.dll Component -->
+      <Component Id="NAudioWasapiDll" Guid="{67890123-4EF0-1234-6789-0ABCDEF12345}">
+        <File
+          Id="NAudioWasapiDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.Wasapi.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.WinForms.dll Component -->
+      <Component Id="NAudioWinFormsDll" Guid="{78901234-5F01-2345-7890-ABCDEF123456}">
+        <File
+          Id="NAudioWinFormsDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.WinForms.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- NAudio.WinMM.dll Component -->
+      <Component Id="NAudioWinMMDll" Guid="{CD2E2DEE-E834-4467-A399-C24BA52404FC}">
+        <File
+          Id="NAudioWinMMDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\NAudio.WinMM.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- TagLibSharp.dll Component -->
+      <Component Id="TagLibSharpDll" Guid="{676960D0-F83A-4A81-A4F9-8859630F267A}">
+        <File
+          Id="TagLibSharpDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\TagLibSharp.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <!-- WpfAudioControlLibrary.dll Component -->
+      <Component Id="WpfAudioControlLibraryDll" Guid="{34D8F52D-6FB9-4858-967D-DC133A138F8A}">
+        <File
+          Id="WpfAudioControlLibraryDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\WpfAudioControlLibrary.dll"
+          KeyPath="yes" />
+      </Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>

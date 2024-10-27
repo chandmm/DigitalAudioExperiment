@@ -6,14 +6,19 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\DaeIconResized.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\AudioPlayerFacePlateRounded.png" />
+    <None Remove="Resources\DaeIconResized.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\AudioPlayerFacePlateRounded.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\DaeIconResized.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

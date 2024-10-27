@@ -5,20 +5,32 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DigitalAudioExperiment", "DigitalAudioExperiment\DigitalAudioExperiment.csproj", "{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DigitalAudioExperimentInstaller", "DigitalAudioExperimentInstaller\DigitalAudioExperimentInstaller.vdproj", "{029DB288-DADC-481E-B5D2-02DC9484A70B}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DigitalAudioExperimentInstaller", "DigitalAudioExperimentInstaller\DigitalAudioExperimentInstaller.wixproj", "{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Debug|x86.Build.0 = Debug|Any CPU
 		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{029DB288-DADC-481E-B5D2-02DC9484A70B}.Debug|Any CPU.ActiveCfg = Debug
-		{029DB288-DADC-481E-B5D2-02DC9484A70B}.Release|Any CPU.ActiveCfg = Release
+		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7D6C1EED-819A-45B5-802E-1A8B2461FF2C}.Release|x86.Build.0 = Release|Any CPU
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Debug|Any CPU.Build.0 = Debug|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Debug|x86.ActiveCfg = Debug|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Debug|x86.Build.0 = Debug|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Release|Any CPU.ActiveCfg = Release|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Release|Any CPU.Build.0 = Release|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Release|x86.ActiveCfg = Release|x86
+		{8DEA0016-BBE1-4E05-AE96-5D4B0B6DB4B0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
