@@ -27,15 +27,19 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Install Wix Toolset
+      run: choco install wix -y
+
     - name: Build the application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }} --output BuildOutput
+      run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
 
     - name: List build outputs
       shell: pwsh
       run: |
-        Get-ChildItem -Path "BuildOutput/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
-    - name: Upload build artifacts
+        Get-ChildItem -Path "**/bin/${{ env.Configuration }}/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
+
+    - name: Upload MSI artifact
       uses: actions/upload-artifact@v3
       with:
-        name: DigitalAudioExperiment
-        path: 'BuildOutput/**/*'
+        name: MSIInstaller
+        path: '**/bin/${{ env.Configuration }}/**/*.msi'
