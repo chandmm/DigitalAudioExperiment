@@ -1,12 +1,12 @@
 name: .NET Core Desktop
 
-# Made with the assistance of ChatGPT
+# Built with the assistance of ChatGPT
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    # Add 'tags' if you want to trigger on tag creation
+    # tags: [ "*" ]
 
 jobs:
 
@@ -37,21 +37,14 @@ jobs:
       run: |
         .\nuget.exe restore ${{ env.Solution_Name }} -Verbosity detailed
 
-    - name: Install WiX Toolset v3.11
-      run: |
-        Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe 
-        .\wix311.exe /install /quiet /norestart
+    - name: Install Wix Toolset
+      run: choco install wixtoolset -y
 
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1
 
     - name: Build the application
       run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
-
-    - name: List build outputs
-      shell: pwsh
-      run: |
-        Get-ChildItem -Path "**/bin/${{ env.Configuration }}/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
 
     - name: Find MSI file
       id: find_msi
@@ -61,15 +54,29 @@ jobs:
         if ($msi -ne $null) {
           Write-Host "MSI file found: $($msi.FullName)"
           echo "msi_path=$($msi.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          echo "msi_directory=$($msi.DirectoryName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "msi_name=$($msi.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         } else {
           Write-Error "MSI file not found"
           exit 1
         }
 
-    - name: Upload MSI artifact
-      uses: actions/upload-artifact@v3
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: MSIInstaller
-        path: ${{ steps.find_msi.outputs.msi_path }}
-        root-directory: ${{ steps.find_msi.outputs.msi_directory }}
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+    - name: Upload MSI to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find_msi.outputs.msi_path }}
+        asset_name: ${{ steps.find_msi.outputs.msi_name }}
+        asset_content_type: application/octet-stream
