@@ -6,10 +6,12 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes"/>
 
+
 		<Feature Id="ProductFeature" Title="DigitalAudioExperiment" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="ProductResourceComponents"/>
       <ComponentRef Id="ApplicationShortcut"/>
+      <ComponentRef Id="DesktopFolderComponent" />
 		</Feature>
 	</Product>
   
@@ -24,6 +26,7 @@
           </Directory>
 
           <!-- Desktop Shortcut Directory -->
+          <Directory Id="DesktopFolder" />
 
           <!-- Resources Subdirectory -->
           <Directory Id="ResourcesFolder" Name="Resources" />
@@ -31,8 +34,15 @@
 			</Directory>
 		</Directory>
 	</Fragment>
-
+  
   <Fragment>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <!-- UI Configuration -->
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <!-- No need for custom <Publish> elements unless customizing UI flow -->
+    </UI>
+    
     <ComponentGroup Id="ProductResourceComponents" Directory="ResourcesFolder">
       <!-- AudioPlayerFacePlateRounded.png Component -->
       <Component Id="AudioPlayerFacePlateRoundedPng" Guid="{CC164319-5F33-429B-9E72-95235FA5328B}">
@@ -199,5 +209,23 @@
         <RegistryValue Root="HKCU" Key="Software\CompanyName\ProductName" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+      <!-- Component for DesktopFolder -->
+      <Component Id="DesktopFolderComponent" Guid="{678ACAC1-A162-4334-A593-40B28692A2CD}">
+        <!-- Remove the directory during uninstallation -->
+        <RemoveFolder Id="RemoveDesktopFolder" On="uninstall" />
+
+        <!-- KeyPath to ensure the component is tracked -->
+        <RegistryValue
+          Root="HKCU"
+          Key="Software\CompanyName\ProductName"
+          Name="installed"
+          Type="integer"
+          Value="1"
+          KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
   </Fragment>
+  
+  
 </Wix>
