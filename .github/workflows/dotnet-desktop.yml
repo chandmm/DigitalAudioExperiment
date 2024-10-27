@@ -27,14 +27,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Install Wix Toolset
-      run: choco install wixtoolset -y
-
-    - name: Set up MSBuild
-      uses: microsoft/setup-msbuild@v1
-
     - name: Build the application
-      run: msbuild ${{ env.Solution_Name }} /t:Rebuild /p:Configuration=${{ env.Configuration }}
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
 
     - name: List build outputs
       shell: pwsh
