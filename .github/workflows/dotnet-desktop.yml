@@ -1,4 +1,4 @@
-name: Build and Package
+name: .NET Core Desktop
 
 on:
   push:
@@ -10,95 +10,32 @@ jobs:
 
   build:
 
-    runs-on: windows-2022  # Use Windows Server 2022 runner
+    runs-on: windows-latest
 
     env:
       Solution_Name: DigitalAudioExperiment.sln
       Configuration: Release
 
     steps:
-    - name: Checkout Source Code
+    - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Setup .NET SDK
+    - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Use .NET 8 SDK
+        dotnet-version: 8.0.x
 
-    - name: Install Visual Studio Installer Projects Extension
-      run: |
-        # Define variables
-        $vsixPackage= "MicrosoftVisualStudioInstallerProjects"
-        $publisher= "VisualStudioClient"
-        $version= "2.0.1"  # Update this if a newer version is available
-        $vsixPackageUrl = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/$publisher/vsextensions/$vsixPackage/$version/vspackage"
-        $FilePath = "$vsixPackage.vsix"
+    - name: Build the application
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }} --output BuildOutput
 
-        Write-Host "Downloading VSIX from $vsixPackageUrl"
-        try {
-          Invoke-WebRequest -Uri $vsixPackageUrl -OutFile $FilePath -Headers @{ "Accept" = "application/octet-stream" }
-        } catch {
-          Write-Error "Failed to download the VSIX package from $vsixPackageUrl"
-          exit 1
-        }
-
-        # Verify the VSIX file was downloaded
-        if (!(Test-Path $FilePath)) {
-          Write-Error "VSIX file was not downloaded successfully."
-          exit 1
-        }
-
-        # Find the path to Visual Studio using vswhere
-        $vsPath = & "C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-        if (!$vsPath) {
-          Write-Error "Visual Studio installation not found."
-          exit 1
-        }
-        Write-Host "Visual Studio Path: $vsPath"
-
-        # Install the VSIX
-        Write-Host "Installing the Visual Studio Installer Projects extension."
-        & "$vsPath\Common7\IDE\VSIXInstaller.exe" /quiet /admin $FilePath
-
-        # Verify the installation
-        if ($LASTEXITCODE -ne 0) {
-          Write-Error "VSIX installation failed."
-          exit 1
-        }
-
-        Write-Host "Visual Studio Installer Projects extension installed successfully."
+    - name: List build outputs
       shell: pwsh
-
-    - name: Build the .NET 8 Application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
-
-    - name: Build the Installer Project
       run: |
-        # Find the path to devenv.com using vswhere
-        $vsPath = & "C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-        if (!$vsPath) {
-          Write-Error "Visual Studio installation not found."
-          exit 1
-        }
-        Write-Host "Visual Studio Path: $vsPath"
-
-        # Build the solution, including the Installer Project
-        & "$vsPath\Common7\IDE\devenv.com" ${{ env.Solution_Name }} /Build "${{ env.Configuration }}|Any CPU"
-
-        # Check if the build was successful
-        if ($LASTEXITCODE -ne 0) {
-          Write-Error "Build failed."
-          exit 1
-        }
-      shell: pwsh
-
-    - name: List Installer Output Directory
-      run: |
-        dir "DigitalAudioExperimentInstaller\bin\${{ env.Configuration }}"
-      shell: pwsh
-
-    - name: Upload MSI Installer Artifact
+        Get-ChildItem -Path "BuildOutput/**/*" -Recurse | ForEach-Object { Write-Host $_.FullName }
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MSI Installer
-        path: 'DigitalAudioExperimentInstaller\bin\${{ env.Configuration }}\DigitalAudioExperimentInstaller.msi'
+        name: DigitalAudioExperiment
+        path: 'BuildOutput/**/*'
