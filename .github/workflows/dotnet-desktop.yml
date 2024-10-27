@@ -28,7 +28,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Install Wix Toolset
-      run: choco install wix-toolset -y
+      run: choco install wixtoolset -y
 
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1
