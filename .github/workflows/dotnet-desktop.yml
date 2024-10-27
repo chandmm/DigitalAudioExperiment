@@ -28,7 +28,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Install Wix Toolset
-      run: choco install wixtoolset -y
+      run: choco install wixtoolset --version=3.11.x
 
     - name: Build the application
       run: dotnet build ${{ env.Solution_Name }} --configuration ${{ env.Configuration }}
