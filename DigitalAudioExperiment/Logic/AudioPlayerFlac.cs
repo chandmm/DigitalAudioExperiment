@@ -32,6 +32,7 @@ namespace DigitalAudioExperiment.Logic
         public AudioPlayerFlac(string fileName) 
             : base(fileName)
         {
+            DecoderType = "NAudio Flac.";
         }
         
         public override void Initialise()

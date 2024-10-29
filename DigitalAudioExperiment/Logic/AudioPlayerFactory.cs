@@ -23,6 +23,11 @@ namespace DigitalAudioExperiment.Logic
     {
         public static IAudioPlayer GetAudioPlayerInterface(string fileName)
         {
+            if (!File.Exists(fileName))
+            {
+                throw new FileNotFoundException();
+            }
+
             var extension = Path.GetExtension(fileName).ToLower();
             IAudioPlayer player = null;
 
@@ -41,14 +46,45 @@ namespace DigitalAudioExperiment.Logic
                 case ".wav":
                     player = new AudioPlayerPcm(fileName);
                     break;
+                default:
+                    player = new AudioPlayerFallback(fileName);
+                    break;
             }
 
-            if (player == null)
+            var retry = false;
+
+            try
             {
-                throw new ApplicationException($"No suitable player found for audio file extension {extension}");
+                player.Initialise();
+            }
+            catch
+            {
+                if (player != null)
+                {
+                    player = new AudioPlayerFallback(fileName);
+
+                    retry = true;
+                }
             }
 
-            player.Initialise();
+            if (retry
+                && player != null)
+            {
+                try
+                {
+                    player.Initialise(); // Try again as might be valid fallback player.
+                }
+                catch (Exception exception)
+                {
+                    // We cant play this file even in fallback mode.
+
+                    player?.Dispose();
+
+                    player = null;
+
+                    throw new ApplicationException($"No suitable player found for audio file extension {extension}", exception);
+                }
+            }
 
             return player;
         }

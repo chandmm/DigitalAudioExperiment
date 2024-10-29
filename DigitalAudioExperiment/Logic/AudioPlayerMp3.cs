@@ -36,6 +36,7 @@ namespace DigitalAudioExperiment.Logic
         public AudioPlayerMp3(string fileName)
             : base(fileName)
         {
+            DecoderType = "Simple Decoder by Michael Chand";
         }
 
         public override void Initialise()
@@ -94,7 +95,7 @@ namespace DigitalAudioExperiment.Logic
                 throw new ApplicationException("No frames present or invalid audio file format.");
             }
 
-            return _simpleDecoder.GetFrames().First().ToStringShort();
+            return string.Join("\r\n", _simpleDecoder.GetFrames().First().ToStringShort().Split("\r\n").Take(4));
         }
 
         public override bool GetIsMonoChannel()

@@ -50,8 +50,10 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 1152;
+        protected int _rmsSampleLength = 576;
         protected FilterSettingsViewModel _filterSettingsViewModel;
+
+        public string DecoderType { get; protected set; }
 
         #endregion
 
@@ -59,6 +61,7 @@ namespace DigitalAudioExperiment.Logic
 
         public AudioPlayerBase(string fileName)
         {
+            DecoderType = "No known decoder";
             if (string.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentNullException(nameof(fileName));

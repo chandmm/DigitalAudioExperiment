@@ -44,8 +44,8 @@
                 <controls:StereoIndicatorControl 
                     Grid.Column="9" 
                     IsMono="{Binding Path=DataContext.IsMono, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                    Margin="5"/>
-                <Grid Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="3">
+                    Margin="2"/>
+                <Grid Grid.RowSpan="6" Grid.ColumnSpan="5">
                     <StackPanel Orientation="Horizontal">
                         <controls:VUControl
                             Mark1="-20"
@@ -71,37 +71,39 @@
                             HorizontalAlignment="Left"
                             Margin="2"
                         />
-                        <Grid>
-                            <Button Margin="2" BorderThickness="0"
-                                    Background="Transparent"
-                                    HorizontalContentAlignment="Left"
-                                    Command="{Binding OpenVisualisationFilterSettingsCommand}">
-                                <Button.Content>
-                                    <Viewbox Stretch="Fill" Child="{StaticResource FilterIconViewbox}"/>
-                                </Button.Content>
-                            </Button>
-                        </Grid>
                     </StackPanel>
                 </Grid>
                 <TextBox 
                     x:Name="playbackInfo"
+                    Grid.Column="9"
+                    Grid.Row="1"
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     TextWrapping="Wrap" 
                     Text="{Binding Bitrate, StringFormat='{}Bitrate: {0}'}" 
                     Background="Black" 
-                    Foreground="SteelBlue" 
-                    Grid.RowSpan="6" 
-                    Margin="5"/>
+                    Foreground="SteelBlue"/>
                 <TextBox 
+                    Text="{Binding DecoderType, StringFormat='{}Decoder: {0}'}"
+                    FontWeight="Bold"
+                    FontSize="12"
+                    Background="Black" 
+                    Foreground="SteelBlue"
+                    IsReadOnly="True" 
+                    BorderThickness="0" 
+                    Grid.Column="3"
+                    Grid.ColumnSpan="4"/>
+                <TextBox 
+                    TextWrapping="Wrap"
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Text="{Binding Metadata, Mode=OneWay}" 
                     Background="Black" 
                     Foreground="SteelBlue" 
+                    Grid.Row="1"
                     Grid.RowSpan="6" 
-                    Grid.ColumnSpan="5" 
-                    Grid.Column="1" 
+                    Grid.ColumnSpan="4" 
+                    Grid.Column="3" 
                     Margin="5"/>
                 <TextBox 
                     IsReadOnly="True" 
@@ -109,9 +111,9 @@
                     Text="{Binding HeaderData, Mode=OneWay}" 
                     Background="Black" 
                     Foreground="SteelBlue" 
-                    Grid.RowSpan="7" 
+                    Grid.RowSpan="4" 
                     Grid.ColumnSpan="2" 
-                    Grid.Column="5" 
+                    Grid.Column="7" 
                     Margin="5"/>
                 <Rectangle 
                     Fill="Transparent" 
@@ -133,10 +135,19 @@
                     DurationMinutes="{Binding Path=DataContext.DurationMinutes, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     DurationSeconds="{Binding Path=DataContext.DurationSeconds, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     Grid.Row="6"
-                    Grid.RowSpan="4" 
-                    Grid.Column="3" 
-                    Grid.ColumnSpan="7"
+                    Grid.RowSpan="4"
+                    Grid.ColumnSpan="10"
                     Margin="0,0,5,0"/>
+                <Grid Grid.Column="9" Grid.Row="2" Grid.RowSpan="3">
+                    <Button Margin="2" BorderThickness="0"
+                        Background="Transparent"
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding OpenVisualisationFilterSettingsCommand}">
+                        <Button.Content>
+                            <Viewbox Stretch="Fill" Child="{StaticResource FilterIconViewbox}"/>
+                        </Button.Content>
+                    </Button>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
