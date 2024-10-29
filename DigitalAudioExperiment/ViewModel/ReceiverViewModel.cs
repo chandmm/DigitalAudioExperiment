@@ -19,6 +19,7 @@
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.View;
+using System.IO;
 using System.Timers;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -316,6 +317,8 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        public string DecoderType { get; set; }
+
         #endregion
 
         #region Commands
@@ -444,9 +447,9 @@ namespace DigitalAudioExperiment.ViewModel
             Play();
         }
 
-        private async void Play()
+        private void Play()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 _player?.Play();
 
@@ -554,29 +557,49 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
-            _player = AudioPlayerFactory.GetAudioPlayerInterface(fileName);
-            _player.SetSeekPositionCallback(UpdatePosition);
-            _player.SetUpdateCallback(Update);
-            _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
-            SliderMaximum = _player.GetFrameCount() ?? 0;
-            _isMono = _player.GetIsMonoChannel();
-            Value = 0;
-            _player.SetVolume(Volume);
-            DurationMinutes = _player.Duration().Item1;
-            DurationSeconds = _player.Duration().Item2;
-            DurationHours = DurationMinutes / 60;
-            HeaderData = _player.GetAudioFileInfo();
-            Metadata = _player?.GetMetadata();
-
-            SetTickFrequency();
-
-            RaisePropertyChangedEvents();
-
-            if (IsAutoPlayChecked
-                && !autoPlayOverride)
+            try
             {
-                PlayInternal();
+                _player = AudioPlayerFactory.GetAudioPlayerInterface(fileName);
+                _player.SetSeekPositionCallback(UpdatePosition);
+                _player.SetUpdateCallback(Update);
+                _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
+                SliderMaximum = _player.GetFrameCount() ?? 0;
+                _isMono = _player.GetIsMonoChannel();
+                Value = 0;
+                _player.SetVolume(Volume);
+                DurationMinutes = _player.Duration().Item1;
+                DurationSeconds = _player.Duration().Item2;
+                DurationHours = DurationMinutes / 60;
+                HeaderData = _player.GetAudioFileInfo();
+                Metadata = _player?.GetMetadata();
+
+                SetTickFrequency();
+
+                RaisePropertyChangedEvents();
+
+                if (IsAutoPlayChecked
+                    && !autoPlayOverride)
+                {
+                    PlayInternal();
+                }
             }
+            catch (FileNotFoundException fileNotFoundException)
+            {
+                _ = fileNotFoundException;
+
+                _player?.Dispose();
+                _player = null;
+
+                if (_playlistPageView != null
+                    && viewModel != null
+                    && viewModel.PlayList.Any())
+                {
+                    SetupWithAutoPlay(autoPlayOverride, fromPlayButton);
+                }
+            }
+
+            DecoderType = _player?.DecoderType;
+            OnPropertyChanged(nameof(DecoderType));
         }
 
         private void SetTickFrequency()

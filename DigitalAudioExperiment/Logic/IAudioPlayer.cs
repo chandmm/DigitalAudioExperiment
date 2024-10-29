@@ -80,6 +80,8 @@ namespace DigitalAudioExperiment.Logic
 
         bool IsDisposed();
 
+        string DecoderType { get; }
+
         #endregion
 
         #region Cleanup and Dispose
