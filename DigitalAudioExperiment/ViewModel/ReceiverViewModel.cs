@@ -476,6 +476,30 @@ namespace DigitalAudioExperiment.ViewModel
             SetSeekValue();
         }
 
+        public void StartIsSeeking(bool isSeeking)
+        {
+            _isSeeking = isSeeking;
+        }
+
+        public void SetSeekValue()
+        {
+            _player?.Seek((int)SeekIndicatorValue);
+        }
+
+        private void SetAutoplayModeToggle()
+        {
+            IsAutoPlayChecked = !IsAutoPlayChecked;
+        }
+
+        private void SetLoopPlayModeToggle()
+        {
+            IsLoopPlayChecked = !IsLoopPlayChecked;
+        }
+
+        #endregion
+
+        #region Audio File Management
+
         private async void SelectFile()
         {
             if (_getFile == null)
@@ -609,45 +633,14 @@ namespace DigitalAudioExperiment.ViewModel
             OnPropertyChanged(nameof(DecoderType));
         }
 
+        #endregion
+
+        #region Application Logic
+
         private void SetTickFrequency()
         {
             TickFrequency = SliderMaximum * _tickPercentage;
         }
-
-        private void UpdatePosition(int position)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                if (!_isSeeking)
-                {
-                    SeekIndicatorValue = position;
-                }
-            });
-        }
-
-        public void StartIsSeeking(bool isSeeking)
-        {
-            _isSeeking = isSeeking;
-        }
-
-        public void SetSeekValue()
-        {
-            _player?.Seek((int)SeekIndicatorValue);
-        }
-
-        private void SetAutoplayModeToggle()
-        {
-            IsAutoPlayChecked = !IsAutoPlayChecked;
-        }
-
-        private void SetLoopPlayModeToggle()
-        {
-            IsLoopPlayChecked = !IsLoopPlayChecked;
-        }
-
-        #endregion
-
-        #region Application Logic
 
         private void OpenPlaylist()
         {
@@ -730,6 +723,17 @@ namespace DigitalAudioExperiment.ViewModel
         #endregion
 
         #region Callbacks
+
+        private void UpdatePosition(int position)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (!_isSeeking)
+                {
+                    SeekIndicatorValue = position;
+                }
+            });
+        }
 
         private void OnFilterSettingsApplied(FilterSettingsViewModel filterSettingsViewModel)
         {
