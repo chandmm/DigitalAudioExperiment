@@ -520,6 +520,12 @@ namespace DigitalAudioExperiment.ViewModel
                 viewModel.RemoveAll();
             }
 
+            if (_player != null 
+                && !_player.IsStopped())
+            {
+                StopButton();
+            }
+
             OnFileSelected(fileName);
         }
 
