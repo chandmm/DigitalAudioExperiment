@@ -110,7 +110,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string GetNextFile()
         {
-            if (!PlayList.Any())
+            if (!IsHasList)
             {
                 _previousPlayIndex = -1;
                 return string.Empty;
@@ -186,7 +186,7 @@ namespace DigitalAudioExperiment.ViewModel
             OnPropertyChanged(nameof(IsHasList));
         }
 
-        private void RemoveAll()
+        public void RemoveAll()
         {
             if (!IsHasList)
             {
@@ -284,7 +284,7 @@ namespace DigitalAudioExperiment.ViewModel
                 fullPaths.ForEach(path => Add(path));
             }
 
-            if (PlayList.Any())
+            if (IsHasList)
             {
                 PlayList.First().IsSelected = true;
                 ResetToSelectedPlayed();
@@ -325,7 +325,7 @@ namespace DigitalAudioExperiment.ViewModel
         private void MoveItem(bool isDown = false)
         {
             if (PlayList == null
-                || !PlayList.Any())
+                || !IsHasList)
             {
                 return;
             }

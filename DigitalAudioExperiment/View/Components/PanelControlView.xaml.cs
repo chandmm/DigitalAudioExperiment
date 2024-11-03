@@ -41,6 +41,7 @@ namespace DigitalAudioExperiment.View.Components
             if (DataContext is ReceiverViewModel viewModel)
             {
                 viewModel.SetSeekValue();
+                viewModel.StartIsSeeking(false);
             }
         }
     }

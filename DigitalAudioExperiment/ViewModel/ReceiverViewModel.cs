@@ -40,6 +40,7 @@ namespace DigitalAudioExperiment.ViewModel
         private PlaylistPageView _playlistPageView;
         private FilterSettingsViewModel _filterSettingsViewModel;
         private FilterSettingsView _filterSettingsView;
+        private bool _isSeeking;
 
         #endregion
 
@@ -75,13 +76,13 @@ namespace DigitalAudioExperiment.ViewModel
             get => _isMono;
         }
 
-        private double _value;
-        public double Value
+        private double _seekIndicatorValue;
+        public double SeekIndicatorValue
         {
-            get => _value;
+            get => _seekIndicatorValue;
             set
             {
-                _value = value;
+                _seekIndicatorValue = value;
 
                 OnPropertyChanged();
             }
@@ -367,7 +368,7 @@ namespace DigitalAudioExperiment.ViewModel
             SliderMaximum = 1;
             Maximum = 100;
             Minimum = 0;
-            Value = 0;
+            SeekIndicatorValue = 0;
 
             _filterSettingsView = new FilterSettingsView();
             _filterSettingsView.DataContext = _filterSettingsViewModel = new FilterSettingsViewModel();
@@ -392,7 +393,7 @@ namespace DigitalAudioExperiment.ViewModel
             _player?.Dispose();
             _player = null;
 
-            Value = 0;
+            SeekIndicatorValue = 0;
             LeftdB = Minimum;
             RightdB = Minimum;
         }
@@ -422,7 +423,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (_player == null
                 && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
                 && newViewModel != null
-                && newViewModel.PlayList.Any())
+                && newViewModel.IsHasList)
             {
                 ResetPlayer();
                 SetupWithAutoPlay(autoPlayOverride: true, fromPlayButton);
@@ -465,13 +466,13 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async void SkipToStartButton()
         {
-            Value = 0;
+            SeekIndicatorValue = 0;
             SetSeekValue();
         }
 
         private void SkipToEndButton()
         {
-            Value = (int)_player?.GetFrameCount() - 1;
+            SeekIndicatorValue = (int)_player?.GetFrameCount() - 1;
             SetSeekValue();
         }
 
@@ -489,6 +490,12 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
+            if (_playlistPageView != null
+                && _playlistPageView.DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.RemoveAll();
+            }
+
             OnFileSelected(fileName);
         }
 
@@ -500,7 +507,7 @@ namespace DigitalAudioExperiment.ViewModel
                 _player.Dispose();
             }
 
-            Value = 0;
+            SeekIndicatorValue = 0;
         }
 
         private void OnFileSelected(string fileName)
@@ -565,7 +572,7 @@ namespace DigitalAudioExperiment.ViewModel
                 _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
                 SliderMaximum = _player.GetFrameCount() ?? 0;
                 _isMono = _player.GetIsMonoChannel();
-                Value = 0;
+                SeekIndicatorValue = 0;
                 _player.SetVolume(Volume);
                 DurationMinutes = _player.Duration().Item1;
                 DurationSeconds = _player.Duration().Item2;
@@ -592,7 +599,7 @@ namespace DigitalAudioExperiment.ViewModel
 
                 if (_playlistPageView != null
                     && viewModel != null
-                    && viewModel.PlayList.Any())
+                    && viewModel.IsHasList)
                 {
                     SetupWithAutoPlay(autoPlayOverride, fromPlayButton);
                 }
@@ -611,18 +618,21 @@ namespace DigitalAudioExperiment.ViewModel
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                Value = position;
+                if (!_isSeeking)
+                {
+                    SeekIndicatorValue = position;
+                }
             });
         }
 
         public void StartIsSeeking(bool isSeeking)
         {
-            _player?.Pause();
+            _isSeeking = isSeeking;
         }
 
         public void SetSeekValue()
         {
-            _player?.Seek((int)Value);
+            _player?.Seek((int)SeekIndicatorValue);
         }
 
         private void SetAutoplayModeToggle()
