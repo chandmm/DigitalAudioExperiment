@@ -514,16 +514,25 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
+            if (_player != null
+                && !_player.IsStopped())
+            {
+                StopButton();
+
+                while (_player != null
+                        && (!_player.IsDisposed()
+                        || !_player.IsStopped()))
+                {
+                    Thread.Sleep(10);
+                }
+
+                _player = null;
+            }
+
             if (_playlistPageView != null
                 && _playlistPageView.DataContext is PlaylistPageViewModel viewModel)
             {
                 viewModel.RemoveAll();
-            }
-
-            if (_player != null 
-                && !_player.IsStopped())
-            {
-                StopButton();
             }
 
             OnFileSelected(fileName);
@@ -772,7 +781,8 @@ namespace DigitalAudioExperiment.ViewModel
 
             if (IsLoopPlayChecked
                 && _canContinueLoopMode
-                && _player.IsStopped())
+                && _player.IsStopped()
+                && !_player.IsHardStop())
             {
                 PlayInternal();
 

@@ -58,15 +58,15 @@
                 Grid.Row="8" 
                 Grid.Column="1" 
                 Grid.ColumnSpan="6"/>
-            <controls:VolumeControlView 
+            <controls:VolumeSliderControl 
                 Volume="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
                 Max="100" Min="0" 
                 ControlLabel="{Binding Path=DataContext.VolumeLabel, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}" 
                 Cursor="ScrollNS"
                 Grid.Row="7" 
-                Grid.Column="8" 
-                Grid.RowSpan="3" 
-                Grid.ColumnSpan="2" />
+                Grid.Column="10" 
+                Grid.RowSpan="3"
+                Margin="0,0,5,0"/>
             <Button
                 ToolTip="Open playlist"
                 Width="30"
