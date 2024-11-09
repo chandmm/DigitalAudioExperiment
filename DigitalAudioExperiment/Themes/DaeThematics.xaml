@@ -1,9 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:convertors="clr-namespace:DigitalAudioExperiment.Convertors">
 
     <SolidColorBrush x:Key="ComponentBackgroundColour" Color="#62e3f6"/>
     <SolidColorBrush x:Key="ComponentForegroundColour" Color="White"/>
+
+    <system:Double x:Key="appWidth">1080</system:Double>
+    <system:Double x:Key="appHeight">476</system:Double>
+    <system:Double x:Key="listWindowWidth">400</system:Double>
 
     <!--Styles-->
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
@@ -185,7 +190,16 @@
         <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{StaticResource ComponentBackgroundColour}"/>
     </Viewbox>
 
+    <Viewbox Stretch="Fill" x:Key="DockModeViewBox" Margin="5">
+        <Grid>
+            <Rectangle Stroke="Black" StrokeThickness="2" Width="80" Height="35" RadiusX="5" RadiusY="5"/>
+            <Rectangle Fill="Black" Width="20" Height="35" HorizontalAlignment="Left"/>
+        </Grid>
+    </Viewbox>
+
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
+    <convertors:VisibilityToGridLengthConvertor x:Key="VisibilityToGridLengthConvertor"/>
+    
 
 </ResourceDictionary>    

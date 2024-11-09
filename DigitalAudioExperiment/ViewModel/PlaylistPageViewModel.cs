@@ -39,12 +39,13 @@ namespace DigitalAudioExperiment.ViewModel
         private Func<string, string, string?> _getSaveFilePathCallback;
         private Action _closeAction;
         private int _previousPlayIndex = -1;
+        public delegate void DockingChanged(bool isDocked);
+
+        public event DockingChanged DockingChangedEvent;
 
         #endregion
 
         #region Properties
-
-        public bool IsShowing { get; set; }
 
         public bool IsHasList { get => PlayList.Any(); }
 
@@ -55,6 +56,33 @@ namespace DigitalAudioExperiment.ViewModel
             set
             {
                 _playList = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsShowing { get; set; }
+
+        private bool _isDocked;
+        public bool IsDocked 
+        {
+            get => _isDocked;
+            set
+            { 
+                _isDocked = value;
+
+                DockingChangedEvent?.Invoke(_isDocked);
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isCanDock;
+        public bool IsCanDock
+        {
+            get => _isCanDock;
+            set
+            {
+                _isCanDock = value;
 
                 OnPropertyChanged();
             }
@@ -72,6 +100,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand RemoveAllCommand { get; private set; }
         public RelayCommand MoveUpCommand { get; private set; }
         public RelayCommand MoveDownCommand { get; private set; }
+        public RelayCommand DockToggleCommand { get; private set; }
 
         #endregion
 
@@ -88,6 +117,7 @@ namespace DigitalAudioExperiment.ViewModel
             LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
             MoveUpCommand = new RelayCommand(() => MoveItem(false), () => true);
             MoveDownCommand = new RelayCommand(MoveItemDown, () => true);
+            DockToggleCommand = new RelayCommand(DockToggle, () => true);
 
             ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
         }
@@ -110,7 +140,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string GetNextFile()
         {
-            if (!PlayList.Any())
+            if (!IsHasList)
             {
                 _previousPlayIndex = -1;
                 return string.Empty;
@@ -186,7 +216,7 @@ namespace DigitalAudioExperiment.ViewModel
             OnPropertyChanged(nameof(IsHasList));
         }
 
-        private void RemoveAll()
+        public void RemoveAll()
         {
             if (!IsHasList)
             {
@@ -284,7 +314,7 @@ namespace DigitalAudioExperiment.ViewModel
                 fullPaths.ForEach(path => Add(path));
             }
 
-            if (PlayList.Any())
+            if (IsHasList)
             {
                 PlayList.First().IsSelected = true;
                 ResetToSelectedPlayed();
@@ -304,6 +334,9 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             _closeAction();
+            IsShowing = false;
+
+            Update();
         }
 
         public bool IsLastItem()
@@ -325,7 +358,7 @@ namespace DigitalAudioExperiment.ViewModel
         private void MoveItem(bool isDown = false)
         {
             if (PlayList == null
-                || !PlayList.Any())
+                || !IsHasList)
             {
                 return;
             }
@@ -374,6 +407,15 @@ namespace DigitalAudioExperiment.ViewModel
         }
         private void MoveItemDown()
             => MoveItem(true);
+
+        private void DockToggle()
+            => IsDocked = !IsDocked;
+
+        public void Update()
+        {
+            OnPropertyChanged(nameof(IsDocked), 
+                nameof(IsShowing));
+        }
 
         #endregion
 

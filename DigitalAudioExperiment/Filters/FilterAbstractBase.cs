@@ -25,7 +25,7 @@ namespace DigitalAudioExperiment.Filters
     {
         protected bool _isDisposed;
 
-        public event EventHandler<RmsEventArgs> RmsCalculated;
+        public event EventHandler<RmsEventArgs>? RmsCalculated;
 
         public abstract FilterType GetFilterType();
         public abstract float Transform(float sample, int channel);

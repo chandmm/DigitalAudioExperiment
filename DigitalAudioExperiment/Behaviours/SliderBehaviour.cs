@@ -82,11 +82,14 @@ namespace DigitalAudioExperiment.Behaviours
             return FindVisualChild<Thumb>(slider);
         }
 
-        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
-            if (parent == null) return null;
+            if (parent == null)
+            {
+                return null;
+            }
 
-            T child = null;
+            T? child = null;
             int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
 
             for (int i = 0; i < numVisuals; i++)

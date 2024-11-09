@@ -1,0 +1,178 @@
+﻿<UserControl x:Class="DigitalAudioExperiment.Pages.PlaylistPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DigitalAudioExperiment.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/DaeThematics.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <!--<TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Width="400" Height="100" Background="Red"/>-->
+        <Grid>
+            <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
+                <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
+            </Viewbox>
+
+            <Border Style="{StaticResource DialogBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="20,5,20,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button ToolTip="Dock playlist window"
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Command="{Binding DockToggleCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Fill"  Child="{StaticResource DockModeViewBox}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button Grid.Column="4"
+                            ToolTip="Load playlist from file."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Command="{Binding LoadPlaylistCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource LoadViewBox}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            ToolTip="Add file to playlist."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="5"
+                            FontSize="30" 
+                            FontWeight="Bold"
+                            Command="{Binding AddFileCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource AddFileViewBox}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            ToolTip="Save current playlist."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="6"
+                            FontSize="30" 
+                            FontWeight="Bold"
+                            Command="{Binding SavePlaylistCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource SavePlaylistViewBox}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            ToolTip="Close playlist window."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="7"
+                            FontSize="30" 
+                            FontWeight="Bold"
+                            Command="{Binding ExitPlaylistCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource ExitIconViewBox}"/>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+                    <Grid Grid.ColumnSpan="10" 
+                          Grid.Row="1" 
+                          Background="{StaticResource ComponentBackgroundColour}" 
+                          Margin="20,5,20,20">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl 
+                                ItemTemplate="{StaticResource PlaylistItemsTemplate}" 
+                                ItemsSource="{Binding PlayList}"/>
+                        </ScrollViewer>
+                    </Grid>
+                    <Grid Visibility="{Binding IsHasList, Converter={StaticResource BoolToVisibilityConvertor}}" 
+                          Grid.Row="2" 
+                          Grid.ColumnSpan="10"
+                          Margin="20,0,20,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            ToolTip="Remove selected item."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Content="X" 
+                            FontSize="25" 
+                            FontWeight="Bold"
+                            Command="{Binding RemoveCommand}"/>
+                        <Button
+                            ToolTip="Clear list of all items."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Grid.Column="1"
+                            FontSize="25" 
+                            FontWeight="Bold"
+                            Command="{Binding RemoveAllCommand}">
+                            <Button.Content>
+                                <Grid>
+                                    <Viewbox Stretch="Uniform" Child="{StaticResource PlaylistViewBoxClearAll}"/>
+                                    <Label Background="Transparent" 
+                                   Content="X" 
+                                   FontSize="25"
+                                   HorizontalContentAlignment="Center"/>
+                                </Grid>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            ToolTip="Move item up one."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="2"
+                            Command="{Binding MoveUpCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource MoveUpViewBoxIcon}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            ToolTip="Move item down one."
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="3"
+                            Command="{Binding MoveDownCommand}">
+                            <Button.Content>
+                                <Viewbox Stretch="Uniform" Child="{StaticResource MoveDownViewBoxIcon}" RenderTransformOrigin="0.5,0.5">
+                                    <Viewbox.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform Angle="180"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Viewbox.RenderTransform>
+                                </Viewbox>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

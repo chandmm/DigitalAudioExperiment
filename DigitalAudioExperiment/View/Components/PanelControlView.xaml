@@ -7,13 +7,6 @@
              xmlns:controls="clr-namespace:WpfAudioControlLibrary.Controls;assembly=WpfAudioControlLibrary"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
         <Border BorderThickness="2" BorderBrush="Silver" Background="Black">
             <Grid>
@@ -125,7 +118,7 @@
                     TickFrequency="{Binding Path=DataContext.TickFrequency, RelativeSource={RelativeSource AncestorType=Grid}}"  
                     Minimum="0" 
                     Maximum="{Binding Path=DataContext.SliderMaximum, RelativeSource={RelativeSource AncestorType=Grid}}" 
-                    Value="{Binding Path=DataContext.Value, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}" 
+                    Value="{Binding Path=DataContext.SeekIndicatorValue, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}" 
                     PreviewMouseLeftButtonDown="SeekSiderControl_PreviewMouseLeftButtonDown"
                     PreviewMouseLeftButtonUp="SeekSiderControl_PreviewMouseLeftButtonUp"
                     ElapsedHours="{Binding Path=DataContext.ElapsedHours, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"

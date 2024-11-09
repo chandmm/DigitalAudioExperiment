@@ -25,6 +25,12 @@ namespace DigitalAudioExperiment.Logic
 {
     public abstract class AudioPlayerBase : IAudioPlayer
     {
+        #region Statics and Constants
+
+        public SynchronizationContext? Context { get; set; }
+
+        #endregion
+
         #region Fields
         private readonly int _volumeScaler = 100;
         private static object _lock = new object();
@@ -50,7 +56,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 576;
+        protected int _rmsSampleLength = 288;
         protected FilterSettingsViewModel _filterSettingsViewModel;
 
         public string DecoderType { get; protected set; }
@@ -134,7 +140,11 @@ namespace DigitalAudioExperiment.Logic
                 while (_waveOut.PlaybackState == PlaybackState.Playing
                     || _waveOut.PlaybackState == PlaybackState.Paused)
                 {
-                    HandlePlaybackStates(_waveOut);
+                    try
+                    {
+                        HandlePlaybackStates(_waveOut);
+                    }
+                    catch { };
 
                     Thread.Sleep(100);
                 }
@@ -269,6 +279,9 @@ namespace DigitalAudioExperiment.Logic
 
         public bool IsStopped()
             => !_isPlaying;
+
+        public void SetContext(SynchronizationContext context)
+            => Context = context;
 
         #endregion
 
@@ -419,6 +432,8 @@ namespace DigitalAudioExperiment.Logic
                         _stream?.Dispose();
                         _stream = null;
                     }
+
+                    Context = null;
                 }
 
                 _isDisposed = true;
