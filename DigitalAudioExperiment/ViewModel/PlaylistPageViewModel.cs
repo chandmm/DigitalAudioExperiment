@@ -76,6 +76,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private bool _isCanDock;
+        public bool IsCanDock
+        {
+            get => _isCanDock;
+            set
+            {
+                _isCanDock = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands

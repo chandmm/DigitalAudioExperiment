@@ -12,6 +12,8 @@
   <ItemGroup>
     <None Remove="Resources\AudioPlayerFacePlateRounded.png" />
     <None Remove="Resources\DaeIconResized.ico" />
+    <None Remove="Resources\HuffmanTables.json" />
+    <None Remove="Resources\ScalefactorBandTables.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,21 +23,18 @@
     <Content Include="Resources\DaeIconResized.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\HuffmanTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ScalefactorBandTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Flac.Unknown" Version="1.0.2" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\HuffmanTables.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ScalefactorBandTables.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

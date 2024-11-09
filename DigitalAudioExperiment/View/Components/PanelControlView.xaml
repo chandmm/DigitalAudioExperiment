@@ -7,13 +7,6 @@
              xmlns:controls="clr-namespace:WpfAudioControlLibrary.Controls;assembly=WpfAudioControlLibrary"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
         <Border BorderThickness="2" BorderBrush="Silver" Background="Black">
             <Grid>

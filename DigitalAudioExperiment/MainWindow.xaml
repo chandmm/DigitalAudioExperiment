@@ -10,11 +10,11 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="Digital Audio Experiment" 
-        Height="476"
+        Height="{DynamicResource appHeight}"
         AllowsTransparency="True"
         Background="Transparent">
-
+    
     <Grid Background="Transparent">
-        <view:ReceiverView/>
+        <view:ReceiverView DataContext="{StaticResource ReceiverViewModelKey}"/>
     </Grid>
 </Window>

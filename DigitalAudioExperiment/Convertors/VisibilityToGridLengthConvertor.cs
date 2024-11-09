@@ -8,8 +8,14 @@ namespace DigitalAudioExperiment.Convertors
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            
-            if (!Int32.TryParse((string)parameter, out int size))
+            var parameterValue = parameter as string;
+            var size = 0;
+
+            if (string.IsNullOrEmpty(parameterValue))
+            {
+                size = 0;
+            }
+            else if (!Int32.TryParse((string)parameter, out size))
             {
                 size = 0;
             }

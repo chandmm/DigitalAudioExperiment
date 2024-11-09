@@ -16,14 +16,6 @@
         ResizeMode="CanResize"
         ShowInTaskbar="True"
         x:Name="filterSettingsDialog">
-
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
     
     <Grid>
         <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">

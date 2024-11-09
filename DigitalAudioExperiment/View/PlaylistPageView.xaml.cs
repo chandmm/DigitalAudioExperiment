@@ -18,6 +18,7 @@
 using DigitalAudioExperiment.Pages;
 using DigitalAudioExperiment.ViewModel;
 using Microsoft.Win32;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,6 +27,8 @@ namespace DigitalAudioExperiment.View
     public partial class PlaylistPageView : Window
     {
         private bool _isVisible;
+        private int _dockDetectionThreashold = 10;
+        private bool _locationChanging;
 
         public PlaylistPageView()
         {
@@ -33,6 +36,8 @@ namespace DigitalAudioExperiment.View
 
             DataContextChanged += OnDataContextChanged;
             Loaded += OnLoaded;
+            LocationChanged += OnLocationChanged;
+            PreviewMouseUp += OnPreviewMouseUp;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs args)
@@ -128,6 +133,68 @@ namespace DigitalAudioExperiment.View
         public PlaylistPage GetPlaylistPage()
             => playlistPageComponent;
 
+        #region Docking/Undocking
+
+        private void OnLocationChanged(object? sender, EventArgs args)
+        {
+            _locationChanging = true;
+
+            var viewModel = this.DataContext as PlaylistPageViewModel;
+
+            if (viewModel != null
+                && !viewModel.IsDocked
+                && IsInsideDockingRange())
+            {
+                viewModel.IsCanDock = true;
+            }
+            else
+            {
+                viewModel.IsCanDock = false;
+            }
+
+        }
+
+        private bool IsInsideDockingRange()
+        {
+            var mainWindowBoundsRight = new Rectangle(
+                (int)(MainWindow.Instance.Left),
+                (int)MainWindow.Instance.Top - _dockDetectionThreashold,
+                (int)MainWindow.Instance.ActualWidth,
+                (int)MainWindow.Instance.ActualHeight + _dockDetectionThreashold);
+            var bounds = new Rectangle((int)Left, 
+                (int)Top,
+                (int)_dockDetectionThreashold,
+                (int)MainWindow.Instance.ActualHeight);
+
+            if (bounds.Left <= mainWindowBoundsRight.Right 
+                && bounds.Left >= (mainWindowBoundsRight.Right - _dockDetectionThreashold)
+                && bounds.Top >= mainWindowBoundsRight.Top
+                && bounds.Top <= mainWindowBoundsRight.Bottom)
+            {
+                return true;
+            }
+
+           return false;
+        }
+
+        private void OnPreviewMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            var viewModel = DataContext as PlaylistPageViewModel;
+
+            if (viewModel != null
+                && !viewModel.IsDocked
+                && _locationChanging
+                && IsInsideDockingRange())
+            {
+                viewModel.IsDocked = true;
+                viewModel.IsCanDock = false;
+            }
+
+            _locationChanging = false;
+        }
+
+        #endregion
+
         public new void Close()
         {
             if (DataContext is PlaylistPageViewModel viewModel)
@@ -139,6 +206,8 @@ namespace DigitalAudioExperiment.View
         public void CloseExit()
         {
             DataContextChanged -= OnDataContextChanged;
+            LocationChanged -= OnLocationChanged;
+            PreviewMouseUp -= OnPreviewMouseUp;
 
             base.Close();
         }

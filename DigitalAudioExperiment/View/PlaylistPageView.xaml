@@ -6,17 +6,23 @@
       xmlns:local="clr-namespace:DigitalAudioExperiment.View" 
       xmlns:pages="clr-namespace:DigitalAudioExperiment.Pages"
       mc:Ignorable="d" 
-      Height="800"
-      Width="400"
+      Height="{StaticResource appHeight}"
+      Width="{StaticResource listWindowWidth}"
       WindowStyle="None"
       WindowStartupLocation="CenterScreen"
       AllowsTransparency="True"
       Background="Transparent"
       ResizeMode="CanResize"
       ShowInTaskbar="False"
-      IsVisibleChanged="OnVisibleChanged">
+      IsVisibleChanged="OnVisibleChanged"
+      x:Name="playlistWindow">
 
     <Grid>
         <pages:PlaylistPage x:Name="playlistPageComponent"/>
+        <Rectangle Width="10" 
+                   Height="{Binding Height, ElementName=playlistPageComponent}"
+                   Fill="LimeGreen"
+                   HorizontalAlignment="Left"
+                   Visibility="{Binding IsCanDock, Converter={StaticResource BoolToVisibilityConvertor}}"/>
     </Grid>
 </Window>
