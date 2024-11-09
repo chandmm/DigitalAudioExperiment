@@ -56,7 +56,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 576;
+        protected int _rmsSampleLength = 288;
         protected FilterSettingsViewModel _filterSettingsViewModel;
 
         public string DecoderType { get; protected set; }

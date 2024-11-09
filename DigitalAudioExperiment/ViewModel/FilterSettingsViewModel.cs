@@ -142,9 +142,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             FilterTypeSet = FilterTypes.First(x => x.FilterTypeValue == FilterType.Bandpass);
 
-            CutoffFrequency = 500;
-            Bandwidth = 600;
-            FilterOrder = 2;
+            ResetToDefaultSettings();
         }
 
         #endregion
@@ -165,7 +163,7 @@ namespace DigitalAudioExperiment.ViewModel
                     break;
                 case FilterType.Bandpass:
                     CutoffFrequency = 500;
-                    Bandwidth = 600;
+                    Bandwidth = 930;
                     FilterOrder = 2;
                     break;
                 case FilterType.ButterworthBandpass:
