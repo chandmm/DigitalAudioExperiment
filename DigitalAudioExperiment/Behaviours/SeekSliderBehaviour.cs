@@ -113,11 +113,14 @@ namespace DigitalAudioExperiment.Behaviours
             return adjustedValue;
         }
 
-        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        private static T? FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
-            if (parentObject == null) return null;
+            if (parentObject == null)
+            {
+                return null;
+            }
 
             if (parentObject is T parent)
             {
