@@ -162,8 +162,8 @@ namespace DigitalAudioExperiment.ViewModel
                     Bandwidth = 0;
                     break;
                 case FilterType.Bandpass:
-                    CutoffFrequency = 500;
-                    Bandwidth = 930;
+                    CutoffFrequency = 1040;
+                    Bandwidth = 2020;
                     FilterOrder = 2;
                     break;
                 case FilterType.ButterworthBandpass:
