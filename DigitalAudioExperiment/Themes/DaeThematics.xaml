@@ -185,6 +185,13 @@
         <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{StaticResource ComponentBackgroundColour}"/>
     </Viewbox>
 
+    <Viewbox Stretch="Fill" x:Key="DockModeViewBox" Margin="5">
+        <Grid>
+            <Rectangle Stroke="Black" StrokeThickness="2" Width="80" Height="35" RadiusX="5" RadiusY="5"/>
+            <Rectangle Fill="Black" Width="20" Height="35" HorizontalAlignment="Left"/>
+        </Grid>
+    </Viewbox>
+
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
 

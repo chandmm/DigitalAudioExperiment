@@ -22,9 +22,13 @@ namespace DigitalAudioExperiment
 {
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            Instance = this;
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs args)
