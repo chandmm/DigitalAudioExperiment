@@ -35,7 +35,7 @@ namespace DigitalAudioExperiment.ViewModel
         private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
-        private double _vuHeartBeatInterval = 4;
+        private double _vuHeartBeatInterval = 3;
         private bool _canContinueLoopMode = true;
         private FilterSettingsViewModel _filterSettingsViewModel;
         private FilterSettingsView _filterSettingsView;
@@ -573,7 +573,21 @@ namespace DigitalAudioExperiment.ViewModel
                 return;
             }
 
+            StopButton();
+
+            var timeout = 30;
+            var timeoutCount = 0;
+
+            while(_player != null
+                && timeoutCount < 30)
+            {
+                Thread.Sleep(10);
+                timeoutCount++;
+            }
+
             SetupPlayListControls(fileName);
+            ResetPlayer();
+            SetupWithAutoPlay(fileName: fileName);
 
             if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel
                 && playlistPageViewModel.PlayList.Count() == 1
@@ -592,14 +606,14 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false)
+        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false, string fileName = "")
         {
             if (!(PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel))
             {
                 return;
             }
 
-            var fileName = viewModel.GetNextFile();
+            fileName = viewModel.GetNextFile();
 
             if (string.IsNullOrEmpty(fileName)
                 && fromPlayButton)
@@ -825,6 +839,7 @@ namespace DigitalAudioExperiment.ViewModel
                     && _player != null
                     && !_player.IsHardStop()
                     && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel
+                    && viewModel.IsHasList
                     && !viewModel.IsLastItem())
                 {
                     ResetPlayer();

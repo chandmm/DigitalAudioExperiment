@@ -11,6 +11,7 @@
         ResizeMode="NoResize"
         Title="Digital Audio Experiment" 
         Height="{DynamicResource appHeight}"
+        Width="{DynamicResource appWidth}"
         AllowsTransparency="True"
         Background="Transparent">
     
