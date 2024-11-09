@@ -43,7 +43,7 @@
 
                         <Button ToolTip="Dock playlist window"
                             Style="{StaticResource PlaylistButtonStyle}"
-                            Command="{Binding LoadPlaylistCommand}">
+                            Command="{Binding DockToggleCommand}">
                             <Button.Content>
                                 <Viewbox Stretch="Fill"  Child="{StaticResource DockModeViewBox}"/>
                             </Button.Content>

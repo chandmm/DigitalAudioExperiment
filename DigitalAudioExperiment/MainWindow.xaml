@@ -10,7 +10,7 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="Digital Audio Experiment" 
-        Height="476" Width="1080" 
+        Height="476"
         AllowsTransparency="True"
         Background="Transparent">
 

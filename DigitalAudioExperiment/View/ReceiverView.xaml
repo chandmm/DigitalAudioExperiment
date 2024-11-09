@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DigitalAudioExperiment.View" 
-             xmlns:components="clr-namespace:DigitalAudioExperiment.View.Components"
+             xmlns:components="clr-namespace:DigitalAudioExperiment.View.Components" xmlns:pages="clr-namespace:DigitalAudioExperiment.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
@@ -17,10 +17,39 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    
     <Grid Background="Transparent">
         <Viewbox Stretch="Fill">
             <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
         </Viewbox>
-        <components:FacePlateControlView/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="{Binding Path=Visibility, ElementName=playlistPage, Converter={StaticResource VisibilityToGridLengthConvertor}, ConverterParameter=400}"/>
+            </Grid.ColumnDefinitions>
+            <components:FacePlateControlView/>
+            <Grid x:Name="playlistPage"
+                  Grid.Column="1"
+                  IsVisibleChanged="playlistPage_IsVisibleChanged"
+                  DataContext="{Binding PlaylistPageViewInstance.DataContext}">
+                <Grid.Resources>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsDocked}" Value="True"/>
+                                    <Condition Binding="{Binding IsShowing}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                  
+                <pages:PlaylistPage DataContext="{Binding Path=DataContext, ElementName=playlistPage}"/>
+            </Grid>
+        </Grid>
     </Grid>
+    
 </UserControl>

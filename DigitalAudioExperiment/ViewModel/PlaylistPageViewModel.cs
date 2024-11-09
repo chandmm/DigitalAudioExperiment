@@ -39,12 +39,13 @@ namespace DigitalAudioExperiment.ViewModel
         private Func<string, string, string?> _getSaveFilePathCallback;
         private Action _closeAction;
         private int _previousPlayIndex = -1;
+        public delegate void DockingChanged(bool isDocked);
+
+        public event DockingChanged DockingChangedEvent;
 
         #endregion
 
         #region Properties
-
-        public bool IsShowing { get; set; }
 
         public bool IsHasList { get => PlayList.Any(); }
 
@@ -56,6 +57,21 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 _playList = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsShowing { get; set; }
+
+        private bool _isDocked;
+        public bool IsDocked 
+        {
+            get => _isDocked;
+            set
+            { 
+                _isDocked = value;
+
+                DockingChangedEvent?.Invoke(_isDocked);
                 OnPropertyChanged();
             }
         }
@@ -72,6 +88,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand RemoveAllCommand { get; private set; }
         public RelayCommand MoveUpCommand { get; private set; }
         public RelayCommand MoveDownCommand { get; private set; }
+        public RelayCommand DockToggleCommand { get; private set; }
 
         #endregion
 
@@ -88,6 +105,7 @@ namespace DigitalAudioExperiment.ViewModel
             LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
             MoveUpCommand = new RelayCommand(() => MoveItem(false), () => true);
             MoveDownCommand = new RelayCommand(MoveItemDown, () => true);
+            DockToggleCommand = new RelayCommand(DockToggle, () => true);
 
             ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
         }
@@ -304,6 +322,9 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             _closeAction();
+            IsShowing = false;
+
+            Update();
         }
 
         public bool IsLastItem()
@@ -374,6 +395,15 @@ namespace DigitalAudioExperiment.ViewModel
         }
         private void MoveItemDown()
             => MoveItem(true);
+
+        private void DockToggle()
+            => IsDocked = !IsDocked;
+
+        public void Update()
+        {
+            OnPropertyChanged(nameof(IsDocked), 
+                nameof(IsShowing));
+        }
 
         #endregion
 

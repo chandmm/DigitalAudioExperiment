@@ -13,9 +13,10 @@
       AllowsTransparency="True"
       Background="Transparent"
       ResizeMode="CanResize"
-      ShowInTaskbar="False">
+      ShowInTaskbar="False"
+      IsVisibleChanged="OnVisibleChanged">
 
     <Grid>
-        <pages:PlaylistPage />
+        <pages:PlaylistPage x:Name="playlistPageComponent"/>
     </Grid>
 </Window>

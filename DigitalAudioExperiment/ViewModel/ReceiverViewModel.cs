@@ -37,7 +37,6 @@ namespace DigitalAudioExperiment.ViewModel
         private System.Timers.Timer _applicationHeartBeatTimer;
         private double _vuHeartBeatInterval = 4;
         private bool _canContinueLoopMode = true;
-        private PlaylistPageView _playlistPageView;
         private FilterSettingsViewModel _filterSettingsViewModel;
         private FilterSettingsView _filterSettingsView;
         private bool _isSeeking;
@@ -320,6 +319,18 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string DecoderType { get; set; }
 
+        private PlaylistPageView _playlistPageView;
+        public PlaylistPageView PlaylistPageViewInstance
+        {
+            get => _playlistPageView;
+            set
+            {
+                _playlistPageView = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -374,6 +385,12 @@ namespace DigitalAudioExperiment.ViewModel
             _filterSettingsView.DataContext = _filterSettingsViewModel = new FilterSettingsViewModel();
             _filterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
 
+            var playlistViewModel = new PlaylistPageViewModel();
+            playlistViewModel.DockingChangedEvent += OnDockingChanged;
+            PlaylistPageViewInstance = new PlaylistPageView();
+            PlaylistPageViewInstance.DataContext = playlistViewModel;
+            PlaylistPageViewInstance.SetPlaylistPageComponent(new Pages.PlaylistPage());
+
             RaisePropertyChangedEvents();
         }
 
@@ -406,7 +423,7 @@ namespace DigitalAudioExperiment.ViewModel
         private async Task PlayInternal(bool fromPlayButton = false)
         {
             if (_player == null
-                && _playlistPageView == null)
+                && PlaylistPageViewInstance == null)
             {
                 return;
             }
@@ -421,7 +438,7 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             if (_player == null
-                && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel newViewModel
                 && newViewModel != null
                 && newViewModel.IsHasList)
             {
@@ -529,8 +546,8 @@ namespace DigitalAudioExperiment.ViewModel
                 _player = null;
             }
 
-            if (_playlistPageView != null
-                && _playlistPageView.DataContext is PlaylistPageViewModel viewModel)
+            if (PlaylistPageViewInstance != null
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel)
             {
                 viewModel.RemoveAll();
             }
@@ -558,7 +575,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             SetupPlayListControls(fileName);
 
-            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel
+            if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel
                 && playlistPageViewModel.PlayList.Count() == 1
                 && _player == null)
             {
@@ -569,13 +586,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void SetupPlayListControls(string fileName)
         {
-            if (_playlistPageView == null)
-            {
-                _playlistPageView = new PlaylistPageView();
-                _playlistPageView.DataContext = new PlaylistPageViewModel();
-            }
-
-            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel)
+            if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel)
             {
                 playlistPageViewModel.Add(fileName);
             }
@@ -583,7 +594,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false)
         {
-            if (!(_playlistPageView.DataContext is PlaylistPageViewModel viewModel))
+            if (!(PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel))
             {
                 return;
             }
@@ -636,7 +647,7 @@ namespace DigitalAudioExperiment.ViewModel
                 _player?.Dispose();
                 _player = null;
 
-                if (_playlistPageView != null
+                if (PlaylistPageViewInstance != null
                     && viewModel != null
                     && viewModel.IsHasList)
                 {
@@ -659,25 +670,44 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void OpenPlaylist()
         {
-            if (_playlistPageView != null
-                && (_playlistPageView.DataContext is PlaylistPageViewModel viewModel)
-                && viewModel.IsShowing)
+            var viewModel = PlaylistPageViewInstance?.DataContext as PlaylistPageViewModel;
+
+            if (viewModel == null)
             {
-                _playlistPageView.Close();
+                return;
+            }
+
+            var isShowing = PlaylistPageViewInstance.GetIsViewVisible();
+
+            if (PlaylistPageViewInstance != null
+                && viewModel != null
+                && (PlaylistPageViewInstance.GetIsViewVisible()
+                    || (!PlaylistPageViewInstance.GetIsViewVisible() && viewModel.IsShowing)))
+            {
+                PlaylistPageViewInstance.Close();
+                viewModel.IsShowing = false;
+                viewModel.Update();
 
                 return;
             }
 
-            if (_playlistPageView == null)
+            if (PlaylistPageViewInstance == null)
             {
-                _playlistPageView = new PlaylistPageView();
-                _playlistPageView.Owner = App.Current.MainWindow;
+                PlaylistPageViewInstance = new PlaylistPageView();
+                PlaylistPageViewInstance.Owner = App.Current.MainWindow;
             }
 
-            _playlistPageView.DataContext = _playlistPageView.DataContext == null || (_playlistPageView.DataContext is PlaylistPageViewModel) == null
+            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
                 ? new PlaylistPageViewModel()
-                : _playlistPageView.DataContext;
-            _playlistPageView.Show();
+                : PlaylistPageViewInstance.DataContext;
+
+            if (!viewModel.IsDocked)
+            {
+                PlaylistPageViewInstance.Show();
+            }
+
+            viewModel.IsShowing = true;
+            viewModel.Update();
         }
 
         private void VolumeAdjust(int value)
@@ -794,14 +824,14 @@ namespace DigitalAudioExperiment.ViewModel
                 if (IsAutoPlayChecked
                     && _player != null
                     && !_player.IsHardStop()
-                    && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
+                    && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel
                     && !viewModel.IsLastItem())
                 {
                     ResetPlayer();
                     SetupWithAutoPlay();
                 }
                 else if (_player != null
-                        && _playlistPageView.DataContext is PlaylistPageViewModel playListViewModel
+                        && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playListViewModel
                         && playListViewModel.IsLastItem()
                         && _player.IsStopped())
                 {
@@ -809,6 +839,32 @@ namespace DigitalAudioExperiment.ViewModel
                     playListViewModel.ResetToSelectedPlayed();
                 }
             });
+        }
+
+        private void OnDockingChanged(bool isDocked)
+        {
+            var page = PlaylistPageViewInstance.GetPlaylistPage();
+            var viewModel = PlaylistPageViewInstance.DataContext as PlaylistPageViewModel;
+
+            if (page == null)
+            {
+                return;
+            }
+
+            if (viewModel == null)
+            {
+                return;
+            }
+
+            if (viewModel.IsDocked
+                && viewModel.IsShowing)
+            {
+                PlaylistPageViewInstance.Close();
+            }
+            else if (viewModel.IsShowing) 
+            {
+                PlaylistPageViewInstance.Show();
+            }
         }
 
         #endregion
@@ -840,12 +896,12 @@ namespace DigitalAudioExperiment.ViewModel
 
                     _player?.Dispose();
 
-                    _playlistPageView?.CloseExit();
+                    PlaylistPageViewInstance?.CloseExit();
                     
-                    if (_playlistPageView?.DataContext is PlaylistPageViewModel viewModel)
+                    if (PlaylistPageViewInstance?.DataContext is PlaylistPageViewModel viewModel)
                     {
                         viewModel.Dispose();
-                        _playlistPageView.DataContext = null;
+                        PlaylistPageViewInstance.DataContext = null;
                     }
 
                     _filterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;

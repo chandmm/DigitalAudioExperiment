@@ -34,6 +34,16 @@ namespace DigitalAudioExperiment.View
 
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
+            var window = MainWindow.Instance;
+            if (playlistPage.Visibility == Visibility.Visible)
+            {
+                window.Width = 1480;
+            }
+            else
+            {
+                window.Width = 1080;
+            }
+
             OnDataContextChanged(sender, default(DependencyPropertyChangedEventArgs));
         }
 
@@ -62,6 +72,20 @@ namespace DigitalAudioExperiment.View
             }
 
             return null;
+        }
+
+        private void playlistPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if ((bool)args.NewValue)
+            {
+                var window = Window.GetWindow(this);
+                window.Width = 1480;
+            }
+            else
+            {
+                var window = Window.GetWindow(this);
+                window.Width = 1080;
+            }
         }
     }
 }

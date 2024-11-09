@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Pages;
 using DigitalAudioExperiment.ViewModel;
 using Microsoft.Win32;
 using System.Windows;
@@ -24,6 +25,8 @@ namespace DigitalAudioExperiment.View
 {
     public partial class PlaylistPageView : Window
     {
+        private bool _isVisible;
+
         public PlaylistPageView()
         {
             InitializeComponent();
@@ -109,12 +112,26 @@ namespace DigitalAudioExperiment.View
             }
         }
 
+        private void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            _isVisible = Visibility == Visibility.Visible;
+        }
+
+        public bool GetIsViewVisible()
+            => _isVisible;
+
+        public void SetPlaylistPageComponent(PlaylistPage page)
+        {
+            playlistPageComponent = page;
+        }
+
+        public PlaylistPage GetPlaylistPage()
+            => playlistPageComponent;
+
         public new void Close()
         {
             if (DataContext is PlaylistPageViewModel viewModel)
             {
-                viewModel.IsShowing = false;
-
                 base.Visibility = Visibility.Collapsed;
             }
         }

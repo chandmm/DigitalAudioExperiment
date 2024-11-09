@@ -194,5 +194,7 @@
 
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
+    <convertors:VisibilityToGridLengthConvertor x:Key="VisibilityToGridLengthConvertor"/>
+    
 
 </ResourceDictionary>    
