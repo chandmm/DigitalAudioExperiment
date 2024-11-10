@@ -51,9 +51,10 @@
                 Grid.Row="8" 
                 Grid.Column="1" 
                 Grid.ColumnSpan="6"/>
-            <controls:VolumeSliderControl 
-                Volume="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
-                Max="100" Min="0" 
+            <controls:GainSliderControl 
+                Gain="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
+                Max="100" 
+                Min="0" 
                 ControlLabel="{Binding Path=DataContext.VolumeLabel, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}" 
                 Cursor="ScrollNS"
                 Grid.Row="7" 
