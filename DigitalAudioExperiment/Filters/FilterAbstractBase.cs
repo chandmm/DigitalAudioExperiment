@@ -35,6 +35,11 @@ namespace DigitalAudioExperiment.Filters
 
         protected abstract void Dispose(bool isDisposing);
 
+        public virtual void UpdateFilterSettings(int valueOne, int valueTwo)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             Dispose(true);

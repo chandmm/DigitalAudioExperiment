@@ -50,6 +50,8 @@ namespace DigitalAudioExperiment.Logic
 
         bool IsStopped();
 
+        void SetBassTreble(int bass, int treble);
+
         #endregion
 
         #region DB RMS value calculations

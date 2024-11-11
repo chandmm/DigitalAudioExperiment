@@ -21,6 +21,7 @@ namespace DigitalAudioExperiment.Filters
     {
         float Transform(float sample, int channel);
         void UpdateFilterSettings(float lowepassCutoffFrequency,  float highepassCutoffFrequency, int filterOrder);
+        void UpdateFilterSettings(int valueOne, int valueTwo);
         FilterType GetFilterType();
         void Dispose();
     }
