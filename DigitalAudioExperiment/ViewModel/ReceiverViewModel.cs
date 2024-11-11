@@ -331,6 +331,38 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private int _bass;
+        public int Bass
+        {
+            get => _bass;
+            set
+            {
+                _bass = value;
+
+                UpdateBassTrebleSettings();
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _treble;
+        public int Treble
+        {
+            get => _treble;
+            set
+            {
+                _treble = value;
+
+                UpdateBassTrebleSettings();
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int BassTrebleRangeMax => 20;
+        public int BassTrebleRangeMin => -20;
+
+
         #endregion
 
         #region Commands
@@ -644,6 +676,7 @@ namespace DigitalAudioExperiment.ViewModel
                 HeaderData = _player.GetAudioFileInfo();
                 Metadata = _player?.GetMetadata();
 
+                UpdateBassTrebleSettings();
                 SetTickFrequency();
 
                 RaisePropertyChangedEvents();
@@ -771,6 +804,9 @@ namespace DigitalAudioExperiment.ViewModel
 
             _filterSettingsView.Show();
         }
+
+        private void UpdateBassTrebleSettings()
+            => _player?.SetBassTreble(_bass, _treble);
 
         private void Exit()
         {

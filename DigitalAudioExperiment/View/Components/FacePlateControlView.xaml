@@ -47,33 +47,56 @@
                 <TextBlock x:Name="subTitle" Text="{Binding SubTitle}" Style="{StaticResource TextBlockSubTitleStyle}"/>
             </StackPanel>
             <local:PanelControlView Grid.Row="1" Grid.RowSpan="7" Margin="10,10,10,55" Grid.ColumnSpan="10"/>
-            <controls:PlaybackControls
-                Grid.Row="8" 
-                Grid.Column="1" 
-                Grid.ColumnSpan="6"/>
-            <controls:GainSliderControl 
-                Gain="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
-                Max="100" 
-                Min="0" 
-                ControlLabel="{Binding Path=DataContext.VolumeLabel, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}" 
-                Cursor="ScrollNS"
-                Grid.Row="7" 
-                Grid.Column="10" 
-                Grid.RowSpan="3"
-                Margin="0,0,5,0"/>
-            <Button
-                ToolTip="Open playlist"
-                Width="30"
-                BorderThickness="0"
-                Background="Silver"
-                Command="{Binding Path=DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"
-                Grid.Row="8"
-                Grid.Column="7"
-                Margin="5">
-                <Button.Content>
-                    <Viewbox Child="{StaticResource OpenViewBox}"/>
-                </Button.Content>
-            </Button>
+            <Grid
+                    Grid.Column="2"
+                    Grid.Row="8"  
+                    Grid.ColumnSpan="5"
+                    HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <controls:PlaybackControls HorizontalAlignment="Stretch"/>
+                <Button Style="{StaticResource PlaylistButtonStyle}"
+                    ToolTip="Open playlist"
+                    Width="40"
+                    BorderThickness="0"
+                    Command="{Binding Path=DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"
+                    Grid.Column="1"> 
+                    <Button.Content>
+                        <Viewbox Child="{StaticResource OpenViewBox}"/>
+                    </Button.Content>
+                </Button>
+            </Grid>
+            <StackPanel VerticalAlignment="Stretch" 
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal" 
+                        Grid.Row="7" 
+                        Grid.RowSpan="3"
+                        Grid.Column="7" 
+                        Grid.ColumnSpan="3">
+                <controls:GainSliderControl 
+                    Gain="{Binding Path=DataContext.Bass, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
+                    Max="{Binding Path=DataContext.BassTrebleRangeMax, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"  
+                    Min="{Binding Path=DataContext.BassTrebleRangeMin, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"   
+                    ControlLabel=" BASS " 
+                    Cursor="ScrollNS"/>
+                <controls:GainSliderControl 
+                    Gain="{Binding Path=DataContext.Treble, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
+                    Max="{Binding Path=DataContext.BassTrebleRangeMax, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"  
+                    Min="{Binding Path=DataContext.BassTrebleRangeMin, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"  
+                    ControlLabel="TREBLE" 
+                    Cursor="ScrollNS"
+                    Grid.Column="1"/>
+                <controls:GainSliderControl 
+                    Gain="{Binding Path=DataContext.Volume, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=TwoWay}" 
+                    Max="100" 
+                    Min="0" 
+                    ControlLabel="{Binding Path=DataContext.VolumeLabel, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}" 
+                    Cursor="ScrollNS"
+                    Grid.Row="7" 
+                    Grid.Column="2"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

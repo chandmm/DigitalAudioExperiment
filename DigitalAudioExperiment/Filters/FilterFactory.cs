@@ -24,23 +24,26 @@ namespace DigitalAudioExperiment.Filters
         Lowpass,
         Highpass,
         Bandpass,
-        ButterworthBandpass
+        ButterworthBandpass,
+        BassAndTreble,
     }
 
     public static class FilterFactory
     {
-        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowpassCutoffFrequency, float highpassCutoffFrequency, int filterOrder)
+        public static IFilter GetFilterInterface(FilterType filterType, WaveFormat waveFormat, float lowValue, float highValue, int filterOrder)
         {
             switch (filterType)
             {
                 case FilterType.Lowpass:
-                    return new FilterLowpass(waveFormat, lowpassCutoffFrequency);
+                    return new FilterLowpass(waveFormat, lowValue);
                 case FilterType.Highpass:
-                    return new FilterHighpass(waveFormat, highpassCutoffFrequency);
+                    return new FilterHighpass(waveFormat, highValue);
                 case FilterType.Bandpass:
-                    return new FilterBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency);
+                    return new FilterBandpass(waveFormat, lowValue, highValue);
                 case FilterType.ButterworthBandpass:
-                    return new FilterButterworthBandpass(waveFormat, lowpassCutoffFrequency, highpassCutoffFrequency, filterOrder);
+                    return new FilterButterworthBandpass(waveFormat, lowValue, highValue, filterOrder);
+                case FilterType.BassAndTreble:
+                    return new FilterBassAndTreble(waveFormat, (int)lowValue, (int)highValue);
             }
 
             throw new NotImplementedException();
