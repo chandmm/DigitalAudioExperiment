@@ -27,7 +27,7 @@ namespace DigitalAudioExperiment.View
     public partial class PlaylistPageView : Window
     {
         private bool _isVisible;
-        private int _dockDetectionThreashold = 10;
+        private int _dockDetectionThreashold = 50;
         private bool _locationChanging;
 
         public PlaylistPageView()

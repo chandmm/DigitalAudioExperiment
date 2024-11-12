@@ -12,7 +12,7 @@
       WindowStartupLocation="CenterScreen"
       AllowsTransparency="True"
       Background="Transparent"
-      ResizeMode="CanResize"
+      ResizeMode="NoResize"
       ShowInTaskbar="False"
       IsVisibleChanged="OnVisibleChanged"
       x:Name="playlistWindow">
@@ -21,7 +21,7 @@
         <pages:PlaylistPage x:Name="playlistPageComponent"/>
         <Rectangle Width="10" 
                    Height="{Binding Height, ElementName=playlistPageComponent}"
-                   Fill="LimeGreen"
+                   Fill="OrangeRed"
                    HorizontalAlignment="Left"
                    Visibility="{Binding IsCanDock, Converter={StaticResource BoolToVisibilityConvertor}}"/>
     </Grid>
