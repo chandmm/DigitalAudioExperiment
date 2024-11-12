@@ -41,10 +41,13 @@
                 <Grid Grid.RowSpan="6" Grid.ColumnSpan="5">
                     <StackPanel Orientation="Horizontal">
                         <controls:VUControl
-                            Mark1="-20"
-                            Mark2="-10"
-                            Mark3="0"
-                            Mark4="+3"
+                            Mark1="20"
+                            Mark2="10"
+                            Mark3="7"
+                            Mark4="5"
+                            Mark5="0"
+                            Mark6="3"
+                            MeterLabel="L"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.LeftdB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
@@ -53,10 +56,13 @@
                             Margin="2"
                         />
                         <controls:VUControl
-                            Mark1="-20"
-                            Mark2="-10"
-                            Mark3="0"
-                            Mark4="+3"
+                            Mark1="20"
+                            Mark2="10"
+                            Mark3="7"
+                            Mark4="5"
+                            Mark5="0"
+                            Mark6="3"
+                            MeterLabel="R"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.RightdB, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"

@@ -422,6 +422,7 @@ namespace DigitalAudioExperiment.ViewModel
             PlaylistPageViewInstance = new PlaylistPageView();
             PlaylistPageViewInstance.DataContext = playlistViewModel;
             PlaylistPageViewInstance.SetPlaylistPageComponent(new Pages.PlaylistPage());
+            PlaylistPageViewInstance.SetDocked();
 
             RaisePropertyChangedEvents();
         }

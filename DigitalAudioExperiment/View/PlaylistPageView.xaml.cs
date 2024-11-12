@@ -193,6 +193,14 @@ namespace DigitalAudioExperiment.View
             _locationChanging = false;
         }
 
+        internal void SetDocked()
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.IsDocked = true;
+            }
+        }
+
         #endregion
 
         public new void Close()
