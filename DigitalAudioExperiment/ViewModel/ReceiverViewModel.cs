@@ -18,7 +18,9 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using DigitalAudioExperiment.Model;
 using DigitalAudioExperiment.View;
+using System.ComponentModel;
 using System.IO;
 using System.Timers;
 
@@ -37,9 +39,9 @@ namespace DigitalAudioExperiment.ViewModel
         private System.Timers.Timer _applicationHeartBeatTimer;
         private double _vuHeartBeatInterval = 3;
         private bool _canContinueLoopMode = true;
-        private FilterSettingsViewModel _filterSettingsViewModel;
         private FilterSettingsView _filterSettingsView;
         private bool _isSeeking;
+        private bool _isSettingsLoaded;
 
         #endregion
 
@@ -361,7 +363,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public int BassTrebleRangeMax => 20;
         public int BassTrebleRangeMin => -20;
-
+        public FilterSettingsViewModel FilterSettingsViewModel {get; private set;}
 
         #endregion
 
@@ -378,6 +380,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand OpenVisualisationFilterSettingsCommand { get; set; }
         public RelayCommand SetAutoplayModeToggleCommand { get; set; }
         public RelayCommand SetLoopPlayModeToggleCommand { get; set; }
+        public RelayCommand SettingsCommand { get; set; }
 
         #endregion
 
@@ -394,7 +397,7 @@ namespace DigitalAudioExperiment.ViewModel
             ExitCommand = new RelayCommand(() => Exit(), () => true);
             PlayCommand = new RelayCommand(async () => PlayButtonFromCommand(), () => true);
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
-            SelectCommand = new RelayCommand(SelectFile, () => true);
+            SelectCommand = new RelayCommand(() => SelectFile(null), () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
             SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
             SkipToEndCommand = new RelayCommand(SkipToEndButton, () => true);
@@ -402,6 +405,7 @@ namespace DigitalAudioExperiment.ViewModel
             OpenVisualisationFilterSettingsCommand = new RelayCommand(OpenVisualisationFilterSettings, () => true);
             SetAutoplayModeToggleCommand = new RelayCommand(SetAutoplayModeToggle, () => true);
             SetLoopPlayModeToggleCommand = new RelayCommand(SetLoopPlayModeToggle, () => true);
+            SettingsCommand = new RelayCommand(() => Settings.SaveReceiverSettings(this), () => true);
 
             Volume = _initialSafeVolume;
             IsAutoPlayChecked = true;
@@ -414,8 +418,8 @@ namespace DigitalAudioExperiment.ViewModel
             SeekIndicatorValue = 0;
 
             _filterSettingsView = new FilterSettingsView();
-            _filterSettingsView.DataContext = _filterSettingsViewModel = new FilterSettingsViewModel();
-            _filterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
+            _filterSettingsView.DataContext = FilterSettingsViewModel = new FilterSettingsViewModel();
+            FilterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
 
             var playlistViewModel = new PlaylistPageViewModel();
             playlistViewModel.DockingChangedEvent += OnDockingChanged;
@@ -424,7 +428,48 @@ namespace DigitalAudioExperiment.ViewModel
             PlaylistPageViewInstance.SetPlaylistPageComponent(new Pages.PlaylistPage());
             PlaylistPageViewInstance.SetDocked();
 
+            PropertyChanged += OnAnyPropertyChanged;
+
             RaisePropertyChangedEvents();
+        }
+
+        public void LoadSettings()
+        {
+            var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
+
+            if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(settingsData.PlayListFile))
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(settingsData.PlayListFile)
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.LoadPlaylistFile(settingsData.PlayListFile);
+
+                PlaylistPageViewInstance.Owner = MainWindow.Instance;
+                viewModel.IsShowing = settingsData.IsShowing;
+                viewModel.IsDocked = settingsData.IsDocked;
+
+                viewModel.Update();
+
+                _isSettingsLoaded = true;
+
+                if (viewModel.FileExistsInList(settingsData.LastPlayedFile))
+                {
+                    viewModel.SetNextSelectedToFile(settingsData.LastPlayedFile);
+                    SetupWithAutoPlay(doNotAutoPlay: true);
+
+                    return;
+                }
+            }
+
+            SelectFile(settingsData.LastPlayedFile, doNotAutoPlay: true);
         }
 
         public void SetGetFileCallback(Func<string, string> callback)
@@ -493,7 +538,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player.SetHardStop(false);
 
-            OnFilterSettingsApplied(_filterSettingsViewModel);
+            OnFilterSettingsApplied(FilterSettingsViewModel);
 
             Play();
         }
@@ -550,14 +595,17 @@ namespace DigitalAudioExperiment.ViewModel
 
         #region Audio File Management
 
-        private async void SelectFile()
+        public async void SelectFile(string? fileNameParameter = null, bool doNotAutoPlay = false)
         {
-            if (_getFile == null)
+            if (_getFile == null
+                && string.IsNullOrEmpty(fileNameParameter))
             {
                 return;
             }
 
-            var fileName = _getFile.Invoke(PlaylistPageViewModel.FileFiltersAudio);
+            var fileName = string.IsNullOrEmpty(fileNameParameter) 
+                ? _getFile.Invoke(PlaylistPageViewModel.FileFiltersAudio) 
+                : fileNameParameter;
 
             if (string.IsNullOrEmpty(fileName))
             {
@@ -580,12 +628,13 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             if (PlaylistPageViewInstance != null
-                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel)
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel
+                && string.IsNullOrEmpty(fileNameParameter))
             {
                 viewModel.RemoveAll();
             }
 
-            OnFileSelected(fileName);
+            OnFileSelected(fileName, doNotAutoPlay);
         }
 
         private void ResetPlayer()
@@ -599,7 +648,7 @@ namespace DigitalAudioExperiment.ViewModel
             SeekIndicatorValue = 0;
         }
 
-        private void OnFileSelected(string fileName)
+        private void OnFileSelected(string fileName, bool doNotAutoPlay)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -620,7 +669,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             SetupPlayListControls(fileName);
             ResetPlayer();
-            SetupWithAutoPlay(fileName: fileName);
+            SetupWithAutoPlay(fileName: fileName, doNotAutoPlay: doNotAutoPlay);
 
             if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel
                 && playlistPageViewModel.PlayList.Count() == 1
@@ -639,7 +688,7 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false, string fileName = "")
+        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false, string fileName = "", bool doNotAutoPlay = false)
         {
             if (!(PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel))
             {
@@ -683,6 +732,7 @@ namespace DigitalAudioExperiment.ViewModel
                 RaisePropertyChangedEvents();
 
                 if (IsAutoPlayChecked
+                    && !doNotAutoPlay
                     && !autoPlayOverride)
                 {
                     PlayInternal();
@@ -705,6 +755,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             DecoderType = _player?.DecoderType;
             OnPropertyChanged(nameof(DecoderType));
+            Settings.SaveSettings(this);
         }
 
         #endregion
@@ -748,6 +799,8 @@ namespace DigitalAudioExperiment.ViewModel
             PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
                 ? new PlaylistPageViewModel()
                 : PlaylistPageViewInstance.DataContext;
+
+            PlaylistPageViewInstance.Owner = MainWindow.Instance;
 
             if (!viewModel.IsDocked)
             {
@@ -795,7 +848,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (_filterSettingsView.IsDisposed())
             {
                 _filterSettingsView = new FilterSettingsView();
-                _filterSettingsView.DataContext = _filterSettingsViewModel;
+                _filterSettingsView.DataContext = FilterSettingsViewModel;
             }
 
             if (_filterSettingsView.IsLoaded)
@@ -917,6 +970,11 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 PlaylistPageViewInstance.Show();
             }
+
+            if (_isSettingsLoaded)
+            {
+                Settings.SaveSettings(this);
+            }
         }
 
         #endregion
@@ -930,6 +988,18 @@ namespace DigitalAudioExperiment.ViewModel
                 , nameof(Metadata));
         }
 
+        private void OnAnyPropertyChanged(object? sender, PropertyChangedEventArgs args)
+        {
+            switch (args.PropertyName)
+            {
+                case nameof(Bass):
+                case nameof(Treble):
+                case nameof(IsAutoPlayChecked):
+                case nameof(IsLoopPlayChecked):
+                    Settings.SaveSettings(this);
+                    break;
+            }
+        }
         #endregion
 
         #region Dispose
@@ -956,9 +1026,11 @@ namespace DigitalAudioExperiment.ViewModel
                         PlaylistPageViewInstance.DataContext = null;
                     }
 
-                    _filterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;
-                    _filterSettingsViewModel?.Dispose();
+                    FilterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;
+                    FilterSettingsViewModel?.Dispose();
                     _filterSettingsView?.Dispose();
+
+                    PropertyChanged -= OnAnyPropertyChanged;
                 }
 
                 _isDisposed = true;

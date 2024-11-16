@@ -97,6 +97,15 @@
                     Grid.Row="7" 
                     Grid.Column="2"/>
             </StackPanel>
+
+            <Button Command="{Binding SettingsCommand}"
+                Grid.Row="9" 
+                    Background="Transparent"
+                    BorderThickness="0">
+                <Button.Content>
+                    <Viewbox Child="{StaticResource SettingsCogViewBox}"/>
+                </Button.Content>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
