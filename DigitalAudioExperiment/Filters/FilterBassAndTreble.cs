@@ -24,7 +24,7 @@ namespace DigitalAudioExperiment.Filters
     {
         private float _bassGainDB;
         private float _trebleGainDB;
-        private float _bassCutoffFrequency = 250f;
+        private float _bassCutoffFrequency = 200f;
         private float _trebleCutoffFrequency = 3000f;
 
         private BiQuadFilter[] _bassFilters;

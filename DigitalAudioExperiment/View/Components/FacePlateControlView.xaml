@@ -99,11 +99,14 @@
             </StackPanel>
 
             <Button Command="{Binding SettingsCommand}"
-                Grid.Row="9" 
-                    Background="Transparent"
-                    BorderThickness="0">
+                Grid.Row="9"
+                Background="Transparent"
+                BorderThickness="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Padding="12">
                 <Button.Content>
-                    <Viewbox Child="{StaticResource SettingsCogViewBox}"/>
+                    <Viewbox Stretch="None" Child="{StaticResource SettingsCogViewBox}"/>
                 </Button.Content>
             </Button>
         </Grid>

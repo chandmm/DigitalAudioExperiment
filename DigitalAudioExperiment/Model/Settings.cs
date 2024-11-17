@@ -25,8 +25,9 @@ namespace DigitalAudioExperiment.Model
 
     public static class Settings
     {
-        private static string SettingsFilePath = "settings.json";
         private static bool _isLoading;
+
+        public const string SettingsFilePath = "settings.json";
 
         public static void SaveReceiverSettings(ReceiverViewModel receiver)
         {
@@ -76,17 +77,17 @@ namespace DigitalAudioExperiment.Model
 
             var settingsData = new SettingsData()
             {
-                Bass = receiver.Bass,
-                Treble = receiver.Treble,
-                IsAutoPlayChecked = receiver.IsAutoPlayChecked, 
-                IsLoopPlayChecked = receiver.IsLoopPlayChecked,
-                LastPlayedFile = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel)?.GetCurrentSelected(),
-                IsDocked = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel).IsDocked,
-                IsShowing = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel).IsShowing,
-                FilterType = filterViewModel.FilterTypeSet.FilterTypeValue,
-                CutoffFrequency = filterViewModel.CutoffFrequency,
-                Bandwidth = filterViewModel.Bandwidth,
-                FilterOrder = filterViewModel.FilterOrder,
+                Bass = 0,
+                Treble = 0,
+                IsAutoPlayChecked = true, 
+                IsLoopPlayChecked = false,
+                LastPlayedFile = null,
+                IsDocked = true,
+                IsShowing = false,
+                FilterType = FilterType.Bandpass,
+                CutoffFrequency = 1040,
+                Bandwidth = 2020,
+                FilterOrder = 2,
             };
 
             var options = new JsonSerializerOptions

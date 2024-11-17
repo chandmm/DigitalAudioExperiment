@@ -23,6 +23,7 @@ using DigitalAudioExperiment.View;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
+using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -41,7 +42,7 @@ namespace DigitalAudioExperiment.ViewModel
         private bool _canContinueLoopMode = true;
         private FilterSettingsView _filterSettingsView;
         private bool _isSeeking;
-        private bool _isSettingsLoaded;
+        private bool _isInitialising;
 
         #endregion
 
@@ -388,11 +389,13 @@ namespace DigitalAudioExperiment.ViewModel
 
         public ReceiverViewModel()
         {
+            _isInitialising = true;
+            _isMono = true;
+
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
             VuLabel = "DB RMS Power";
             VolumeLabel = "Volume";
-            _isMono = true;
 
             ExitCommand = new RelayCommand(() => Exit(), () => true);
             PlayCommand = new RelayCommand(async () => PlayButtonFromCommand(), () => true);
@@ -405,7 +408,7 @@ namespace DigitalAudioExperiment.ViewModel
             OpenVisualisationFilterSettingsCommand = new RelayCommand(OpenVisualisationFilterSettings, () => true);
             SetAutoplayModeToggleCommand = new RelayCommand(SetAutoplayModeToggle, () => true);
             SetLoopPlayModeToggleCommand = new RelayCommand(SetLoopPlayModeToggle, () => true);
-            SettingsCommand = new RelayCommand(() => Settings.SaveReceiverSettings(this), () => true);
+            SettingsCommand = new RelayCommand(OpenSettings, () => true);
 
             Volume = _initialSafeVolume;
             IsAutoPlayChecked = true;
@@ -458,7 +461,7 @@ namespace DigitalAudioExperiment.ViewModel
 
                 viewModel.Update();
 
-                _isSettingsLoaded = true;
+                _isInitialising = false;
 
                 if (viewModel.FileExistsInList(settingsData.LastPlayedFile))
                 {
@@ -859,6 +862,28 @@ namespace DigitalAudioExperiment.ViewModel
             _filterSettingsView.Show();
         }
 
+        private void OpenSettings()
+        {
+            var settings = new SettingsView();
+
+            using (var viewModel = new SettingsViewModel(this, FilterSettingsViewModel, settings.Close))
+            {
+                _isInitialising = true;
+
+                settings.DataContext = viewModel;
+                var result = settings.ShowDialog();
+
+                if (!viewModel.IsReset)
+                {
+                    _isInitialising = false;
+
+                    return;
+                }
+                
+                LoadSettings();
+            }
+        }
+
         private void UpdateBassTrebleSettings()
             => _player?.SetBassTreble(_bass, _treble);
 
@@ -966,15 +991,17 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 PlaylistPageViewInstance.Close();
             }
-            else if (viewModel.IsShowing) 
+            else if (viewModel.IsShowing)
             {
                 PlaylistPageViewInstance.Show();
             }
 
-            if (_isSettingsLoaded)
+            if (_isInitialising)
             {
-                Settings.SaveSettings(this);
+                return;
             }
+
+            Settings.SaveSettings(this);
         }
 
         #endregion
