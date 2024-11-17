@@ -19,6 +19,7 @@ using DigitalAudioExperiment.Filters;
 using DigitalAudioExperiment.ViewModel;
 using System.IO;
 using System.Text.Json;
+using System.Windows.Forms;
 
 namespace DigitalAudioExperiment.Model
 {
@@ -28,42 +29,6 @@ namespace DigitalAudioExperiment.Model
         private static bool _isLoading;
 
         public const string SettingsFilePath = "settings.json";
-
-        public static void SaveReceiverSettings(ReceiverViewModel receiver)
-        {
-            if (receiver is null)
-            {
-                throw new ArgumentNullException(nameof(receiver));
-            }
-
-            if (!IsSettingsExist())
-            {
-                File.WriteAllText(SettingsFilePath, "");
-            }
-
-            var settingsData = new SettingsData()
-            {
-                Bass = receiver.Bass,
-                Treble = receiver.Treble,
-                IsAutoPlayChecked = receiver.IsAutoPlayChecked,
-                IsLoopPlayChecked = receiver.IsLoopPlayChecked,
-                LastPlayedFile = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel)?.GetCurrentSelected(),
-                IsDocked = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel).IsDocked,
-                IsShowing = (receiver.PlaylistPageViewInstance.DataContext as PlaylistPageViewModel).IsShowing,
-                FilterType = receiver.FilterSettingsViewModel.FilterTypeSet.FilterTypeValue,
-                CutoffFrequency = receiver.FilterSettingsViewModel.CutoffFrequency,
-                Bandwidth = receiver.FilterSettingsViewModel.Bandwidth,
-                FilterOrder = receiver.FilterSettingsViewModel.FilterOrder,
-            };
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-
-            var jsonString = JsonSerializer.Serialize(settingsData, options);
-            File.WriteAllText(SettingsFilePath, jsonString);
-        }
 
         public static bool IsSettingsExist()
             => File.Exists(SettingsFilePath);
@@ -90,12 +55,7 @@ namespace DigitalAudioExperiment.Model
                 FilterOrder = 2,
             };
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-
-            File.WriteAllText(SettingsFilePath, JsonSerializer.Serialize(settingsData, options));
+            WriteChanges(settingsData);
         }
 
         public static void SaveSettings(object viewModel)
@@ -127,12 +87,7 @@ namespace DigitalAudioExperiment.Model
                 settingsData.IsShowing = (((ReceiverViewModel)viewModel).PlaylistPageViewInstance.DataContext as PlaylistPageViewModel).IsShowing;
             }
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-
-            File.WriteAllText(SettingsFilePath, JsonSerializer.Serialize(settingsData, options));
+            WriteChanges(settingsData);
         }
 
         public static SettingsData LoadSettings(ReceiverViewModel receiver, FilterSettingsViewModel filterViewModel)
@@ -159,20 +114,15 @@ namespace DigitalAudioExperiment.Model
         {
             if (!File.Exists(SettingsFilePath))
             {
-                var settingsData = GetDefaultDto();
+                var settingsData = GetDefaultSettingsData();
 
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                };
-
-                File.WriteAllText(SettingsFilePath, JsonSerializer.Serialize(settingsData, options));
+                WriteChanges(settingsData);
             }
 
             return JsonSerializer.Deserialize<SettingsData>(File.ReadAllText(SettingsFilePath));
         }
 
-        private static SettingsData GetDefaultDto()
+        private static SettingsData GetDefaultSettingsData()
         {
             return new SettingsData()
             {
@@ -182,9 +132,21 @@ namespace DigitalAudioExperiment.Model
                 CutoffFrequency = 1040,
                 Bandwidth = 2020,
                 FilterOrder = 2,
+                IsDocked = true,
+                IsShowing = false,
+                IsAutoPlayChecked = true,
+                IsLoopPlayChecked = false,
             };
         }
 
+        private static void WriteChanges(SettingsData settingsData)
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
 
+            File.WriteAllText(SettingsFilePath, JsonSerializer.Serialize(settingsData, options));
+        }
     }
 }

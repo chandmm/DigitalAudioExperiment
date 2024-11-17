@@ -128,7 +128,7 @@
             <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="Black"/>
             <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="Black"/>
             <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="Black"/>
-            <Path Data="m 4.5285592,9.11168 h 7.5294118 v 0.968457 H 4.5285592 Z" Stroke="{StaticResource ComponentBackgroundColour}"/>
+            <Path Data="m 4.5285592,9.11168 h 7.5294118 v 0.968457 H 4.5285592 Z" Stroke="{StaticResource ComponentHighlightColour}"/>
             <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="Black"/>
             <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="Black"/>
         </Grid>
