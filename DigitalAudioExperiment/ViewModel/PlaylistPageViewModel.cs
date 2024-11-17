@@ -34,13 +34,13 @@ namespace DigitalAudioExperiment.ViewModel
         private readonly string _saveFileFilters = "Playlist Files (*.xml)|*.xml";
 
         private bool _isDisposed;
-        private PlaylistModel? _currentlyPlaying;
         private Func<string, string[]> _getFileCallback;
         private Func<string, string, string?> _getSaveFilePathCallback;
         private Action _closeAction;
         private int _previousPlayIndex = -1;
-        public delegate void DockingChanged(bool isDocked);
+        private string? _currentPlaylist;
 
+        public delegate void DockingChanged(bool isDocked);
         public event DockingChanged DockingChangedEvent;
 
         #endregion
@@ -114,7 +114,7 @@ namespace DigitalAudioExperiment.ViewModel
             RemoveCommand = new RelayCommand(Remove, () => true);
             AddFileCommand = new RelayCommand(AddFile, () => true);
             SavePlaylistCommand = new RelayCommand(SavePlaylist, () => true);
-            LoadPlaylistCommand = new RelayCommand(LoadPlaylist, () => true);
+            LoadPlaylistCommand = new RelayCommand(() => LoadPlaylist(), () => true);
             MoveUpCommand = new RelayCommand(() => MoveItem(false), () => true);
             MoveDownCommand = new RelayCommand(MoveItemDown, () => true);
             DockToggleCommand = new RelayCommand(DockToggle, () => true);
@@ -225,6 +225,8 @@ namespace DigitalAudioExperiment.ViewModel
 
             PlayList.Clear();
 
+            _currentPlaylist = null;
+
             OnPropertyChanged(nameof(IsHasList));
         }
 
@@ -286,18 +288,27 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-        private void LoadPlaylist()
+        private void LoadPlaylist(string? fileName = null)
         {
-            if (_getFileCallback == null)
+            if (_getFileCallback == null
+                && string.IsNullOrEmpty(fileName))
             {
                 return;
             }
 
-            var filePath = _getFileCallback(_fileFiltersPlaylist)
+            var filePath = (string.IsNullOrEmpty(fileName) ? _getFileCallback(_fileFiltersPlaylist) : new[] { fileName })
                 ?.Where(x => x.EndsWith(".xml"))
                 .Select(x => x)
                 .First();
 
+            LoadPlaylistFromFile(filePath);
+        }
+
+        public void LoadPlaylistFile(string? fileName)
+            => LoadPlaylist(fileName);
+
+        public void LoadPlaylistFromFile(string filePath)
+        {
             if (string.IsNullOrEmpty(filePath))
             {
                 return;
@@ -319,6 +330,8 @@ namespace DigitalAudioExperiment.ViewModel
                 PlayList.First().IsSelected = true;
                 ResetToSelectedPlayed();
             }
+
+            _currentPlaylist = filePath;
         }
 
         public void SetPlaylistViewControl(Action closeAction)
@@ -416,6 +429,32 @@ namespace DigitalAudioExperiment.ViewModel
             OnPropertyChanged(nameof(IsDocked), 
                 nameof(IsShowing));
         }
+
+        public bool FileExistsInList(string path)
+            => PlayList.Any(x => x.FullFilePathName.Equals(path));
+
+        public void SetNextSelectedToFile(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
+            var model = PlayList.FirstOrDefault(x => x.FullFilePathName.Equals(path));
+            _previousPlayIndex = PlayList.IndexOf(model) - 1;
+
+            HandleIsSelected(model);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        public string? GetCurrentSelected()
+            => PlayList?.FirstOrDefault(x => x.IsSelected)?.FullFilePathName;
+
+        public string GetCurrentlyLoadedPlaylistFilePath()
+            => _currentPlaylist;
 
         #endregion
 

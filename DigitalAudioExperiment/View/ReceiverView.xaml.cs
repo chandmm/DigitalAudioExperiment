@@ -35,6 +35,11 @@ namespace DigitalAudioExperiment.View
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             OnDataContextChanged(sender, default(DependencyPropertyChangedEventArgs));
+            
+           if (DataContext is ReceiverViewModel viewModel)
+            {
+                viewModel.LoadSettings();
+            }
         }
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
@@ -64,7 +69,7 @@ namespace DigitalAudioExperiment.View
             return null;
         }
 
-        private void playlistPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs args)
+        private void PlaylistPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
             if ((bool)args.NewValue)
             {

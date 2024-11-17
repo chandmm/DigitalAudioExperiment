@@ -33,7 +33,6 @@ namespace DigitalAudioExperiment.View
         public PlaylistPageView()
         {
             InitializeComponent();
-
             DataContextChanged += OnDataContextChanged;
             Loaded += OnLoaded;
             LocationChanged += OnLocationChanged;
@@ -52,6 +51,7 @@ namespace DigitalAudioExperiment.View
                 viewModel.SetGetFileCallback(GetFile);
                 viewModel.SetGetSaveFileCallback(GetSaveFile);
                 viewModel.SetPlaylistViewControl(Close);
+                Owner = MainWindow.Instance;
             }
         }
 

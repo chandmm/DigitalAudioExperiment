@@ -21,7 +21,7 @@
             <components:FacePlateControlView/>
             <Grid x:Name="playlistPage"
                   Grid.Column="1"
-                  IsVisibleChanged="playlistPage_IsVisibleChanged"
+                  IsVisibleChanged="PlaylistPage_IsVisibleChanged"
                   DataContext="{Binding PlaylistPageViewInstance.DataContext}">
                 <Grid.Resources>
                     <Style TargetType="Grid">

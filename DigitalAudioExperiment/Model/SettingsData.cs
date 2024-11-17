@@ -15,34 +15,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System.Windows;
-using System.Windows.Input;
+using DigitalAudioExperiment.Filters;
 
-namespace DigitalAudioExperiment
+namespace DigitalAudioExperiment.Model
 {
-    public partial class MainWindow : Window
+    public class SettingsData
     {
-        public static MainWindow Instance { get; private set; }
-
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            Loaded += OnLoaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            Instance = this;
-        }
-
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs args)
-        {
-            base.OnMouseLeftButtonDown(args);
-
-            this.DragMove();
-
-            args.Handled = true;
-        }
+        public int Bass { get; set; }
+        public int Treble { get; set; }
+        public string? PlayListFile { get; set; }
+        public string? LastPlayedFile { get; set; }
+        public FilterType FilterType { get; set; }
+        public int CutoffFrequency { get; set; }
+        public int Bandwidth { get; set; }
+        public int FilterOrder { get; set; }
+        public bool IsAutoPlayChecked { get; set; }
+        public bool IsLoopPlayChecked { get; set; }
+        public bool IsDocked { get; set; }
+        public bool IsShowing { get; set; }
     }
 }
