@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\AudioPlayerFacePlateRounded.png">
+    <Content Include="Resources\Themes\AudioPlayerFacePlateRounded.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\DaeIconResized.ico">

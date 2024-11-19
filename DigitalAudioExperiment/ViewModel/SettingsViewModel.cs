@@ -17,20 +17,83 @@
 */
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
     public class SettingsViewModel : BaseViewModel
     {
+        #region Constant Fields
+
+        public const string DefaultThemeImage = "AudioPlayerFacePlateRounded.png";
+        public const string ThemePath = "Resources/Themes";
+
+        #endregion
+
+        #region Fields
+
         private ReceiverViewModel _receiver;
         private FilterSettingsViewModel _filterSettingsViewModel;
+        private Func<string, string[]> _getFiles;
+
+        #endregion
+
+        #region Properties
 
         public bool IsReset { get; private set; }
 
-        public RelayCommand ResetToDefaultCommand { get; set; }
-        public RelayCommand CloseCommand { get; set; }
+        private bool _isShowThemeSetting;
+        public bool IsShowThemeSetting 
+        { 
+            get => _isShowThemeSetting; 
+            set
+            {
+                _isShowThemeSetting = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<ThematicModel> _thematicList;
+        public ObservableCollection<ThematicModel> ThematicList
+        {
+            get => _thematicList;
+            set
+            {
+                _thematicList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ThematicModel _thematic;
+        public ThematicModel Thematic
+        {
+            get => _thematic;
+            set
+            {
+                _thematic = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand ResetToDefaultCommand { get; private set; }
+        public RelayCommand CloseCommand { get; private set; }
+        public RelayCommand ThemesCommand { get; private set; }
+        public RelayCommand AddThemeCommand { get; private set; }
+        public RelayCommand ApplyThemeCommand { get; private set; }
+        public RelayCommand DeleteThemeCommand { get; private set; }
+        public RelayCommand SaveCommand { get; private set; }
+
+        #endregion
 
         public SettingsViewModel(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
         {
@@ -39,6 +102,170 @@ namespace DigitalAudioExperiment.ViewModel
 
             ResetToDefaultCommand = new RelayCommand(ResetToDefault, () => true);
             CloseCommand = new RelayCommand(() => windowCloseFunction?.Invoke(), () => true);
+            ThemesCommand = new RelayCommand(() => IsShowThemeSetting = !IsShowThemeSetting, () => true);
+            AddThemeCommand = new RelayCommand(AddThemeFileToList, () => true);
+            ApplyThemeCommand = new RelayCommand(ApplyTheme, () => true);
+            DeleteThemeCommand = new RelayCommand(DeleteTheme, () => true);
+            SaveCommand = new RelayCommand(Save, () => true);
+
+            Initialise();
+        }
+
+        private void Initialise()
+        {
+            ThematicList = BuildImageListFromApplicationFolder();
+
+            Thematic = GetCurrentTheme();
+        }
+
+        #region Manage Theme
+
+        private ThematicModel GetCurrentTheme()
+        {
+            try
+            { 
+                var imageName = Path.GetFileName(((BitmapImage)Application.Current.Resources["ReceiverFacePlateImageSource"]).UriSource.OriginalString);
+
+                return ThematicList.FirstOrDefault(x => x.ImagePath.Contains(imageName));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static ImageSource LoadImage(string filePath)
+        {
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure it's fully loaded into memory
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                    bitmap.Freeze(); // Make it thread-safe and immutable
+                    return bitmap;
+                }
+            }
+            catch
+            {
+                return CreateSolidColourImage(Colors.Black, 1, 1);
+            }
+        }
+
+        private static ImageSource CreateSolidColourImage(Color color, int width, int height)
+        {
+            var pixelData = new byte[4 * width * height]; // 4 bytes per pixel: ARGB
+            for (int i = 0; i < pixelData.Length; i += 4)
+            {
+                pixelData[i] = color.B;
+                pixelData[i + 1] = color.G;
+                pixelData[i + 2] = color.R;
+                pixelData[i + 3] = color.A;
+            }
+
+            var bitmap = BitmapSource.Create(
+                width, height, 96, 96, PixelFormats.Pbgra32, null, pixelData, 4 * width);
+            bitmap.Freeze(); // Make it immutable and thread-safe
+            return bitmap;
+        }
+
+        private void DeleteTheme()
+        {
+            var result = MessageBox.Show("This will permenantly delete this theme. Are you sure?"
+                , "Reset Settings"
+                , MessageBoxButton.YesNo
+                , MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            var currentThematic = Thematic;
+
+            Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Contains(DefaultThemeImage));
+            ApplyTheme();
+
+            if (File.Exists(currentThematic.ImagePath)
+                && !currentThematic.ImagePath.Contains("AudioPlayerFacePlateRounded.png"))
+            {
+
+                File.Delete(currentThematic.ImagePath);
+            }
+
+            if (currentThematic.ImagePath.Contains(DefaultThemeImage))
+            {
+                MessageBox.Show("You cannot delete the default application theme");
+                return;
+            }
+
+            ThematicList = BuildImageListFromApplicationFolder();
+        }
+
+        private void ApplyTheme()
+        {
+            Application.Current.Resources["ReceiverFacePlateImageSource"] = LoadImage(Thematic.ImagePath);
+        }
+
+        public void SetOpenFileDialog(Func<string, string[]> getFiles)
+            => _getFiles = getFiles;
+
+        private void AddThemeFileToList()
+        {
+            var currentThematic = Thematic;
+
+            if (_getFiles == null)
+            {
+                return;
+            }
+
+            var files = _getFiles?.Invoke("PNG file| *.png");
+
+            if (files == null)
+            {
+                return;
+            }
+
+            var resourceFolder = Path.Combine(Directory.GetCurrentDirectory(), ThemePath);
+
+            foreach (var file in files)
+            {
+                if (File.Exists(Path.Combine(resourceFolder, Path.GetFileName(file))))
+                {
+                    continue;
+                }
+
+                File.Copy(file, Path.Combine(resourceFolder, Path.GetFileName(file)));
+            }
+
+            ThematicList = BuildImageListFromApplicationFolder();
+
+            Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Equals(currentThematic.ImagePath));
+        }
+
+        private ObservableCollection<ThematicModel> BuildImageListFromApplicationFolder()
+        {
+            var collection = new ObservableCollection<ThematicModel>();
+
+            //foreach (var path in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), ThemePath)
+            //     , "*.png"))
+            //{
+            //    collection.Add(new ThematicModel()
+            //    {
+            //        ImagePath = path,
+            //        Description = Path.GetFileNameWithoutExtension(path)
+            //    });
+            //}
+
+            foreach (var path in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), ThemePath), "*.xml"))
+            {
+                collection.Add(Load(path));
+            }
+
+            return collection;
         }
 
         private void ResetToDefault()
@@ -63,6 +290,37 @@ namespace DigitalAudioExperiment.ViewModel
             Settings.CreateIfNotExists(_receiver, _filterSettingsViewModel);
         }
 
+        #endregion
+
+        #region Save and Load Theme
+
+        private void Save()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), ThemePath, "DefaultTheme.xml");
+            var serialiser = new XmlSerializer(typeof(ThematicModel));
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            {
+                serialiser.Serialize(fs, Thematic);
+            }
+        }
+
+        private ThematicModel Load(string filePath)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(ThematicModel));
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Open))
+            {
+                return (ThematicModel)serializer.Deserialize(fs);
+
+            }
+
+        }
+
+        #endregion
+
+        #region Dispose
+
         protected override void Dispose(bool isDisposng)
         {
             if (!_isDisposed)
@@ -76,5 +334,7 @@ namespace DigitalAudioExperiment.ViewModel
                 _isDisposed = true;
             }
         }
+
+        #endregion
     }
 }

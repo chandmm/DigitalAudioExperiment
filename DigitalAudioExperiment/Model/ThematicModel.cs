@@ -15,15 +15,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System.Windows.Controls;
-
-namespace DigitalAudioExperiment.Pages
+namespace DigitalAudioExperiment.Model
 {
-    public partial class PlaylistPage : UserControl
+    public class ThematicModel
     {
-        public PlaylistPage()
-        {
-            InitializeComponent();
-        }
+        public string ImagePath { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
+        public string ComponentBackgroundColour { get; set; }
+        public string ComponentForegroundColour { get; set; }
+        public string ComponentHighlightColour { get; set; }
+        public string ComponentBorderColour { get; set; }
     }
 }

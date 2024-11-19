@@ -19,9 +19,9 @@ using System.Windows.Controls;
 
 namespace DigitalAudioExperiment.Pages
 {
-    public partial class PlaylistPage : UserControl
+    public partial class ThemeSettings : UserControl
     {
-        public PlaylistPage()
+        public ThemeSettings()
         {
             InitializeComponent();
         }

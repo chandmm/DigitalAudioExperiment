@@ -23,7 +23,7 @@ using DigitalAudioExperiment.View;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
-using System.Xml.Serialization;
+using System.Windows.Media.Imaging;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -439,6 +439,9 @@ namespace DigitalAudioExperiment.ViewModel
         public void LoadSettings()
         {
             var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
+
+            App.Current.Resources["ReceiverFacePlateImageSource"] =
+                new BitmapImage(new Uri(Path.Combine(SettingsViewModel.ThemePath, "AudioPlayerFacePlateRounded.png"), UriKind.RelativeOrAbsolute));
 
             if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
             {
