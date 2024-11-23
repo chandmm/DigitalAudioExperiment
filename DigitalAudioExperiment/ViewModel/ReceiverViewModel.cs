@@ -20,6 +20,7 @@ using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.Model;
 using DigitalAudioExperiment.View;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;

@@ -8,6 +8,9 @@
     <SolidColorBrush x:Key="ComponentForegroundColour" Color="White"/>
     <SolidColorBrush x:Key="ComponentBorderColour" Color="Black"/>
     <SolidColorBrush x:Key="ComponentDefaultBackgroundColour" Color="Black"/>
+    <SolidColorBrush x:Key="ComponentDefaultDialogBackgroundColour" Color="Silver"/>
+    <SolidColorBrush x:Key="ComponentDefaultDialogForegroundColour" Color="Black"/>
+    <SolidColorBrush x:Key="ApplicationTransparentBackgroundColour" Color="Transparent"/>
 
     <system:Double x:Key="appWidth">1080</system:Double>
     <system:Double x:Key="appHeight">476</system:Double>
@@ -80,7 +83,15 @@
         <Setter Property="Foreground" Value="{StaticResource ComponentForegroundColour}"/>
         <Setter Property="Padding" Value="5"/>
     </Style>
-    
+
+    <Style TargetType="Label" x:Key="DialogLabelTitleStyle">
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="Foreground" Value="{StaticResource ComponentDefaultDialogForegroundColour}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
     <!--Templates-->
     <DataTemplate x:Key="PlaylistItemsTemplate">
         <Grid>

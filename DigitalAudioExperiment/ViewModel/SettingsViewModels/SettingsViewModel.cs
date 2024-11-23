@@ -24,7 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
-namespace DigitalAudioExperiment.ViewModel
+namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
@@ -32,6 +32,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public const string DefaultThemeImage = "AudioPlayerFacePlateRounded.png";
         public const string ThemePath = "Resources/Themes";
+        public const string DefaultThematicFileName = "DefaultTheme.xml";
 
         #endregion
 
@@ -48,9 +49,9 @@ namespace DigitalAudioExperiment.ViewModel
         public bool IsReset { get; private set; }
 
         private bool _isShowThemeSetting;
-        public bool IsShowThemeSetting 
-        { 
-            get => _isShowThemeSetting; 
+        public bool IsShowThemeSetting
+        {
+            get => _isShowThemeSetting;
             set
             {
                 _isShowThemeSetting = value;
@@ -114,9 +115,20 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void Initialise()
         {
-            ThematicList = BuildImageListFromApplicationFolder();
+            // Always create default settings to preserve sanity incase of external file changes.
+            CreateDefaultSettings();
 
-            Thematic = GetCurrentTheme();
+            //ThematicList = BuildImageListFromApplicationFolder();
+
+            //Thematic = GetCurrentTheme();
+            Thematic = Load(Path.Combine(ThemePath, DefaultThematicFileName));
+
+            ApplyTheme();
+        }
+
+        private void CreateDefaultSettings()
+        {
+            Save(ThematicModel.GetDefaultSettings(), DefaultThematicFileName);
         }
 
         #region Manage Theme
@@ -124,7 +136,7 @@ namespace DigitalAudioExperiment.ViewModel
         private ThematicModel GetCurrentTheme()
         {
             try
-            { 
+            {
                 var imageName = Path.GetFileName(((BitmapImage)Application.Current.Resources["ReceiverFacePlateImageSource"]).UriSource.OriginalString);
 
                 return ThematicList.FirstOrDefault(x => x.ImagePath.Contains(imageName));
@@ -297,12 +309,18 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void Save()
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), ThemePath, "DefaultTheme.xml");
+            // Save button saves Thematic and user provided theme name.
+            // Save(Thematic, userFileName);
+        }
+
+        private void Save(ThematicModel model, string fileName)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), ThemePath, fileName);
             var serialiser = new XmlSerializer(typeof(ThematicModel));
 
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
-                serialiser.Serialize(fs, Thematic);
+                serialiser.Serialize(fs, model);
             }
         }
 

@@ -17,9 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\Themes\AudioPlayerFacePlateRounded.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\DaeIconResized.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -32,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Flac.Unknown" Version="1.0.2" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
@@ -39,6 +37,7 @@
 
   <ItemGroup>
     <Folder Include="ExternalDependencies\" />
+    <Folder Include="Resources\Themes\" />
   </ItemGroup>
 
   <ItemGroup>

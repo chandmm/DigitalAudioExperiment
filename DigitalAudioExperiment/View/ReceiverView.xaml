@@ -8,7 +8,7 @@
              xmlns:pages="clr-namespace:DigitalAudioExperiment.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="{StaticResource ComponentDefaultBackgroundColour}">
+             Background="{StaticResource ApplicationTransparentBackgroundColour}">
     
     <Grid Background="Transparent">
         <Viewbox Stretch="Fill">
