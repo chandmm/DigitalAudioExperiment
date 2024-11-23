@@ -362,8 +362,6 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
-
-
         public int BassTrebleRangeMax => 20;
         public int BassTrebleRangeMin => -20;
         public FilterSettingsViewModel FilterSettingsViewModel { get; private set; }
@@ -1000,7 +998,7 @@ namespace DigitalAudioExperiment.ViewModel
             SwitchForeground = "White";
             // Volume, bass, treble controls
             GainSliderMidBarFill = "Red";
-            GainSliderTextForeground = "LimeGreen";
+            GainSliderTextForeground = "White";
             GainSliderTickForeground = "White";
             // Power button Control
             PowerButtonLightFill = "Red";

@@ -42,7 +42,7 @@
                 Grid.ColumnSpan="2"
                 Padding="0,20,0,20"/>
             <controls:PowerButtonControl Grid.Column="9" 
-                ExitCommand="{Binding ExitCommand}" 
+                ExitCommand="{Binding Path=DataContext.ExitCommand, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                 Margin="5" 
                 Background="Transparent" 
                 HorizontalAlignment="Right"
