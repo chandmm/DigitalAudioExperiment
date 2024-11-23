@@ -95,6 +95,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         #endregion
 
+        // TODO: Make folders relative. I.e instead of full path, use 'Resources/Themes'
         public SettingsViewModel(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
         {
             _receiver = receiver;
