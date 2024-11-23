@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="Themes/DaeThematics.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <viewmodel:ReceiverViewModel x:Key="ReceiverViewModelKey"/>
-            <BitmapImage x:Key="ReceiverFacePlateImageSource" UriSource="notused" />
+            <BitmapImage x:Key="ReceiverFacePlateImageSource" UriSource="placeholder.png"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

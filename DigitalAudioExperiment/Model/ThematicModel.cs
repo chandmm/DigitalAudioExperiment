@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Drawing;
+using Xceed.Wpf.Toolkit.PropertyGrid.Converters;
 
 namespace DigitalAudioExperiment.Model
 {
@@ -68,7 +69,9 @@ namespace DigitalAudioExperiment.Model
         #endregion
 
         #region Properties
-
+        //Thematic options
+        public bool IsDefault {  get; set; }
+        public bool IsApplication { get; set; }
         // Application
         public string ImagePath { get; set; }
         public string Description { get; set; }
@@ -174,6 +177,7 @@ namespace DigitalAudioExperiment.Model
             StereoOffFill = DefaultStereoOffFill,
             LabelForeground = DefaultLabelForeground,
             ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
+            IsApplication = true,
         };
 
         #endregion

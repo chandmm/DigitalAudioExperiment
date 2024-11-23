@@ -34,6 +34,8 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         public const string ThemePath = "Resources/Themes";
         public const string DefaultThematicFileName = "DefaultTheme.xml";
 
+        private static SettingsViewModel Instance = null;
+
         #endregion
 
         #region Fields
@@ -97,7 +99,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         #endregion
 
         // TODO: Make folders relative. I.e instead of full path, use 'Resources/Themes'
-        public SettingsViewModel(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
+        private SettingsViewModel(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
         {
             _receiver = receiver;
             _filterSettingsViewModel = filterSettingsViewModel;
@@ -113,15 +115,20 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             Initialise();
         }
 
+        public static SettingsViewModel GetSettingsInstance(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
+        {
+            Instance = Instance ?? new SettingsViewModel(receiver, filterSettingsViewModel, windowCloseFunction);
+
+            return Instance;
+        }
+
         private void Initialise()
         {
             // Always create default settings to preserve sanity incase of external file changes.
             CreateDefaultSettings();
 
-            //ThematicList = BuildImageListFromApplicationFolder();
-
-            //Thematic = GetCurrentTheme();
-            Thematic = Load(Path.Combine(ThemePath, DefaultThematicFileName));
+            ThematicList = LoadThemeListFromApplicationFolder();
+            Thematic = GetDefaultTheme();
 
             ApplyTheme();
         }
@@ -129,6 +136,26 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         private void CreateDefaultSettings()
         {
             Save(ThematicModel.GetDefaultSettings(), DefaultThematicFileName);
+        }
+
+        private ThematicModel GetDefaultTheme()
+        {
+            var thematic = ThematicList.FirstOrDefault(x => x.IsDefault);
+            if (thematic == null)
+            {
+                try
+                {
+                    thematic = ThematicList.First(x => x.IsApplication);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show($"Default theme could not be found. Internal defaults will be loaded. Error details: {exception.Message}");
+
+                    return ThematicModel.GetDefaultSettings();
+                }
+            }
+
+            return thematic;
         }
 
         #region Manage Theme
@@ -203,19 +230,19 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             ApplyTheme();
 
             if (File.Exists(currentThematic.ImagePath)
-                && !currentThematic.ImagePath.Contains("AudioPlayerFacePlateRounded.png"))
+                && !currentThematic.IsApplication)
             {
 
                 File.Delete(currentThematic.ImagePath);
             }
 
-            if (currentThematic.ImagePath.Contains(DefaultThemeImage))
+            if (currentThematic.IsApplication)
             {
                 MessageBox.Show("You cannot delete the default application theme");
                 return;
             }
 
-            ThematicList = BuildImageListFromApplicationFolder();
+            ThematicList = LoadThemeListFromApplicationFolder();
         }
 
         private void ApplyTheme()
@@ -254,26 +281,16 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
                 File.Copy(file, Path.Combine(resourceFolder, Path.GetFileName(file)));
             }
 
-            ThematicList = BuildImageListFromApplicationFolder();
+            ThematicList = LoadThemeListFromApplicationFolder();
 
             Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Equals(currentThematic.ImagePath));
         }
 
-        private ObservableCollection<ThematicModel> BuildImageListFromApplicationFolder()
+        private ObservableCollection<ThematicModel> LoadThemeListFromApplicationFolder()
         {
             var collection = new ObservableCollection<ThematicModel>();
 
-            //foreach (var path in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), ThemePath)
-            //     , "*.png"))
-            //{
-            //    collection.Add(new ThematicModel()
-            //    {
-            //        ImagePath = path,
-            //        Description = Path.GetFileNameWithoutExtension(path)
-            //    });
-            //}
-
-            foreach (var path in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), ThemePath), "*.xml"))
+            foreach (var path in Directory.GetFiles(ThemePath, "*.xml"))
             {
                 collection.Add(Load(path));
             }
@@ -334,6 +351,11 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             }
 
+        }
+
+        public void ApplyCurrentTheme()
+        {
+            ApplyTheme();
         }
 
         #endregion

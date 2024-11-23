@@ -922,10 +922,8 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
 
-            App.Current.Resources["ReceiverFacePlateImageSource"] =
-                new BitmapImage(new Uri(Path.Combine(SettingsViewModel.ThemePath, "AudioPlayerFacePlateRounded.png"), UriKind.RelativeOrAbsolute));
-
             SetupColours();
+            SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
 
             if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
             {
@@ -1404,7 +1402,7 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settings = new SettingsView();
 
-            using (var viewModel = new SettingsViewModel(this, FilterSettingsViewModel, settings.Close))
+            using (var viewModel = SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, settings.Close))
             {
                 _isInitialising = true;
 
