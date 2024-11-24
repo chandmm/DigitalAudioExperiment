@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DigitalAudioExperiment.Pages.SettingsPages"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,7 +14,52 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-            
+
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Power Button Light Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="0" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.PowerButtonLightFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="0" Grid.Column="1" />
+
+        <Label Content="Power Button Stroke Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="1" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.PowerButtonStrokeFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="1" Grid.Column="1" />
+
+        <Label Content="Power Button Highlight:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="2" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.PowerButtonHighlight}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="2" Grid.Column="1" />
     </Grid>
 </UserControl>

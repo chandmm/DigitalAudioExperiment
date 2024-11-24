@@ -15,15 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System.Drawing;
-using Xceed.Wpf.Toolkit.PropertyGrid.Converters;
+using System.IO;
 
 namespace DigitalAudioExperiment.Model
 {
     public class ThematicModel
     {
         #region Constants
+        // Application
+        public const string DefaultThemeGuid = "BF61B3F9-2810-43EF-B710-C4C41EEB972C";
 
+        // Theme
         public const string DefaultBackgroundColour = "DodgerBlue";
         public const string DefaultNeedleColour = "Black";
         public const string DefaultDecalColour = "Black";
@@ -71,9 +73,11 @@ namespace DigitalAudioExperiment.Model
         #region Properties
         //Thematic options
         public bool IsDefault {  get; set; }
-        public bool IsApplication { get; set; }
+        public string Id { get; set; }
         // Application
+        public string ThematicFileName { get; set; }
         public string ImagePath { get; set; }
+        public string ImageName { get => Path.GetFileName(ImagePath); }
         public string Description { get; set; }
         public string Name { get; set; }
         public string ComponentBackgroundColour { get; set; }
@@ -176,9 +180,18 @@ namespace DigitalAudioExperiment.Model
             StereoOnFill = DefaultStereoOnFill,
             StereoOffFill = DefaultStereoOffFill,
             LabelForeground = DefaultLabelForeground,
+            //Application
             ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
-            IsApplication = true,
+            Description = "Default Theme",
+            ThematicFileName = "DefaultTheme.xml",
+            ImagePath = Path.Combine("Resources/Themes", "AudioPlayerFacePlateRounded.png"),
+            Id = DefaultThemeGuid,
         };
+
+        public ThematicModel Clone()
+        {
+            return (ThematicModel)this.MemberwiseClone();
+        }
 
         #endregion
 

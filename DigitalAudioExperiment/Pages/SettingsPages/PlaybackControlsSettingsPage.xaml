@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DigitalAudioExperiment.Pages.SettingsPages"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,7 +14,131 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-            
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Skip to Start Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="0" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SkipToStartButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="0" Grid.Column="1" />
+
+        <Label Content="Stop Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="1" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.StopButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="1" Grid.Column="1" />
+
+        <Label Content="Play Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="2" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.PlayButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="2" Grid.Column="1" />
+
+        <Label Content="Pause Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="3" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.PauseButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="3" Grid.Column="1" />
+
+        <Label Content="Skip to End Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="4" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SkipToEndButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="4" Grid.Column="1" />
+
+        <Label Content="Select Button Fill:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="5" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SelectButtonFill}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="5" Grid.Column="1" />
+
+        <Label Content="Switch On Background:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="6" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SwitchOnBackground}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="6" Grid.Column="1" />
+
+        <Label Content="Switch Off Background:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="7" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SwitchOffBackground}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="7" Grid.Column="1" />
+
+        <Label Content="Switch Foreground:" 
+           VerticalAlignment="Center" 
+           Margin="5"
+           Grid.Row="8" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.SwitchForeground}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False" 
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="8" Grid.Column="1" />
     </Grid>
 </UserControl>

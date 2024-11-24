@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DigitalAudioExperiment.Pages.SettingsPages"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,7 +14,78 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-            
+
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Mono On Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="0" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.MonoOnFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="0" Grid.Column="1" />
+
+        <Label Content="Mono Off Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="1" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.MonoOffFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="1" Grid.Column="1" />
+
+        <Label Content="Stereo On Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="2" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.StereoOnFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="2" Grid.Column="1" />
+
+        <Label Content="Stereo Off Fill:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="3" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.StereoOffFill}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="3" Grid.Column="1" />
+
+        <Label Content="Label Foreground:" 
+               VerticalAlignment="Center" 
+               Margin="5"
+               Grid.Row="4" Grid.Column="0" />
+        <xctk:ColorPicker SelectedColor="{Binding Thematic.LabelForeground}" 
+                          ColorMode="ColorPalette" 
+                          UsingAlphaChannel="False" 
+                          DisplayColorAndName="True"
+                          DisplayColorTooltip="True"
+                          Margin="5"
+                          Grid.Row="4" Grid.Column="1" />
     </Grid>
 </UserControl>

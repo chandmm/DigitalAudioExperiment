@@ -15,9 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.Extensions;
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
+using DigitalAudioExperiment.View.Dialogs;
+using DigitalAudioExperiment.ViewModel.Dialogs;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -43,6 +47,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         private ReceiverViewModel _receiver;
         private FilterSettingsViewModel _filterSettingsViewModel;
         private Func<string, string[]> _getFiles;
+        private Action _windowCloseFunction;
 
         #endregion
 
@@ -69,6 +74,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             set
             {
                 _thematicList = value;
+
                 OnPropertyChanged();
             }
         }
@@ -80,9 +86,12 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             set
             {
                 _thematic = value;
+
                 OnPropertyChanged();
             }
         }
+
+        public bool HasChanges { get; private set; }
 
         #endregion
 
@@ -91,61 +100,107 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         public RelayCommand ResetToDefaultCommand { get; private set; }
         public RelayCommand CloseCommand { get; private set; }
         public RelayCommand ThemesCommand { get; private set; }
-        public RelayCommand AddThemeCommand { get; private set; }
+        public RelayCommand AddImageCommand { get; private set; }
         public RelayCommand ApplyThemeCommand { get; private set; }
         public RelayCommand DeleteThemeCommand { get; private set; }
-        public RelayCommand SaveCommand { get; private set; }
+        public RelayCommand CreateNewThemeCommand { get; private set; }
 
         #endregion
 
         // TODO: Make folders relative. I.e instead of full path, use 'Resources/Themes'
+        // TODO: Have some kind of active theme that is autosaved. Load this up each time. So changes whether saved or unsaved is retained.
         private SettingsViewModel(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
         {
             _receiver = receiver;
             _filterSettingsViewModel = filterSettingsViewModel;
+            _windowCloseFunction = windowCloseFunction;
 
             ResetToDefaultCommand = new RelayCommand(ResetToDefault, () => true);
-            CloseCommand = new RelayCommand(() => windowCloseFunction?.Invoke(), () => true);
+            CloseCommand = new RelayCommand(() =>
+                {
+                    _windowCloseFunction?.Invoke();
+                }, () => true);
             ThemesCommand = new RelayCommand(() => IsShowThemeSetting = !IsShowThemeSetting, () => true);
-            AddThemeCommand = new RelayCommand(AddThemeFileToList, () => true);
+            AddImageCommand = new RelayCommand(AddImageToTheme, () => true);
             ApplyThemeCommand = new RelayCommand(ApplyTheme, () => true);
             DeleteThemeCommand = new RelayCommand(DeleteTheme, () => true);
-            SaveCommand = new RelayCommand(Save, () => true);
+            CreateNewThemeCommand = new RelayCommand(CreateNewTheme, () => true);
+
+            PropertyChanged += OnNotifiedPropertyChanged;
 
             Initialise();
         }
 
         public static SettingsViewModel GetSettingsInstance(ReceiverViewModel receiver, FilterSettingsViewModel filterSettingsViewModel, Action windowCloseFunction)
         {
-            Instance = Instance ?? new SettingsViewModel(receiver, filterSettingsViewModel, windowCloseFunction);
+            if (Instance == null)
+            {
+                Instance =  new SettingsViewModel(receiver, filterSettingsViewModel, windowCloseFunction);
+            }
+            else
+            {
+                Instance.UpdateReceiever(receiver);
+                Instance.UpdateWindowsCloseFunction(windowCloseFunction);
+            }
 
             return Instance;
         }
 
         private void Initialise()
         {
-            // Always create default settings to preserve sanity incase of external file changes.
-            CreateDefaultSettings();
+            try
+            {
+                // Always create default settings to preserve sanity incase of external file changes.
+                ThematicList = LoadThemeListFromApplicationFolder();
+                HasChanges = false;
+                CreateDefaultSettingsIfNotExists();
+            }
+            catch
+            {
+                // Ignore. May be out of space or no storage read/write access.
+            }
 
-            ThematicList = LoadThemeListFromApplicationFolder();
             Thematic = GetDefaultTheme();
-
+            Save();
             ApplyTheme();
         }
 
-        private void CreateDefaultSettings()
+        private void CreateDefaultSettingsIfNotExists()
         {
-            Save(ThematicModel.GetDefaultSettings(), DefaultThematicFileName);
+            if (ThematicList.Any(x => x.Id == ThematicModel.DefaultThemeGuid))
+            {
+                return;
+            }
+
+            ThematicList.Add(ThematicModel.GetDefaultSettings());
+
+            ThematicList.Refresh();
         }
+
+        private void UpdateReceiever(ReceiverViewModel receiver)
+            => _receiver = _receiver ?? receiver;
+
+        private void UpdateWindowsCloseFunction(Action windowCloseFunction)
+            => _windowCloseFunction = windowCloseFunction;
 
         private ThematicModel GetDefaultTheme()
         {
             var thematic = ThematicList.FirstOrDefault(x => x.IsDefault);
+
             if (thematic == null)
             {
                 try
                 {
-                    thematic = ThematicList.First(x => x.IsApplication);
+                    thematic = ThematicList.FirstOrDefault(x => x.IsDefault);
+
+                    if (thematic == null
+                        && ThematicList.Any())
+                    {
+                        thematic = ThematicList.First();
+                        thematic.IsDefault = true;
+
+                        return thematic;
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -229,61 +284,40 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Contains(DefaultThemeImage));
             ApplyTheme();
 
-            if (File.Exists(currentThematic.ImagePath)
-                && !currentThematic.IsApplication)
+            if (File.Exists(currentThematic.ImagePath))
             {
 
                 File.Delete(currentThematic.ImagePath);
             }
 
-            if (currentThematic.IsApplication)
-            {
-                MessageBox.Show("You cannot delete the default application theme");
-                return;
-            }
-
             ThematicList = LoadThemeListFromApplicationFolder();
-        }
-
-        private void ApplyTheme()
-        {
-            Application.Current.Resources["ReceiverFacePlateImageSource"] = LoadImage(Thematic.ImagePath);
         }
 
         public void SetOpenFileDialog(Func<string, string[]> getFiles)
             => _getFiles = getFiles;
 
-        private void AddThemeFileToList()
+
+        private void AddImageToTheme()
         {
-            var currentThematic = Thematic;
-
-            if (_getFiles == null)
-            {
-                return;
-            }
-
-            var files = _getFiles?.Invoke("PNG file| *.png");
+            var files = _getFiles?.Invoke("PNG file | *.png");
 
             if (files == null)
             {
                 return;
             }
 
-            var resourceFolder = Path.Combine(Directory.GetCurrentDirectory(), ThemePath);
+            var filePath = files.First();
 
-            foreach (var file in files)
+            var fileName = Path.GetFileName(filePath);
+
+            if (!File.Exists(Path.Combine(ThemePath, fileName)))
             {
-                if (File.Exists(Path.Combine(resourceFolder, Path.GetFileName(file))))
-                {
-                    continue;
-                }
-
-                File.Copy(file, Path.Combine(resourceFolder, Path.GetFileName(file)));
+                File.Copy(filePath, Path.Combine(ThemePath, fileName));
             }
 
-            ThematicList = LoadThemeListFromApplicationFolder();
+            Thematic.ImagePath = Path.Combine(ThemePath, fileName);
 
-            Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Equals(currentThematic.ImagePath));
+            OnPropertyChanged(nameof(Thematic));
         }
 
         private ObservableCollection<ThematicModel> LoadThemeListFromApplicationFolder()
@@ -292,7 +326,12 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             foreach (var path in Directory.GetFiles(ThemePath, "*.xml"))
             {
-                collection.Add(Load(path));
+                var theme = Load(path);
+
+                if (!string.IsNullOrEmpty(theme.Id))
+                {
+                    collection.Add(theme);
+                }
             }
 
             return collection;
@@ -326,18 +365,20 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
         private void Save()
         {
-            // Save button saves Thematic and user provided theme name.
-            // Save(Thematic, userFileName);
-        }
-
-        private void Save(ThematicModel model, string fileName)
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), ThemePath, fileName);
-            var serialiser = new XmlSerializer(typeof(ThematicModel));
-
-            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            if (!HasChanges)
             {
-                serialiser.Serialize(fs, model);
+                return;
+            }
+
+            foreach (var theme in ThematicList)
+            {
+                var filePath = Path.Combine(ThemePath, Path.GetFileName(theme.ThematicFileName));
+                var serialiser = new XmlSerializer(typeof(ThematicModel));
+
+                using (FileStream fs = new FileStream(filePath, FileMode.Create))
+                {
+                    serialiser.Serialize(fs, theme);
+                }
             }
         }
 
@@ -353,14 +394,132 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
         }
 
+        private void ApplyTheme()
+        {
+            if (Instance == null)
+            {
+                return;
+            }
+
+            Application.Current.Resources["ReceiverFacePlateImageSource"] = LoadImage(Thematic.ImagePath);
+            // VU
+            _receiver.BackgroundColour = Thematic.BackgroundColour;
+            _receiver.NeedleColour = Thematic.NeedleColour;
+            _receiver.DecalColour = Thematic.DecalColour;
+            _receiver.OverdriveLampColour = Thematic.OverdriveLampColour;
+            _receiver.BottomCoverFill = Thematic.BottomCoverFill;
+            _receiver.OverdriveLampOffColour = Thematic.OverdriveLampOffColour;
+            _receiver.MeterLabelForeground = Thematic.MeterLabelForeground;
+            // Seek slider
+            _receiver.SliderThumbGlowOverlay = Thematic.SliderThumbGlowOverlay;
+            _receiver.SliderThumbGripBarBackground = Thematic.SliderThumbGripBarBackground;
+            _receiver.SliderThumbPointBackground = Thematic.SliderThumbPointBackground;
+            _receiver.SliderThumbBorder = Thematic.SliderThumbBorder;
+            _receiver.SliderThumbForeground = Thematic.SliderThumbForeground;
+            _receiver.SliderThumbMouseOverBackground = Thematic.SliderThumbMouseOverBackground;
+            _receiver.SliderThumbMouseOverBorder = Thematic.SliderThumbMouseOverBorder;
+            _receiver.SliderThumbPressedBackground = Thematic.SliderThumbPressedBackground;
+            _receiver.SliderThumbPressedBorder = Thematic.SliderThumbPressedBorder;
+            _receiver.SliderThumbDisabledBackground = Thematic.SliderThumbDisabledBackground;
+            _receiver.SliderThumbDisabledBorder = Thematic.SliderThumbDisabledBorder;
+            _receiver.SliderThumbTrackBackground = Thematic.SliderThumbTrackBackground;
+            _receiver.SliderThumbTrackBorder = Thematic.SliderThumbTrackBorder;
+            // Playback controls
+            _receiver.SkipToStartButtonFill = Thematic.SkipToStartButtonFill;
+            _receiver.StopButtonFill = Thematic.StopButtonFill;
+            _receiver.PlayButtonFill = Thematic.PlayButtonFill;
+            _receiver.PauseButtonFill = Thematic.PauseButtonFill;
+            _receiver.SkipToEndButtonFill = Thematic.SkipToEndButtonFill;
+            _receiver.SelectButtonFill = Thematic.SelectButtonFill;
+            _receiver.SwitchOnBackground = Thematic.SwitchOnBackground;
+            _receiver.SwitchOffBackground = Thematic.SwitchOffBackground;
+            _receiver.SwitchForeground = Thematic.SwitchForeground;
+            // Volume, bass, treble controls
+            _receiver.GainSliderMidBarFill = Thematic.GainSliderMidBarFill;
+            _receiver.GainSliderTextForeground = Thematic.GainSliderTextForeground;
+            _receiver.GainSliderTickForeground = Thematic.GainSliderTickForeground;
+            // Power button Control
+            _receiver.PowerButtonLightFill = Thematic.PowerButtonLightFill;
+            _receiver.PowerButtonStrokeFill = Thematic.PowerButtonStrokeFill;
+            _receiver.PowerButtonHighlight = Thematic.PowerButtonHighlight;
+            // Stereo indicator control
+            _receiver.MonoOnFill = Thematic.MonoOnFill;
+            _receiver.MonoOffFill = Thematic.MonoOffFill;
+            _receiver.StereoOnFill = Thematic.StereoOnFill;
+            _receiver.StereoOffFill = Thematic.StereoOffFill;
+            _receiver.LabelForeground = Thematic.LabelForeground;
+
+            UpdateDefaultTheme(Thematic.Id);
+            OnPropertyChanged(nameof(Thematic));
+            Save();
+        }
+
         public void ApplyCurrentTheme()
         {
             ApplyTheme();
         }
 
+        private void UpdateDefaultTheme(string id)
+        {
+            foreach (var thematic in ThematicList)
+            {
+                thematic.IsDefault = false;
+
+                if (thematic.Id.Equals(id))
+                {
+                    thematic.IsDefault = true;
+                }
+            }
+        }
+
+        private void CreateNewTheme()
+        {
+            var dialog = new NameDescriptionDialog();
+            var viewModel = new NameDescriptionDialogViewModel(nameFieldLabel: "Theme file name"
+                , descriptionLabel: "Theme description"
+                , title: "Enter your theme file name and description");
+
+            dialog.DataContext = viewModel;
+            dialog.ShowDialog();
+            
+            if (viewModel.IsUserAccepted)
+            {
+                var theme = Thematic.Clone();
+
+                theme.Id = Guid.NewGuid().ToString();
+                theme.ThematicFileName = $"{viewModel.Name}.xml";
+                theme.Description = viewModel.Description;
+
+                ThematicList.Add(theme);
+                UpdateDefaultTheme(theme.Id);
+                Save();
+
+                ThematicList = LoadThemeListFromApplicationFolder();
+
+                Thematic = ThematicList.FirstOrDefault(x => x.Id.Equals(theme.Id));
+
+                ApplyTheme();
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        private void OnNotifiedPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            HasChanges = true;
+        }
+
         #endregion
 
         #region Dispose
+
+        public override void ExplicitDispose()
+        {
+            _receiver = null;
+            _filterSettingsViewModel = null;
+        }
 
         protected override void Dispose(bool isDisposng)
         {
@@ -368,8 +527,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             {
                 if (isDisposng)
                 {
-                    _receiver = null;
-                    _filterSettingsViewModel = null;
+                    // Dispose on close
                 }
 
                 _isDisposed = true;

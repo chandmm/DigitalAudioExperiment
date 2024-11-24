@@ -922,8 +922,7 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
 
-            SetupColours();
-            SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
+            SetupTheme();
 
             if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
             {
@@ -961,54 +960,56 @@ namespace DigitalAudioExperiment.ViewModel
         }
 
 
-        private void SetupColours()
+        private void SetupTheme()
         {
-            // VU
-            BackgroundColour = "DodgerBlue";
-            NeedleColour = "Black";
-            DecalColour = "Black";
-            OverdriveLampColour = "Red";
-            BottomCoverFill = "Black";
-            OverdriveLampOffColour = "#550000";
-            MeterLabelForeground = "#62e3f6";
-            // Seek slider
-            SliderThumbGlowOverlay = "OrangeRed";
-            SliderThumbGripBarBackground = "#250a01";
-            SliderThumbPointBackground = "White";
-            SliderThumbBorder = "#FFACACAC";
-            SliderThumbForeground = "DodgerBlue";
-            SliderThumbMouseOverBackground = "#FFDCECFC";
-            SliderThumbMouseOverBorder = "#FF7Eb4EA";
-            SliderThumbPressedBackground = "#FFDAECFC";
-            SliderThumbPressedBorder = "#FF569DE5";
-            SliderThumbDisabledBackground = "#FFF0F0F0";
-            SliderThumbDisabledBorder = "#FFD9D9D9";
-            SliderThumbTrackBackground = "Cyan";
-            SliderThumbTrackBorder = "Blue";
-            // Playback controls
-            SkipToStartButtonFill = "Black";
-            StopButtonFill = "Black";
-            PlayButtonFill = "Black";
-            PauseButtonFill = "Black";
-            SkipToEndButtonFill = "Black";
-            SelectButtonFill = "Black";
-            SwitchOnBackground = "#62e3f6";
-            SwitchOffBackground = "#000040";
-            SwitchForeground = "White";
-            // Volume, bass, treble controls
-            GainSliderMidBarFill = "Red";
-            GainSliderTextForeground = "White";
-            GainSliderTickForeground = "White";
-            // Power button Control
-            PowerButtonLightFill = "Red";
-            PowerButtonStrokeFill = "Black";
-            PowerButtonHighlight = "LimeGreen";
-            // Stereo indicator control
-            MonoOnFill = "#62e3f6";
-            MonoOffFill = "#000040";
-            StereoOnFill = "Red";
-            StereoOffFill = "#200000";
-            LabelForeground = "Black";
+            SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
+
+            //// VU
+            //BackgroundColour = "DodgerBlue";
+            //NeedleColour = "Black";
+            //DecalColour = "Black";
+            //OverdriveLampColour = "Red";
+            //BottomCoverFill = "Black";
+            //OverdriveLampOffColour = "#550000";
+            //MeterLabelForeground = "#62e3f6";
+            //// Seek slider
+            //SliderThumbGlowOverlay = "OrangeRed";
+            //SliderThumbGripBarBackground = "#250a01";
+            //SliderThumbPointBackground = "White";
+            //SliderThumbBorder = "#FFACACAC";
+            //SliderThumbForeground = "DodgerBlue";
+            //SliderThumbMouseOverBackground = "#FFDCECFC";
+            //SliderThumbMouseOverBorder = "#FF7Eb4EA";
+            //SliderThumbPressedBackground = "#FFDAECFC";
+            //SliderThumbPressedBorder = "#FF569DE5";
+            //SliderThumbDisabledBackground = "#FFF0F0F0";
+            //SliderThumbDisabledBorder = "#FFD9D9D9";
+            //SliderThumbTrackBackground = "Cyan";
+            //SliderThumbTrackBorder = "Blue";
+            //// Playback controls
+            //SkipToStartButtonFill = "Black";
+            //StopButtonFill = "Black";
+            //PlayButtonFill = "Black";
+            //PauseButtonFill = "Black";
+            //SkipToEndButtonFill = "Black";
+            //SelectButtonFill = "Black";
+            //SwitchOnBackground = "#62e3f6";
+            //SwitchOffBackground = "#000040";
+            //SwitchForeground = "White";
+            //// Volume, bass, treble controls
+            //GainSliderMidBarFill = "Red";
+            //GainSliderTextForeground = "White";
+            //GainSliderTickForeground = "White";
+            //// Power button Control
+            //PowerButtonLightFill = "Red";
+            //PowerButtonStrokeFill = "Black";
+            //PowerButtonHighlight = "LimeGreen";
+            //// Stereo indicator control
+            //MonoOnFill = "#62e3f6";
+            //MonoOffFill = "#000040";
+            //StereoOnFill = "Red";
+            //StereoOffFill = "#200000";
+            //LabelForeground = "Black";
         }
 
         public void SetGetFileCallback(Func<string, string> callback)
@@ -1594,6 +1595,8 @@ namespace DigitalAudioExperiment.ViewModel
                     _filterSettingsView?.Dispose();
 
                     PropertyChanged -= OnAnyPropertyChanged;
+
+                    SettingsViewModel.GetSettingsInstance(null, null, null).ExplicitDispose();
                 }
 
                 _isDisposed = true;

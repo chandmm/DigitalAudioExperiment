@@ -28,8 +28,9 @@
                     <RowDefinition MinHeight="50" Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Border BorderThickness="1" 
+                <Border BorderThickness="1"
                         BorderBrush="Gray">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -61,8 +62,12 @@
                             Command="{Binding DeleteThemeCommand}"/>
                         <Button Grid.Column="4"
                             Style="{StaticResource PlaylistButtonStyle}"
+                            Content="Create new theme"
+                            Command="{Binding CreateNewThemeCommand}"/>
+                        <!--<Button Grid.Column="4"
+                            Style="{StaticResource PlaylistButtonStyle}"
                             Content="Save"
-                            Command="{Binding SaveCommand}"/>
+                            Command="{Binding SaveCommand}"/>-->
                     </Grid>
                 </Border>
                 <Grid Grid.Row="1">
@@ -72,9 +77,8 @@
                            VerticalAlignment="Center"/>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <TabControl>
-                        <TabItem Header="VU Meters"
-                                 DataContext="{Binding}">
+                    <TabControl DataContext="{Binding}">
+                        <TabItem Header="VU Meters">
                             <settingspages:VUSettingsPage/>
                         </TabItem>
                         <TabItem Header="Seek Slider">
@@ -90,27 +94,33 @@
                             <settingspages:PowerButtonControlsSettingsPage/>
                         </TabItem>
                         <TabItem Header="Stereo indicator">
-
+                            <settingspages:StereoIndicatorControlSettingsPage/>
                         </TabItem>
                     </TabControl>
                 </Grid>
-
-
-
-
-                <!--To replace below into a more structured approach-->
-                
-                <!--<Label Content="Add faceplate image.&#10;This will add Image to list:"
+                <Grid Grid.Row="3"
+                      Background="Gray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Add background image."
                        Foreground="{StaticResource ComponentForegroundColour}"
                        VerticalAlignment="Center"
                        Grid.Row="2"/>
-                <Button Grid.Row="2"
+                    <Button Grid.Row="2"
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Style="{StaticResource PlaylistButtonStyle}"
                         Content="Add"
-                        Command="{Binding AddThemeCommand}"/>-->
-
+                        Command="{Binding AddImageCommand}"/>
+                    <TextBlock Grid.Column="2"
+                               Style="{StaticResource TextListItemStyle}"
+                               VerticalAlignment="Center"
+                               Text="{Binding Thematic.ImageName, StringFormat='{}Current: {0}'}"
+                               Margin="5"/>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
