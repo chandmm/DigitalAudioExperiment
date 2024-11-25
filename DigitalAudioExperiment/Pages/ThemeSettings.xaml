@@ -78,6 +78,9 @@
                 </Grid>
                 <Grid Grid.Row="2">
                     <TabControl DataContext="{Binding}">
+                        <TabItem Header="Application">
+                            <settingspages:ApplicationSettingsPage/>
+                        </TabItem>
                         <TabItem Header="VU Meters">
                             <settingspages:VUSettingsPage/>
                         </TabItem>
