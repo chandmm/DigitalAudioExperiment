@@ -27,21 +27,21 @@
             <TabControl Grid.RowSpan="4"
                         Background="Transparent"
                         Margin="10">
-                <TabItem Background="{StaticResource ComponentHighlightColour}" 
+                <TabItem Background="{DynamicResource ComponentHighlightColour}" 
                          BorderThickness="0"
                          Padding="0">
                     <TabItem.Header>
                         <Label Content="General" BorderThickness="0" 
-                            Background="{StaticResource ComponentBackgroundColour}"/>
+                            Background="{DynamicResource ComponentBackgroundColour}"/>
                     </TabItem.Header>
                     <pages:GeneralSettings/>
                 </TabItem>
-                <TabItem Background="{StaticResource ComponentBackgroundColour}" 
+                <TabItem Background="{DynamicResource ComponentBackgroundColour}" 
                          BorderThickness="0"
                          Padding="0">
                     <TabItem.Header>
                         <Label Content="Theme" BorderThickness="0" 
-                            Background="{StaticResource ComponentBackgroundColour}"/>
+                            Background="{DynamicResource ComponentBackgroundColour}"/>
                     </TabItem.Header>
                     <pages:ThemeSettings/>
                 </TabItem>
@@ -66,7 +66,7 @@
                 Style="{StaticResource PlaylistButtonStyle}" 
                 FontSize="28"
                 FontWeight="Bold"
-                Background="{StaticResource ComponentBackgroundColour}"
+                Background="{DynamicResource ComponentBackgroundColour}"
                 Command="{Binding CloseCommand}"
                 Grid.Row="4" Width="100"
                 HorizontalAlignment="Left"

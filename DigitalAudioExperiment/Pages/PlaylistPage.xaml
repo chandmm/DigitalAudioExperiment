@@ -99,7 +99,7 @@
                           Margin="20,5,20,20">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl 
-                                ItemTemplate="{StaticResource PlaylistItemsTemplate}" 
+                                ItemTemplate="{DynamicResource PlaylistItemsTemplate}" 
                                 ItemsSource="{Binding PlayList}"/>
                         </ScrollViewer>
                     </Grid>
@@ -130,45 +130,24 @@
                             Grid.Column="1"
                             FontSize="25" 
                             FontWeight="Bold"
+                            Content="{StaticResource PlaylistViewBoxClearAll}"
                             Command="{Binding RemoveAllCommand}">
-                            <Button.Content>
-                                <Grid>
-                                    <Viewbox Stretch="Uniform" Child="{StaticResource PlaylistViewBoxClearAll}"/>
-                                    <Label Background="Transparent" 
-                                   Content="X" 
-                                   FontSize="25"
-                                   HorizontalContentAlignment="Center"/>
-                                </Grid>
-                            </Button.Content>
                         </Button>
                         <Button
                             ToolTip="Move item up one."
                             Style="{StaticResource PlaylistButtonStyle}"
                             VerticalContentAlignment="Center"
                             Grid.Column="2"
+                            Content="{StaticResource MoveUpViewBoxIcon}"
                             Command="{Binding MoveUpCommand}">
-                            <Button.Content>
-                                <Viewbox Stretch="Uniform" Child="{StaticResource MoveUpViewBoxIcon}"/>
-                            </Button.Content>
                         </Button>
                         <Button
                             ToolTip="Move item down one."
                             Style="{StaticResource PlaylistButtonStyle}"
                             VerticalContentAlignment="Center"
                             Grid.Column="3"
+                            Content="{StaticResource MoveDownViewBoxIcon}"
                             Command="{Binding MoveDownCommand}">
-                            <Button.Content>
-                                <Viewbox Stretch="Uniform" Child="{StaticResource MoveDownViewBoxIcon}" RenderTransformOrigin="0.5,0.5">
-                                    <Viewbox.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform/>
-                                            <SkewTransform/>
-                                            <RotateTransform Angle="180"/>
-                                            <TranslateTransform/>
-                                        </TransformGroup>
-                                    </Viewbox.RenderTransform>
-                                </Viewbox>
-                            </Button.Content>
                         </Button>
                     </Grid>
                 </Grid>

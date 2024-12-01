@@ -15,15 +15,40 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.ViewModel;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DigitalAudioExperiment.Pages
 {
     public partial class PlaylistPage : UserControl
     {
+        public static PlaylistPage Instance { get; private set; }
+
         public PlaylistPage()
         {
             InitializeComponent();
+
+            DataContextChanged += OnDataContextChanged;
+            IsVisibleChanged += OnVisibleChanged;
+        }
+
+        private void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                Instance = this;
+                SettingsViewModel.GetSettingsInstance(null, null, null).ApplyCurrentTheme();
+            }
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if (DataContext is PlaylistPageViewModel viewModel)
+            {
+                Instance = this;
+            }
         }
     }
 }

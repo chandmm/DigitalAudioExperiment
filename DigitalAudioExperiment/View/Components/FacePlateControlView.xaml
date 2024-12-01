@@ -38,6 +38,8 @@
                 IsOn="{Binding Path=DataContext.IsOn, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}, Mode=OneWay}"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
+                OffColour="{Binding Path=DataContext.PlaybackIndicatorOffLamp, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                OnColour="{Binding Path=DataContext.PlaybackIndicatorOnLamp, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                 Grid.Column="4"
                 Grid.ColumnSpan="2"
                 Padding="0,20,0,20"/>
@@ -78,10 +80,8 @@
                     Width="40"
                     BorderThickness="0"
                     Command="{Binding Path=DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"
-                    Grid.Column="1"> 
-                    <Button.Content>
-                        <Viewbox Child="{StaticResource OpenViewBox}"/>
-                    </Button.Content>
+                    Content="{DynamicResource OpenViewBox}"
+                    Grid.Column="1">
                 </Button>
             </Grid>
             <StackPanel VerticalAlignment="Stretch" 

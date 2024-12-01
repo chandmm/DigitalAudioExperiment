@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.IO;
+using System.Windows.Media;
 
 namespace DigitalAudioExperiment.Model
 {
@@ -67,6 +68,18 @@ namespace DigitalAudioExperiment.Model
         public const string DefaultStereoOffFill = "#200000";
         public const string DefaultLabelForeground = "Black";
         public const string DefaultApplicationBackgroundFill = "Black";
+        public const string DefaultComponentBackgroundColour = "DodgerBlue";
+        public const string DefaultComponentForegroundColour = "Black";
+        public const string DefaultComponentHighlightColour = "#62e3f6";
+        public const string DefaultComponentBorderColour = "Black";
+        public const string DefaultPlaybackIndicatorOffColour = "#00004A";
+        public const string DefaultPlaybackIndicatorOnColour = "#0020FF";
+        //Application Theme
+        public const string DefaultApplicationBorderColour = "DodgerBlue";
+        public const string DefaultListTextForegroundColour = "Black";
+        public const string DefaultComponentWindowsBackgroundColour = "Silver";
+        public const string DefaultApplicationForegroundColour = "White";
+        public const string DefaultButtonContentForegroundColour = "Black";
 
         #endregion
 
@@ -80,11 +93,17 @@ namespace DigitalAudioExperiment.Model
         public string ImageName { get => Path.GetFileName(ImagePath); }
         public string Description { get; set; }
         public string Name { get; set; }
-        public string ComponentBackgroundColour { get; set; }
+        public string ComponentBackgroundFill { get; set; }
         public string ComponentForegroundColour { get; set; }
         public string ComponentHighlightColour { get; set; }
         public string ComponentBorderColour { get; set; }
         public string ApplicationBackgroundFill { get; set; }
+        public string ApplicationBorderColour { get; set; }
+        public string ListTextForegroundColour { get; set; }
+        public string ComponentWindowsDefaultBackgroundColour { get; set; }
+        public string ApplicationForegroundColour { get; set; }
+        public string ButtonContentForegroundColour { get; set; }
+
         // VU meter
         public string BackgroundColour { get; set; }
         public string NeedleColour { get; set; }
@@ -131,6 +150,9 @@ namespace DigitalAudioExperiment.Model
         public string StereoOnFill { get; set; }
         public string StereoOffFill { get; set; }
         public string LabelForeground { get; set; }
+        // Playback indicator control
+        public string PlaybackIndicatorOffColour { get; set; }
+        public string PlaybackIndicatorOnColour { get; set; }
 
         #endregion
 
@@ -180,8 +202,19 @@ namespace DigitalAudioExperiment.Model
             StereoOnFill = DefaultStereoOnFill,
             StereoOffFill = DefaultStereoOffFill,
             LabelForeground = DefaultLabelForeground,
-            //Application
-            ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
+            PlaybackIndicatorOffColour = DefaultPlaybackIndicatorOffColour,
+            PlaybackIndicatorOnColour = DefaultPlaybackIndicatorOnColour,
+        //Application
+        ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
+            ComponentBackgroundFill = DefaultComponentBackgroundColour,
+            ComponentForegroundColour = DefaultComponentForegroundColour,
+            ComponentHighlightColour = DefaultComponentHighlightColour,
+            ComponentBorderColour = DefaultComponentBorderColour,
+            ApplicationBorderColour = DefaultApplicationBorderColour,
+            ListTextForegroundColour = DefaultListTextForegroundColour,
+            ComponentWindowsDefaultBackgroundColour = DefaultComponentWindowsBackgroundColour,
+            ApplicationForegroundColour = DefaultApplicationForegroundColour,
+            ButtonContentForegroundColour = DefaultButtonContentForegroundColour,
             Description = "Default Theme",
             ThematicFileName = "DefaultTheme.xml",
             ImagePath = Path.Combine("Resources/Themes", "AudioPlayerFacePlateRounded.png"),

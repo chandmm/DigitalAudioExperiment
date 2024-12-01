@@ -24,6 +24,7 @@ using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace DigitalAudioExperiment.ViewModel
@@ -848,6 +849,30 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private string _playbackIndicatorOffLamp;
+        public string PlaybackIndicatorOffLamp
+        {
+            get => _playbackIndicatorOffLamp;
+            set
+            {
+                _playbackIndicatorOffLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playbackIndicatorOnLamp;
+        public string PlaybackIndicatorOnLamp
+        {
+            get => _playbackIndicatorOnLamp;
+            set
+            {
+                _playbackIndicatorOnLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -1336,7 +1361,8 @@ namespace DigitalAudioExperiment.ViewModel
                 PlaylistPageViewInstance.Owner = App.Current.MainWindow;
             }
 
-            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
+            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null 
+                    || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
                 ? new PlaylistPageViewModel()
                 : PlaylistPageViewInstance.DataContext;
 

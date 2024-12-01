@@ -7,14 +7,6 @@
       xmlns:settingspages="clr-namespace:DigitalAudioExperiment.Pages.SettingsPages"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="800">
-
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     
     <Grid>
         <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
@@ -28,7 +20,7 @@
                     <RowDefinition MinHeight="50" Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition MaxHeight="50"/>
                 </Grid.RowDefinitions>
                 <Border BorderThickness="1"
                         BorderBrush="Gray">
@@ -98,6 +90,9 @@
                         </TabItem>
                         <TabItem Header="Stereo indicator">
                             <settingspages:StereoIndicatorControlSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Playback indicator">
+                            <settingspages:PlaybackIndicatorControlSettingsPage/>
                         </TabItem>
                     </TabControl>
                 </Grid>

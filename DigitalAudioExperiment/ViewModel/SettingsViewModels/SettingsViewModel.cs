@@ -18,6 +18,9 @@
 using DigitalAudioExperiment.Extensions;
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
+using DigitalAudioExperiment.Pages;
+using DigitalAudioExperiment.View;
+using DigitalAudioExperiment.View.Components;
 using DigitalAudioExperiment.View.Dialogs;
 using DigitalAudioExperiment.ViewModel.Dialogs;
 using System.Collections.ObjectModel;
@@ -246,7 +249,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             }
             catch
             {
-                return CreateSolidColourImage(Colors.Black, 1, 1);
+                return CreateSolidColourImage((Color)ColorConverter.ConvertFromString(ThematicModel.DefaultComponentWindowsBackgroundColour), 1, 1);
             }
         }
 
@@ -269,7 +272,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
         private void DeleteTheme()
         {
-            var result = MessageBox.Show("This will permenantly delete this theme. Are you sure?"
+            var result = MessageBox.Show("This will permenantly delete this theme and load application default. Are you sure?"
                 , "Reset Settings"
                 , MessageBoxButton.YesNo
                 , MessageBoxImage.Warning);
@@ -281,8 +284,13 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             var currentThematic = Thematic;
 
-            Thematic = ThematicList.FirstOrDefault(x => x.ImagePath.Contains(DefaultThemeImage));
-            ApplyTheme();
+            var defaultTheme = ThematicList.FirstOrDefault(x => x.ThematicFileName.Contains(DefaultThematicFileName));
+
+            if (defaultTheme == null)
+            {
+                defaultTheme = ThematicModel.GetDefaultSettings();
+                ThematicList.Add(defaultTheme);
+            }
 
             if (File.Exists(currentThematic.ImagePath))
             {
@@ -290,7 +298,17 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
                 File.Delete(currentThematic.ImagePath);
             }
 
+            var thematicPath = Path.Combine(ThemePath, currentThematic.ThematicFileName);
+
+            if (File.Exists(thematicPath))
+            {
+
+                File.Delete(thematicPath);
+            }
+
+            ApplyTheme();
             ThematicList = LoadThemeListFromApplicationFolder();
+            Thematic = ThematicList.FirstOrDefault(x => x.ThematicFileName.Contains(defaultTheme.ThematicFileName));
         }
 
         public void SetOpenFileDialog(Func<string, string[]> getFiles)
@@ -401,7 +419,58 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
                 return;
             }
 
-            Application.Current.Resources["ReceiverFacePlateImageSource"] = LoadImage(Thematic.ImagePath);
+            Application.Current.Resources["ReceiverFacePlateImageSource"] = LoadImage(Thematic?.ImagePath);
+
+            if (PlaylistPage.Instance != null)
+            {
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ApplicationBackgroundFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBackgroundFill));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBackgroundFill));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentForegroundColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentHighlightColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentHighlightColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBorderColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ApplicationBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBorderColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ListTextForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ListTextForegroundColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentWindowsDefaultBackgroundColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ButtonContentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ButtonContentForegroundColour));
+                PlaylistPage.Instance.Resources.MergedDictionaries.First()["ApplicationForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+            }
+
+            if (FacePlateControlView.Instance != null)
+            {
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ApplicationBackgroundFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBackgroundFill));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBackgroundFill));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentForegroundColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentHighlightColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentHighlightColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBorderColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ApplicationBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBorderColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ListTextForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ListTextForegroundColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentWindowsDefaultBackgroundColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ButtonContentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ButtonContentForegroundColour));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["ApplicationForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+            }
+
+            if (FilterSettingsView.Instance != null)
+            {
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ApplicationBackgroundFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBackgroundFill));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBackgroundFill));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentForegroundColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentHighlightColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentHighlightColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentBorderColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ApplicationBorderColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationBorderColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ListTextForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ListTextForegroundColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ComponentWindowsDefaultBackgroundColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ButtonContentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ButtonContentForegroundColour));
+                FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ApplicationForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+            }
+
+            if (_receiver == null)
+            {
+                return;
+            }
+
             // VU
             _receiver.BackgroundColour = Thematic.BackgroundColour;
             _receiver.NeedleColour = Thematic.NeedleColour;
@@ -448,6 +517,9 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             _receiver.StereoOnFill = Thematic.StereoOnFill;
             _receiver.StereoOffFill = Thematic.StereoOffFill;
             _receiver.LabelForeground = Thematic.LabelForeground;
+            // Playback indicator lamp colour
+            _receiver.PlaybackIndicatorOffLamp = Thematic.PlaybackIndicatorOffColour;
+            _receiver.PlaybackIndicatorOnLamp = Thematic.PlaybackIndicatorOnColour;
 
             UpdateDefaultTheme(Thematic.Id);
             OnPropertyChanged(nameof(Thematic));
