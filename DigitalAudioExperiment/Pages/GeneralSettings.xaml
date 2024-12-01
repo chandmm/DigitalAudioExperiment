@@ -20,13 +20,13 @@
                 </Grid.RowDefinitions>
                 <Label Content="Reset all player settings to defaults."
                        VerticalAlignment="Center"
-                       Foreground="{StaticResource ComponentForegroundColour}"/>
+                       Foreground="{DynamicResource ComponentForegroundColour}"/>
                 <Button Content="Default"
                         ToolTip="Reset player settings to defaults."
                         Style="{StaticResource PlaylistButtonStyle}" 
                         FontSize="28"
                         FontWeight="Bold"
-                        Background="{StaticResource ComponentBackgroundColour}"
+                        Background="{DynamicResource ComponentBackgroundColour}"
                         Command="{Binding ResetToDefaultCommand}"
                         Height="50"
                         Width="100"
