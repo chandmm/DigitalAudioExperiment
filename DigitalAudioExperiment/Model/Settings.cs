@@ -19,7 +19,6 @@ using DigitalAudioExperiment.Filters;
 using DigitalAudioExperiment.ViewModel;
 using System.IO;
 using System.Text.Json;
-using System.Windows.Forms;
 
 namespace DigitalAudioExperiment.Model
 {

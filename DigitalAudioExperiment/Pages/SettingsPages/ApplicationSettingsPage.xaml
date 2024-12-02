@@ -44,45 +44,13 @@
                Margin="5"
                Grid.Row="0" Grid.Column="0" />
             <Label Content="{Binding Thematic.ThematicFileName}" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="0" Grid.Column="1" />
-            <Button Content="Add" 
                 VerticalAlignment="Center" 
                 Margin="5"
-                Grid.Row="1" Grid.Column="0" />
-            <TextBox Text="{Binding Thematic.ImagePath}" 
-                 VerticalAlignment="Center" 
-                 Margin="5"
-                 Grid.Row="1" Grid.Column="1" />
-            <Label Content="Image Name:" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="2" Grid.Column="0" />
-            <Label Content="{Binding Thematic.ImageName}" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="2" Grid.Column="1" />
-            <Label Content="Description:" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="3" Grid.Column="0" />
-            <Label Content="{Binding Thematic.Description}" 
-                          VerticalAlignment="Center" 
-                          Margin="5"
-                          Grid.Row="3" Grid.Column="1" />
-            <Label Content="Name:" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="4" Grid.Column="0" />
-            <Label Content="{Binding Thematic.Name}" 
-                          VerticalAlignment="Center" 
-                          Margin="5"
-                          Grid.Row="4" Grid.Column="1" />
+                Grid.Row="0" Grid.Column="1" />
             <Label Content="Component Background:" 
-               VerticalAlignment="Center" 
-               Margin="5"
-               Grid.Row="5" Grid.Column="0" />
+                VerticalAlignment="Center" 
+                Margin="5"
+                Grid.Row="5" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentBackgroundFill}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  

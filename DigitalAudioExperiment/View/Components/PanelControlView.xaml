@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Border BorderThickness="2" BorderBrush="Silver" Background="Black">
+        <Border BorderThickness="2" BorderBrush="Silver" Background="{DynamicResource ApplicationBackgroundFill}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -101,14 +101,14 @@
                     BorderThickness="0" 
                     TextWrapping="Wrap" 
                     Text="{Binding Bitrate, StringFormat='{}Bitrate: {0}'}" 
-                    Background="Black" 
-                    Foreground="SteelBlue"/>
+                    Background="Transparent"
+                    Foreground="{DynamicResource ApplicationForegroundColour}"/>
                 <TextBox 
                     Text="{Binding DecoderType, StringFormat='{}Decoder: {0}'}"
                     FontWeight="Bold"
                     FontSize="12"
-                    Background="Black" 
-                    Foreground="SteelBlue"
+                    Background="Transparent" 
+                    Foreground="{DynamicResource ApplicationForegroundColour}"
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Grid.Column="3"
@@ -118,8 +118,8 @@
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Text="{Binding Metadata, Mode=OneWay}" 
-                    Background="Black" 
-                    Foreground="SteelBlue" 
+                    Background="Transparent" 
+                    Foreground="{DynamicResource ApplicationForegroundColour}" 
                     Grid.Row="1"
                     Grid.RowSpan="6" 
                     Grid.ColumnSpan="4" 
@@ -129,8 +129,8 @@
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Text="{Binding HeaderData, Mode=OneWay}" 
-                    Background="Black" 
-                    Foreground="SteelBlue" 
+                    Background="Transparent" 
+                    Foreground="{DynamicResource ApplicationForegroundColour}" 
                     Grid.RowSpan="4" 
                     Grid.ColumnSpan="2" 
                     Grid.Column="7" 

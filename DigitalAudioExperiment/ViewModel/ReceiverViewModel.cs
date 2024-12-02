@@ -947,7 +947,7 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
 
-            SetupTheme();
+            LoadAndSetTheme();
 
             if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
             {
@@ -975,7 +975,7 @@ namespace DigitalAudioExperiment.ViewModel
                 if (viewModel.FileExistsInList(settingsData.LastPlayedFile))
                 {
                     viewModel.SetNextSelectedToFile(settingsData.LastPlayedFile);
-                    SetupWithAutoPlay(doNotAutoPlay: true);
+                    //SetupWithAutoPlay(doNotAutoPlay: true);
 
                     return;
                 }
@@ -985,57 +985,8 @@ namespace DigitalAudioExperiment.ViewModel
         }
 
 
-        private void SetupTheme()
-        {
-            SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
-
-            //// VU
-            //BackgroundColour = "DodgerBlue";
-            //NeedleColour = "Black";
-            //DecalColour = "Black";
-            //OverdriveLampColour = "Red";
-            //BottomCoverFill = "Black";
-            //OverdriveLampOffColour = "#550000";
-            //MeterLabelForeground = "#62e3f6";
-            //// Seek slider
-            //SliderThumbGlowOverlay = "OrangeRed";
-            //SliderThumbGripBarBackground = "#250a01";
-            //SliderThumbPointBackground = "White";
-            //SliderThumbBorder = "#FFACACAC";
-            //SliderThumbForeground = "DodgerBlue";
-            //SliderThumbMouseOverBackground = "#FFDCECFC";
-            //SliderThumbMouseOverBorder = "#FF7Eb4EA";
-            //SliderThumbPressedBackground = "#FFDAECFC";
-            //SliderThumbPressedBorder = "#FF569DE5";
-            //SliderThumbDisabledBackground = "#FFF0F0F0";
-            //SliderThumbDisabledBorder = "#FFD9D9D9";
-            //SliderThumbTrackBackground = "Cyan";
-            //SliderThumbTrackBorder = "Blue";
-            //// Playback controls
-            //SkipToStartButtonFill = "Black";
-            //StopButtonFill = "Black";
-            //PlayButtonFill = "Black";
-            //PauseButtonFill = "Black";
-            //SkipToEndButtonFill = "Black";
-            //SelectButtonFill = "Black";
-            //SwitchOnBackground = "#62e3f6";
-            //SwitchOffBackground = "#000040";
-            //SwitchForeground = "White";
-            //// Volume, bass, treble controls
-            //GainSliderMidBarFill = "Red";
-            //GainSliderTextForeground = "White";
-            //GainSliderTickForeground = "White";
-            //// Power button Control
-            //PowerButtonLightFill = "Red";
-            //PowerButtonStrokeFill = "Black";
-            //PowerButtonHighlight = "LimeGreen";
-            //// Stereo indicator control
-            //MonoOnFill = "#62e3f6";
-            //MonoOffFill = "#000040";
-            //StereoOnFill = "Red";
-            //StereoOffFill = "#200000";
-            //LabelForeground = "Black";
-        }
+        private void LoadAndSetTheme()
+            => SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
 
         public void SetGetFileCallback(Func<string, string> callback)
             => _getFile = callback;

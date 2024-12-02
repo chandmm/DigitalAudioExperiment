@@ -38,7 +38,7 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Resources>
-                <pages:PlaylistPage DataContext="{Binding Path=DataContext, ElementName=playlistPage}"/>
+                <pages:PlaylistPage DataContext="{Binding Path=DataContext, ElementName=playlistPage}" Background="Transparent"/>
             </Grid>
         </Grid>
     </Grid>
