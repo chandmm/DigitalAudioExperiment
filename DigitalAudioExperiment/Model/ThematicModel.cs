@@ -79,6 +79,8 @@ namespace DigitalAudioExperiment.Model
         public const string DefaultComponentWindowsBackgroundColour = "Silver";
         public const string DefaultApplicationForegroundColour = "White";
         public const string DefaultButtonContentForegroundColour = "Black";
+        public const string DefaultPanelBackground = "Black";
+        public const string DefaultPanelForeground = "DodgerBlue";
 
         #endregion
 
@@ -102,6 +104,8 @@ namespace DigitalAudioExperiment.Model
         public string ComponentWindowsDefaultBackgroundColour { get; set; }
         public string ApplicationForegroundColour { get; set; }
         public string ButtonContentForegroundColour { get; set; }
+        public string PanelBackground { get; set; }
+        public string PanelForeground { get; set; }
 
         // VU meter
         public string BackgroundColour { get; set; }
@@ -204,7 +208,7 @@ namespace DigitalAudioExperiment.Model
             PlaybackIndicatorOffColour = DefaultPlaybackIndicatorOffColour,
             PlaybackIndicatorOnColour = DefaultPlaybackIndicatorOnColour,
         //Application
-        ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
+            ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
             ComponentBackgroundFill = DefaultComponentBackgroundColour,
             ComponentForegroundColour = DefaultComponentForegroundColour,
             ComponentHighlightColour = DefaultComponentHighlightColour,
@@ -214,6 +218,8 @@ namespace DigitalAudioExperiment.Model
             ComponentWindowsDefaultBackgroundColour = DefaultComponentWindowsBackgroundColour,
             ApplicationForegroundColour = DefaultApplicationForegroundColour,
             ButtonContentForegroundColour = DefaultButtonContentForegroundColour,
+            PanelBackground = DefaultPanelBackground,
+            PanelForeground = DefaultPanelForeground,
             Description = "Default Theme",
             ThematicFileName = "DefaultTheme.xml",
             ImagePath = Path.Combine("Resources/Themes", "AudioPlayerFacePlateRounded.png"),

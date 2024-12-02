@@ -24,8 +24,6 @@ using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
-using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace DigitalAudioExperiment.ViewModel
 {

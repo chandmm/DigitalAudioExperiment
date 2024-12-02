@@ -38,7 +38,9 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
             <Label Content="Thematic File Name:" 
                VerticalAlignment="Center" 
                Margin="5"
@@ -50,114 +52,136 @@
             <Label Content="Component Background:" 
                 VerticalAlignment="Center" 
                 Margin="5"
-                Grid.Row="5" Grid.Column="0" />
+                Grid.Row="1" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentBackgroundFill}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  
                           DisplayColorAndName="True"
                           DisplayColorTooltip="True"
                           Margin="5"
-                          Grid.Row="5" Grid.Column="1" />
+                          Grid.Row="1" Grid.Column="1" />
             <Label Content="Component Foreground:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="6" Grid.Column="0" />
+               Grid.Row="2" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentForegroundColour}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  
                           DisplayColorAndName="True"
                           DisplayColorTooltip="True"
                           Margin="5"
-                          Grid.Row="6" Grid.Column="1" />
+                          Grid.Row="2" Grid.Column="1" />
             <Label Content="Component Highlight:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="7" Grid.Column="0" />
+               Grid.Row="3" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentHighlightColour}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  
                           DisplayColorAndName="True"
                           DisplayColorTooltip="True"
                           Margin="5"
-                          Grid.Row="7" Grid.Column="1" />
+                          Grid.Row="3" Grid.Column="1" />
             <Label Content="Component Border:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="8" Grid.Column="0" />
+               Grid.Row="4" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentBorderColour}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  
                           DisplayColorAndName="True"
                           DisplayColorTooltip="True"
                           Margin="5"
-                              Grid.Row="8" Grid.Column="1" />
+                          Grid.Row="4" Grid.Column="1" />
             <Label Content="Application Background:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="9" Grid.Column="0" />
+               Grid.Row="5" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ApplicationBackgroundFill}" 
                           ColorMode="ColorPalette" 
                           UsingAlphaChannel="False"  
                           DisplayColorAndName="True"
                           DisplayColorTooltip="True"
                           Margin="5"
-                          Grid.Row="9" Grid.Column="1" />
+                          Grid.Row="5" Grid.Column="1" />
             <Label Content="Application Border:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="10" Grid.Column="0" />
+               Grid.Row="6" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ApplicationBorderColour}" 
                   ColorMode="ColorPalette" 
                   UsingAlphaChannel="False"  
                   DisplayColorAndName="True"
                   DisplayColorTooltip="True"
                   Margin="5"
-                  Grid.Row="10" Grid.Column="1" />
+                  Grid.Row="6" Grid.Column="1" />
             <Label Content="Application foreground:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="11" Grid.Column="0" />
+               Grid.Row="7" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ApplicationForegroundColour}" 
                   ColorMode="ColorPalette" 
                   UsingAlphaChannel="False"  
                   DisplayColorAndName="True"
                   DisplayColorTooltip="True"
                   Margin="5"
-                  Grid.Row="11" Grid.Column="1" />
+                  Grid.Row="7" Grid.Column="1" />
             <Label Content="List Text Foreground:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="12" Grid.Column="0" />
+               Grid.Row="8" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ListTextForegroundColour}" 
                   ColorMode="ColorPalette" 
                   UsingAlphaChannel="False"  
                   DisplayColorAndName="True"
                   DisplayColorTooltip="True"
                   Margin="5"
-                  Grid.Row="12" Grid.Column="1" />
+                  Grid.Row="8" Grid.Column="1" />
             <Label Content="Component Windows default background:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="13" Grid.Column="0" />
+               Grid.Row="9" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ComponentWindowsDefaultBackgroundColour}" 
                   ColorMode="ColorPalette" 
                   UsingAlphaChannel="False"  
                   DisplayColorAndName="True"
                   DisplayColorTooltip="True"
                   Margin="5"
-                  Grid.Row="13" Grid.Column="1" />
+                  Grid.Row="9" Grid.Column="1" />
             <Label Content="Button Content Foreground:" 
                VerticalAlignment="Center" 
                Margin="5"
-               Grid.Row="14" Grid.Column="0" />
+               Grid.Row="10" Grid.Column="0" />
             <xctk:ColorPicker SelectedColor="{Binding Thematic.ButtonContentForegroundColour}" 
                   ColorMode="ColorPalette" 
                   UsingAlphaChannel="False"  
                   DisplayColorAndName="True"
                   DisplayColorTooltip="True"
                   Margin="5"
-                  Grid.Row="14" Grid.Column="1" />
-        </Grid>
+                  Grid.Row="10" Grid.Column="1" />
+                <Label Content="Panel Background:" 
+                   VerticalAlignment="Center" 
+                   Margin="5"
+                   Grid.Row="11" Grid.Column="0" />
+                <xctk:ColorPicker SelectedColor="{Binding Thematic.PanelBackground}" 
+                      ColorMode="ColorPalette" 
+                      UsingAlphaChannel="False"  
+                      DisplayColorAndName="True"
+                      DisplayColorTooltip="True"
+                      Margin="5"
+                      Grid.Row="11" Grid.Column="1" />
+                <Label Content="Panel Foreground:" 
+                   VerticalAlignment="Center" 
+                   Margin="5"
+                   Grid.Row="12" Grid.Column="0" />
+                <xctk:ColorPicker SelectedColor="{Binding Thematic.PanelForeground}" 
+                    ColorMode="ColorPalette" 
+                    UsingAlphaChannel="False"  
+                    DisplayColorAndName="True"
+                    DisplayColorTooltip="True"
+                    Margin="5"
+                    Grid.Row="12" Grid.Column="1" />
+            </Grid>
     </ScrollViewer>
         </Grid>
 </UserControl>

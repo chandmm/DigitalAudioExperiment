@@ -107,6 +107,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         public RelayCommand ApplyThemeCommand { get; private set; }
         public RelayCommand DeleteThemeCommand { get; private set; }
         public RelayCommand CreateNewThemeCommand { get; private set; }
+        public RelayCommand ResetToFactoryDefaultCommand { get; private set; }
 
         #endregion
 
@@ -118,7 +119,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             _filterSettingsViewModel = filterSettingsViewModel;
             _windowCloseFunction = windowCloseFunction;
 
-            ResetToDefaultCommand = new RelayCommand(ResetToDefault, () => true);
+            ResetToDefaultCommand = new RelayCommand(() => ResetToDefault(null), () => true);
             CloseCommand = new RelayCommand(() =>
                 {
                     _windowCloseFunction?.Invoke();
@@ -128,6 +129,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             ApplyThemeCommand = new RelayCommand(ApplyTheme, () => true);
             DeleteThemeCommand = new RelayCommand(DeleteTheme, () => true);
             CreateNewThemeCommand = new RelayCommand(CreateNewTheme, () => true);
+            ResetToFactoryDefaultCommand = new RelayCommand(ResetToFactoryDefault, () => true);
 
             PropertyChanged += OnNotifiedPropertyChanged;
 
@@ -217,20 +219,6 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         }
 
         #region Manage Theme
-
-        private ThematicModel GetCurrentTheme()
-        {
-            try
-            {
-                var imageName = Path.GetFileName(((BitmapImage)Application.Current.Resources["ReceiverFacePlateImageSource"]).UriSource.OriginalString);
-
-                return ThematicList.FirstOrDefault(x => x.ImagePath.Contains(imageName));
-            }
-            catch
-            {
-                return null;
-            }
-        }
 
         private static ImageSource LoadImage(string filePath)
         {
@@ -355,9 +343,9 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             return collection;
         }
 
-        private void ResetToDefault()
+        private bool ResetToDefault(string? message = null)
         {
-            var result = MessageBox.Show("This will reset player settings to default. You will lose your saved player settings. Are you sure?"
+            var result = MessageBox.Show(message ?? "This will reset player settings to default. You will lose your current player settings. Are you sure?"
                 , "Reset Settings"
                 , MessageBoxButton.YesNo
                 , MessageBoxImage.Warning);
@@ -366,7 +354,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             if (result == MessageBoxResult.No)
             {
-                return;
+                return false;
             }
 
             if (File.Exists(Settings.SettingsFilePath))
@@ -375,6 +363,33 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             }
 
             Settings.CreateIfNotExists(_receiver, _filterSettingsViewModel);
+
+            return true;
+        }
+
+        private void ResetToFactoryDefault()
+        {
+            if (!ResetToDefault("This will reset player settings and application theme to defaults. Some updates may only occur after settings is closed. Are you sure?"))
+            {
+                return;
+            }
+
+
+            var defaultThemePath = Path.Combine(ThemePath, DefaultThematicFileName);
+
+            if (File.Exists(defaultThemePath))
+            {
+                File.Delete(defaultThemePath);
+            }
+
+            ThematicList.Clear();
+
+            CreateDefaultSettingsIfNotExists();
+            Thematic = ThematicList.First();
+            Save();
+            ThematicList = LoadThemeListFromApplicationFolder();
+            Thematic = ThematicList.FirstOrDefault(x => x.Id.Equals(ThematicModel.DefaultThemeGuid));
+            ApplyTheme();
         }
 
         #endregion
@@ -464,6 +479,12 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
                 FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ComponentWindowsDefaultBackgroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
                 FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ButtonContentForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ButtonContentForegroundColour));
                 FilterSettingsView.Instance.Resources.MergedDictionaries.First()["ApplicationForegroundColour"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.ApplicationForegroundColour));
+            }
+
+            if (FacePlateControlView.Instance != null)
+            {
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["PanelBackground"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.PanelBackground));
+                FacePlateControlView.Instance.Resources.MergedDictionaries.First()["PanelForeground"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Thematic.PanelForeground));
             }
 
             if (_receiver == null)

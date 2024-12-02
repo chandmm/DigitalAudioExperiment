@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DigitalAudioExperiment.View" 
         xmlns:pages="clr-namespace:DigitalAudioExperiment.Pages"
         mc:Ignorable="d"
-        Title="SettingsView" Height="800" Width="800"
+        Title="Digital Audio Experiment settings" Height="800" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid Background="{StaticResource ComponentDefaultDialogBackgroundColour}">
         <Grid.ColumnDefinitions>

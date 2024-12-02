@@ -17,6 +17,8 @@
     <SolidColorBrush x:Key="ApplicationForegroundColour" Color="White"/>
     <SolidColorBrush x:Key="ButtonContentForegroundColour" Color="Black"/>
     <SolidColorBrush x:Key="ApplicationBackgroundFill" Color="Black"/>
+    <SolidColorBrush x:Key="PanelBackground" Color="Black"/>
+    <SolidColorBrush x:Key="PanelForeground" Color="DodgerBlue"/>
 
     <system:Double x:Key="appWidth">1080</system:Double>
     <system:Double x:Key="appHeight">476</system:Double>
