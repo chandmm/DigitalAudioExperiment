@@ -454,6 +454,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private double? _needleThickness;
+        public double? NeedleThickness
+        {
+            get => _needleThickness;
+            set
+            {
+                _needleThickness = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         private string _glowOverlayColour;
         public string SliderThumbGlowOverlay
         {

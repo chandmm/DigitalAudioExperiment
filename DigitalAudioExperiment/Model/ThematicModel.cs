@@ -30,6 +30,7 @@ namespace DigitalAudioExperiment.Model
         public const string DefaultNeedleColour = "Black";
         public const string DefaultDecalColour = "Black";
         public const string DefaultOverdriveLampColour = "Red";
+        public const double DefaultNeedleThickness = 4;
         public const string DefaultBottomCoverFill = "Black";
         public const string DefaultOverdriveLampOffColour = "#550000";
         public const string DefaultMeterLabelForeground = "#62e3f6";
@@ -115,6 +116,7 @@ namespace DigitalAudioExperiment.Model
         public string BottomCoverFill { get; set; }
         public string OverdriveLampOffColour { get; set; }
         public string MeterLabelForeground { get; set; }
+        public double NeedleThickness { get; set; }
         // Seek slider
         public string SliderThumbGlowOverlay { get; set; }
         public string SliderThumbGripBarBackground { get; set; }
@@ -169,6 +171,7 @@ namespace DigitalAudioExperiment.Model
             NeedleColour = DefaultNeedleColour,
             DecalColour = DefaultDecalColour,
             OverdriveLampColour = DefaultOverdriveLampColour,
+            NeedleThickness = DefaultNeedleThickness,
             BottomCoverFill = DefaultBottomCoverFill,
             OverdriveLampOffColour = DefaultOverdriveLampOffColour,
             MeterLabelForeground = DefaultMeterLabelForeground,
@@ -207,7 +210,7 @@ namespace DigitalAudioExperiment.Model
             LabelForeground = DefaultLabelForeground,
             PlaybackIndicatorOffColour = DefaultPlaybackIndicatorOffColour,
             PlaybackIndicatorOnColour = DefaultPlaybackIndicatorOnColour,
-        //Application
+            //Application
             ApplicationBackgroundFill = DefaultApplicationBackgroundFill,
             ComponentBackgroundFill = DefaultComponentBackgroundColour,
             ComponentForegroundColour = DefaultComponentForegroundColour,

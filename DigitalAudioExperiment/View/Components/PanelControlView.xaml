@@ -59,12 +59,12 @@
                             MeterLabelForeground="{Binding Path=DataContext.MeterLabelForeground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BottomCoverFill="{Binding Path=DataContext.BottomCoverFill, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackgroundColour="{Binding Path=DataContext.BackgroundColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-
                             MeterLabel="L"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.LeftdB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            NeedleThickness="{Binding Path=DataContext.NeedleThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             HorizontalAlignment="Left"
                             Margin="2"
                         />
@@ -82,12 +82,12 @@
                             MeterLabelForeground="{Binding Path=DataContext.MeterLabelForeground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BottomCoverFill="{Binding Path=DataContext.BottomCoverFill, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackgroundColour="{Binding Path=DataContext.BackgroundColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-
                             MeterLabel="R"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.RightdB, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            NeedleThickness="{Binding Path=DataContext.NeedleThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             HorizontalAlignment="Left"
                             Margin="2"
                         />

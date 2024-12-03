@@ -500,6 +500,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             _receiver.BottomCoverFill = Thematic.BottomCoverFill;
             _receiver.OverdriveLampOffColour = Thematic.OverdriveLampOffColour;
             _receiver.MeterLabelForeground = Thematic.MeterLabelForeground;
+            _receiver.NeedleThickness = Thematic.NeedleThickness;
             // Seek slider
             _receiver.SliderThumbGlowOverlay = Thematic.SliderThumbGlowOverlay;
             _receiver.SliderThumbGripBarBackground = Thematic.SliderThumbGripBarBackground;
