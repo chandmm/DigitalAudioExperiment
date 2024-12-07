@@ -15,7 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace DigitalAudioExperiment.Pages
 {
@@ -24,6 +26,12 @@ namespace DigitalAudioExperiment.Pages
         public GeneralSettings()
         {
             InitializeComponent();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
     }
 }
