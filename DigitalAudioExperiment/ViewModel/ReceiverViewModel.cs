@@ -24,6 +24,7 @@ using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
+using System.Windows.Media.Animation;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -365,6 +366,18 @@ namespace DigitalAudioExperiment.ViewModel
         public int BassTrebleRangeMax => 20;
         public int BassTrebleRangeMin => -20;
         public FilterSettingsViewModel FilterSettingsViewModel { get; private set; }
+
+        private bool _isPaused;
+        public bool IsPaused 
+        { 
+            get => _isPaused; 
+            set
+            {
+                _isPaused = value;
+
+                OnPropertyChanged(nameof(IsPaused));
+            }
+        }
 
         #endregion
 
@@ -1017,6 +1030,7 @@ namespace DigitalAudioExperiment.ViewModel
             SeekIndicatorValue = 0;
             LeftdB = Minimum;
             RightdB = Minimum;
+            IsPaused = false;
         }
 
         private async void PlayButtonFromCommand()
@@ -1082,7 +1096,15 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async Task PauseButton()
         {
+            if (_player == null)
+            {
+                IsPaused = false;
+
+                return;
+            }
+
             _player?.Pause();
+            IsPaused = _player.IsPaused;
         }
 
         private async void SkipToStartButton()

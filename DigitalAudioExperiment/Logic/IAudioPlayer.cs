@@ -22,6 +22,7 @@ namespace DigitalAudioExperiment.Logic
     public interface IAudioPlayer: IDisposable
     {
         SynchronizationContext? Context { get; set; }
+        bool IsPaused { get; set; }
 
         void Initialise();
 

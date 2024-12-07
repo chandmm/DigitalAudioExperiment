@@ -62,6 +62,14 @@ namespace DigitalAudioExperiment.Logic
         protected FilterSettingsViewModel _filterSettingsViewModel;
 
         public string DecoderType { get; protected set; }
+        public bool IsPaused 
+        { 
+            get => _isPaused; 
+            set
+            {
+                _isPaused = value;
+            }
+        }
 
         #endregion
 
@@ -274,7 +282,7 @@ namespace DigitalAudioExperiment.Logic
                 return; 
             }
 
-            _isPaused = !_isPaused;
+            IsPaused = !IsPaused;
         }
 
         public void SetVolume(int volume)
