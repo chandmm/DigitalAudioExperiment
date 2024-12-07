@@ -14,6 +14,7 @@
     <None Remove="Resources\DaeIconResized.ico" />
     <None Remove="Resources\HuffmanTables.json" />
     <None Remove="Resources\ScalefactorBandTables.json" />
+    <None Remove="Resources\Themes\AudioPlayerFacePlateBrushedMetal.png" />
     <None Remove="Resources\Themes\AudioPlayerFacePlateRounded.png" />
   </ItemGroup>
 
@@ -25,6 +26,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\ScalefactorBandTables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Themes\AudioPlayerFacePlateBrushedMetal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Themes\AudioPlayerFacePlateRounded.png">

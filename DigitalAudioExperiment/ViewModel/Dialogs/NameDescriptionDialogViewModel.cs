@@ -73,10 +73,20 @@ namespace DigitalAudioExperiment.ViewModel.Dialogs
 
         private void UserAccepted()
         {
+            if (!Validate())
+            {
+                MessageBox.Show($"Both the \"{NameFieldLabel}\" and \"{DescriptionFieldLabel}\" Fields are required.");
+
+                return;
+            }
+
             IsUserAccepted = true;
 
             Close?.Invoke();
         }
+
+        private bool Validate()
+            => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Description);
 
         #endregion
 

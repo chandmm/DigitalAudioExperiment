@@ -10,8 +10,8 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="Digital Audio Experiment" 
-        Height="{DynamicResource appHeight}"
-        Width="{DynamicResource appWidth}"
+        Height="{DynamicResource AppHeight}"
+        Width="{DynamicResource AppWidth}"
         AllowsTransparency="True"
         Background="Transparent">
     

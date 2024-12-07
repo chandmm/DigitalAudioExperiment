@@ -35,11 +35,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        #region Constant Fields
-
-        public const string DefaultThemeImage = "AudioPlayerFacePlateRounded.png";
-        public const string ThemePath = "Resources/Themes";
-        public const string DefaultThematicFileName = "DefaultTheme.xml";
+        #region Constant and static fields
 
         private static SettingsViewModel Instance = null;
 
@@ -90,11 +86,14 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             {
                 _thematic = value;
 
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(Thematic)
+                    , nameof(IsSystemDefaultTheme));
             }
         }
 
         public bool HasChanges { get; private set; }
+
+        public bool IsSystemDefaultTheme => Thematic != null && Thematic.Id.EqualsAny(ThematicModel.DefaultThemeGuid, ThematicModel.DefaultClassicThemeGuid);
 
         #endregion
 
@@ -172,12 +171,15 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
         private void CreateDefaultSettingsIfNotExists()
         {
-            if (ThematicList.Any(x => x.Id == ThematicModel.DefaultThemeGuid))
+            if (!ThematicList.Any(x => x.Id == ThematicModel.DefaultThemeGuid))
             {
-                return;
+                ThematicList.Add(ThematicModel.GetDefaultSettings());
             }
 
-            ThematicList.Add(ThematicModel.GetDefaultSettings());
+            if (!ThematicList.Any(x => x.Id == ThematicModel.DefaultClassicThemeGuid))
+            {
+                ThematicList.Add(ThematicModel.GetDefaultClassicSettings());
+            }
 
             ThematicList.Refresh();
         }
@@ -201,7 +203,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
                     if (thematic == null
                         && ThematicList.Any())
                     {
-                        thematic = ThematicList.First();
+                        thematic = ThematicList.First(x => x.Id.Equals(ThematicModel.DefaultThemeGuid));
                         thematic.IsDefault = true;
 
                         return thematic;
@@ -258,45 +260,47 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             return bitmap;
         }
 
-        private void DeleteTheme()
-        {
-            var result = MessageBox.Show("This will permenantly delete this theme and load application default. Are you sure?"
+        private bool CanDeleteTheme()
+            => MessageBox.Show("This will permenantly delete this theme and load application default. Are you sure?"
                 , "Reset Settings"
                 , MessageBoxButton.YesNo
-                , MessageBoxImage.Warning);
+                , MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
-            if (result != MessageBoxResult.Yes)
+        private void DeleteTheme()
+        {
+            if (!CanDeleteTheme())
             {
                 return;
             }
 
-            var currentThematic = Thematic;
+            var thematicPath = Path.Combine(ThematicModel.ThemePath, Thematic.ThematicFileName);
 
-            var defaultTheme = ThematicList.FirstOrDefault(x => x.ThematicFileName.Contains(DefaultThematicFileName));
-
-            if (defaultTheme == null)
+            try
             {
-                defaultTheme = ThematicModel.GetDefaultSettings();
-                ThematicList.Add(defaultTheme);
+                if (File.Exists(thematicPath))
+                {
+                    File.Delete(thematicPath);
+                }
+
+                if (!Path.GetFileName(Thematic.ImagePath).EqualsAny(ThematicModel.DefaultThemeImageFile, ThematicModel.DefaultThemeClassicImageFile)
+                    && File.Exists(Thematic.ImagePath))
+                {
+                    File.Delete(Thematic.ImagePath);
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"All or part of theme compoennts were unable to be deleted. Error: {exception.Message}. Stack trace: {exception.StackTrace}");
             }
 
-            if (File.Exists(currentThematic.ImagePath))
-            {
+            LoadDefaultTheme();
+        }
 
-                File.Delete(currentThematic.ImagePath);
-            }
-
-            var thematicPath = Path.Combine(ThemePath, currentThematic.ThematicFileName);
-
-            if (File.Exists(thematicPath))
-            {
-
-                File.Delete(thematicPath);
-            }
-
+        private void LoadDefaultTheme()
+        {
+            ThematicList = ThematicList = LoadThemeListFromApplicationFolder();
+            Thematic = ThematicList.First(x => x.Id.Equals(ThematicModel.DefaultThemeGuid));
             ApplyTheme();
-            ThematicList = LoadThemeListFromApplicationFolder();
-            Thematic = ThematicList.FirstOrDefault(x => x.ThematicFileName.Contains(defaultTheme.ThematicFileName));
         }
 
         public void SetOpenFileDialog(Func<string, string[]> getFiles)
@@ -316,12 +320,12 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             var fileName = Path.GetFileName(filePath);
 
-            if (!File.Exists(Path.Combine(ThemePath, fileName)))
+            if (!File.Exists(Path.Combine(ThematicModel.ThemePath, fileName)))
             {
-                File.Copy(filePath, Path.Combine(ThemePath, fileName));
+                File.Copy(filePath, Path.Combine(ThematicModel.ThemePath, fileName));
             }
 
-            Thematic.ImagePath = Path.Combine(ThemePath, fileName);
+            Thematic.ImagePath = Path.Combine(ThematicModel.ThemePath, fileName);
 
             OnPropertyChanged(nameof(Thematic));
         }
@@ -330,7 +334,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
         {
             var collection = new ObservableCollection<ThematicModel>();
 
-            foreach (var path in Directory.GetFiles(ThemePath, "*.xml"))
+            foreach (var path in Directory.GetFiles(ThematicModel.ThemePath, "*.xml"))
             {
                 var theme = Load(path);
 
@@ -375,7 +379,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
             }
 
 
-            var defaultThemePath = Path.Combine(ThemePath, DefaultThematicFileName);
+            var defaultThemePath = Path.Combine(ThematicModel.ThemePath, ThematicModel.DefaultThematicFileName);
 
             if (File.Exists(defaultThemePath))
             {
@@ -405,7 +409,7 @@ namespace DigitalAudioExperiment.ViewModel.SettingsViewModels
 
             foreach (var theme in ThematicList)
             {
-                var filePath = Path.Combine(ThemePath, Path.GetFileName(theme.ThematicFileName));
+                var filePath = Path.Combine(ThematicModel.ThemePath, Path.GetFileName(theme.ThematicFileName));
                 var serialiser = new XmlSerializer(typeof(ThematicModel));
 
                 using (FileStream fs = new FileStream(filePath, FileMode.Create))

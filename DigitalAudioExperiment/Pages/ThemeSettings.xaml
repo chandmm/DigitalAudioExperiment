@@ -50,6 +50,7 @@
                             Command="{Binding ApplyThemeCommand}"/>
                         <Button Grid.Column="3"
                             Style="{StaticResource PlaylistButtonStyle}"
+                            Visibility="{Binding IsSystemDefaultTheme, Converter={StaticResource BoolToVisibilityInverseConvertor}}"
                             Content="Delete Selected Theme"
                             Command="{Binding DeleteThemeCommand}"/>
                         <Button Grid.Column="4"

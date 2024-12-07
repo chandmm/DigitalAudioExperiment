@@ -23,7 +23,14 @@ namespace DigitalAudioExperiment.Model
     {
         #region Constants
         // Application
+        public const string DefaultThemeImageFile = "AudioPlayerFacePlateBrushedMetal.png";
+        public const string DefaultThemeClassicImageFile = "AudioPlayerFacePlateRounded.png";
+        public const string ThemePath = "Resources/Themes";
+        public const string DefaultThematicFileName = "DefaultModern.xml";
+        public const string DefaultClassicThematicFileName = "DefaultClassic.xml";
         public const string DefaultThemeGuid = "BF61B3F9-2810-43EF-B710-C4C41EEB972C";
+        public const string DefaultClassicThemeGuid = "BF968BEF-D3B8-40ED-ACFD-880EAAAE3636";
+
 
         // Theme
         public const string DefaultBackgroundColour = "DodgerBlue";
@@ -57,8 +64,8 @@ namespace DigitalAudioExperiment.Model
         public const string DefaultSwitchOffBackground = "#000040";
         public const string DefaultSwitchForeground = "White";
         public const string DefaultGainSliderMidBarFill = "Red";
-        public const string DefaultGainSliderTextForeground = "White";
-        public const string DefaultGainSliderTickForeground = "White";
+        public const string DefaultGainSliderTextForeground = "Black";
+        public const string DefaultGainSliderTickForeground = "Black";
         public const string DefaultPowerButtonLightFill = "Red";
         public const string DefaultPowerButtonStrokeFill = "Black";
         public const string DefaultPowerButtonHighlight = "LimeGreen";
@@ -165,6 +172,17 @@ namespace DigitalAudioExperiment.Model
 
         #region Defaults
 
+        public static ThematicModel GetDefaultClassicSettings()
+        {
+            var theme = GetDefaultSettings();
+            theme.Id = DefaultClassicThemeGuid;
+            theme.ImagePath = Path.Combine("Resources/Themes", DefaultThemeClassicImageFile);
+            theme.ThematicFileName = DefaultClassicThematicFileName;
+            theme.Description = "Dlefault classic";
+
+            return theme;
+        }
+
         public static ThematicModel GetDefaultSettings() => new()
         {
             BackgroundColour = DefaultBackgroundColour,
@@ -223,9 +241,9 @@ namespace DigitalAudioExperiment.Model
             ButtonContentForegroundColour = DefaultButtonContentForegroundColour,
             PanelBackground = DefaultPanelBackground,
             PanelForeground = DefaultPanelForeground,
-            Description = "Default Theme",
+            Description = "Default modern",
             ThematicFileName = "DefaultTheme.xml",
-            ImagePath = Path.Combine("Resources/Themes", "AudioPlayerFacePlateRounded.png"),
+            ImagePath = Path.Combine("Resources/Themes", DefaultThemeImageFile),
             Id = DefaultThemeGuid,
         };
 

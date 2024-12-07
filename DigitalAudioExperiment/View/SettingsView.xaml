@@ -46,21 +46,6 @@
                     <pages:ThemeSettings/>
                 </TabItem>
             </TabControl>
-            <!--<Button Content="Default"
-                ToolTip="Reset player settings to defaults."
-                Style="{StaticResource PlaylistButtonStyle}" 
-                FontSize="28"
-                FontWeight="Bold"
-                Background="{StaticResource ComponentBackgroundColour}"
-                Command="{Binding ResetToDefaultCommand}"/>
-            <Button Content="Theme"
-                ToolTip="Change theme"
-                Style="{StaticResource PlaylistButtonStyle}" 
-                FontSize="28"
-                FontWeight="Bold"
-                Background="{StaticResource ComponentBackgroundColour}"
-                Command="{Binding ThemesCommand}"
-                Grid.Row="1"/>-->
             <Button Content="Close"
                 ToolTip="Close settings window."
                 Style="{StaticResource PlaylistButtonStyle}" 
@@ -72,8 +57,5 @@
                 HorizontalAlignment="Left"
                 Margin="5"/>
         </Grid>
-        <!--<pages:ThemeSettings
-            Grid.Column="1"
-            Margin="5"/>-->
     </Grid>
 </Window>

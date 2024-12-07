@@ -7,8 +7,6 @@
     <SolidColorBrush x:Key="ComponentHighlightColour" Color="#62e3f6"/>
     <SolidColorBrush x:Key="ComponentForegroundColour" Color="White"/>
     <SolidColorBrush x:Key="ComponentBorderColour" Color="DarkBlue"/>
-    <!--<SolidColorBrush x:Key="ComponentDefaultBackgroundColour" Color="Black"/>
-    <SolidColorBrush x:Key="ComponentDefaultDialogForegroundColour" Color="Black"/>-->
     <SolidColorBrush x:Key="ComponentDefaultDialogBackgroundColour" Color="Silver"/>
     <SolidColorBrush x:Key="ApplicationTransparentBackgroundColour" Color="Transparent"/>
     <SolidColorBrush x:Key="ApplicationBorderColour" Color="DodgerBlue"/>
@@ -20,14 +18,10 @@
     <SolidColorBrush x:Key="PanelBackground" Color="Black"/>
     <SolidColorBrush x:Key="PanelForeground" Color="DodgerBlue"/>
 
-    <system:Double x:Key="appWidth">1080</system:Double>
-    <system:Double x:Key="appHeight">476</system:Double>
+    <system:Double x:Key="AppWidth">1080</system:Double>
+    <system:Double x:Key="AppHeight">476</system:Double>
     <system:Double x:Key="listWindowWidth">400</system:Double>
-
-    <!--Styles-->
-    <!--<Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
-        <Setter Property="Source" Value="/Resources/AudioPlayerFacePlateRounded.png"/>
-    </Style>-->
+    
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
         <Setter Property="Source" Value="{DynamicResource ReceiverFacePlateImageSource}" />
     </Style>
