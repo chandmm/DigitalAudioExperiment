@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:DigitalAudioExperiment.View" 
       xmlns:pages="clr-namespace:DigitalAudioExperiment.Pages"
       mc:Ignorable="d" 
-      Height="{StaticResource appHeight}"
+      Height="{StaticResource AppHeight}"
       Width="{StaticResource listWindowWidth}"
       WindowStyle="None"
       WindowStartupLocation="CenterScreen"

@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using DigitalAudioExperiment.ViewModel;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -23,9 +25,22 @@ namespace DigitalAudioExperiment.View.Components
 {
     public partial class PanelControlView : UserControl
     {
+        public PanelControlView Instance { get; private set; }
+
         public PanelControlView()
         {
             InitializeComponent();
+            DataContextChanged += OnDataContextChanged;
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if (DataContext is ReceiverViewModel viewModel)
+            {
+                this.Resources.MergedDictionaries.Add(App.Current.Resources.MergedDictionaries.First());
+                Instance = this;
+                SettingsViewModel.GetSettingsInstance(viewModel, null, null)?.ApplyCurrentTheme();
+            }
         }
 
         private void SeekSiderControl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

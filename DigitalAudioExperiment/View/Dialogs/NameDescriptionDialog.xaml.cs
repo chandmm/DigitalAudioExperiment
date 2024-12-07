@@ -15,15 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using DigitalAudioExperiment.ViewModel.SettingsViewModels;
-using Microsoft.Win32;
+using DigitalAudioExperiment.ViewModel.Dialogs;
 using System.Windows;
 
-namespace DigitalAudioExperiment.View
+namespace DigitalAudioExperiment.View.Dialogs
 {
-    public partial class SettingsView : Window
+    public partial class NameDescriptionDialog : Window, IDisposable
     {
-        public SettingsView()
+        private bool _isDisposed;
+        public NameDescriptionDialog()
         {
             InitializeComponent();
 
@@ -32,29 +32,38 @@ namespace DigitalAudioExperiment.View
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
-            if (DataContext is SettingsViewModel viewModel)
+            if (DataContext is NameDescriptionDialogViewModel viewModel)
             {
-                viewModel.SetOpenFileDialog(GetFiles);
+                viewModel.Close = Close;
             }
         }
 
-        private string[] GetFiles(string filter)
+        public new void Close()
         {
-            var openFileDialog = new OpenFileDialog()
-            {
-                Multiselect = true,
-                Filter = filter
-            };
+            Dispose();
 
-            var dialogResult = openFileDialog.ShowDialog();
-
-            if (dialogResult != null
-                && dialogResult == true)
-            {
-                return openFileDialog.FileNames;
-            }
-
-            return null;
+            base.Close();
         }
+
+        #region Dispose
+
+        private void Dispose(bool isDisposing)
+        {
+            if (!_isDisposed)
+            {
+                if (isDisposing)
+                {
+                    DataContextChanged -= OnDataContextChanged;
+                }
+                _isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
 }

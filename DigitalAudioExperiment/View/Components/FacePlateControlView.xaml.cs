@@ -15,15 +15,41 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
+using DigitalAudioExperiment.ViewModel;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DigitalAudioExperiment.View.Components
 {
     public partial class FacePlateControlView : UserControl
     {
+        public static FacePlateControlView Instance { get; private set; }
+
         public FacePlateControlView()
         {
             InitializeComponent();
+            DataContextChanged += OnDataContextChanged;
+            IsVisibleChanged += OnVisibleChanged;
+        }
+
+        private void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is ReceiverViewModel viewModel)
+            {
+                Instance = this;
+                SettingsViewModel.GetSettingsInstance(viewModel, null, null)?.ApplyCurrentTheme();
+            }
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if (DataContext is ReceiverViewModel viewModel)
+            {
+                this.Resources.MergedDictionaries.Add(App.Current.Resources.MergedDictionaries.First());
+                Instance = this;
+                SettingsViewModel.GetSettingsInstance(viewModel, null, null)?.ApplyCurrentTheme();
+            }
         }
     }
 }

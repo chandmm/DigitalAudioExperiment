@@ -13,6 +13,7 @@
     <Feature Id="ProductFeature" Title="DigitalAudioExperiment" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="ProductResourceComponents"/>
+      <ComponentGroupRef Id="ProductResourceThemeComponents"/>
       <ComponentRef Id="ApplicationShortcut"/>
       <ComponentRef Id="ApplicationShortcutDesktop" />
     </Feature>
@@ -32,7 +33,9 @@
           <Directory Id="DesktopFolder" Name="Desktop" />
 
           <!-- Resources Subdirectory -->
-          <Directory Id="ResourcesFolder" Name="Resources" />
+          <Directory Id="ResourcesFolder" Name="Resources">
+            <Directory Id="ThemesFolder" Name="Themes"/>
+          </Directory>
         </Directory>
       </Directory>
     </Directory>
@@ -63,15 +66,25 @@
       <!-- No need for custom <Publish> elements unless customizing UI flow -->
     </UI>
 
-    <ComponentGroup Id="ProductResourceComponents" Directory="ResourcesFolder">
+    <ComponentGroup Id="ProductResourceThemeComponents" Directory="ThemesFolder">
       <!-- AudioPlayerFacePlateRounded.png Component -->
       <Component Id="AudioPlayerFacePlateRoundedPng" Guid="{CC164319-5F33-429B-9E72-95235FA5328B}">
         <File
           Id="AudioPlayerFacePlateRoundedPngFile"
-          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\AudioPlayerFacePlateRounded.png"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\Themes\AudioPlayerFacePlateRounded.png"
           KeyPath="yes" />
       </Component>
 
+      <!-- AudioPlayerFacePlateBrushedMetal.png Component -->
+      <Component Id="AudioPlayerFacePlateBrushedMetalPng" Guid="{A1DDBCF8-6213-4A72-BC1F-920DA40945E8}">
+        <File
+          Id="AudioPlayerFacePlateBrushedMetalPng"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\Themes\AudioPlayerFacePlateBrushedMetal.png"
+          KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+    
+    <ComponentGroup Id="ProductResourceComponents" Directory="ResourcesFolder">
       <!-- HuffmanTables.json Component -->
       <Component Id="HuffmanTablesJson" Guid="{3093B3A8-5843-495A-94D7-456061D808E4}">
         <File
@@ -220,6 +233,43 @@
         <File
           Id="WpfAudioControlLibraryDllFile"
           Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\WpfAudioControlLibrary.dll"
+          KeyPath="yes" />
+      </Component>
+      
+      <!-- Xceed.Wpf.AvalonDock.Themes.Aero.dll Component -->
+      <Component Id="Xceed.Wpf.AvalonDockDll" Guid="{8F79E128-8C7A-4C3A-B852-794FADB290E0}">
+        <File
+          Id="Xceed.Wpf.AvalonDockDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.AvalonDock.dll"
+          KeyPath="yes" />
+      </Component>
+      
+      <!-- Xceed.Wpf.AvalonDock.Themes.Aero.dll Component -->
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.AeroDll" Guid="{A4D45F88-5E20-4B8D-B5A9-92D52DD36CA1}">
+        <File
+          Id="Xceed.Wpf.AvalonDock.Themes.AeroDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.AvalonDock.Themes.Aero.dll"
+          KeyPath="yes" />
+      </Component>
+      
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.MetroDll" Guid="{24DFE080-3EC9-418A-BB60-92C1104C1EB2}">
+        <File
+          Id="Xceed.Wpf.AvalonDock.Themes.MetroDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.AvalonDock.Themes.Metro.dll"
+          KeyPath="yes" />
+      </Component>
+
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.VS2010Dll" Guid="{717308D3-9CD5-491A-A658-F4E60582F6B0}">
+        <File
+          Id="Xceed.Wpf.AvalonDock.Themes.VS2010DllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.AvalonDock.Themes.VS2010.dll"
+          KeyPath="yes" />
+      </Component>
+      
+      <Component Id="Xceed.Wpf.ToolkitDll" Guid="{EC849E89-6176-4CBB-BFFB-456C5D0C1E88}">
+        <File
+          Id="Xceed.Wpf.ToolkitDllFile"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.Toolkit.dll"
           KeyPath="yes" />
       </Component>
     </ComponentGroup>

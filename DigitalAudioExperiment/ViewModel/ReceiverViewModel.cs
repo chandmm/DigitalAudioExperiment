@@ -20,10 +20,10 @@ using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
 using DigitalAudioExperiment.Model;
 using DigitalAudioExperiment.View;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
-using System.Xml.Serialization;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -364,7 +364,524 @@ namespace DigitalAudioExperiment.ViewModel
 
         public int BassTrebleRangeMax => 20;
         public int BassTrebleRangeMin => -20;
-        public FilterSettingsViewModel FilterSettingsViewModel {get; private set;}
+        public FilterSettingsViewModel FilterSettingsViewModel { get; private set; }
+
+        #endregion
+
+        #region Styling Properties
+
+        public string _backgroundColour;
+        public string BackgroundColour
+        {
+            get => _backgroundColour;
+            set
+            {
+                _backgroundColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _needleColour;
+        public string NeedleColour
+        {
+            get => _needleColour;
+            set
+            {
+                _needleColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _decalColour;
+        public string DecalColour
+        {
+            get => _decalColour;
+            set
+            {
+                _decalColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _overdriveLampColour;
+        public string OverdriveLampColour
+        {
+            get => _overdriveLampColour;
+            set
+            {
+                _overdriveLampColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _overdriveLampOffColour;
+        public string OverdriveLampOffColour
+        {
+            get => _overdriveLampOffColour;
+            set
+            {
+                _overdriveLampOffColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _meterLabelForeground;
+        public string MeterLabelForeground
+        {
+            get => _meterLabelForeground;
+            set
+            {
+                _meterLabelForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _bottomCoverFill;
+        public string BottomCoverFill
+        {
+            get => _bottomCoverFill;
+            set
+            {
+                _bottomCoverFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double? _needleThickness;
+        public double? NeedleThickness
+        {
+            get => _needleThickness;
+            set
+            {
+                _needleThickness = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _glowOverlayColour;
+        public string SliderThumbGlowOverlay
+        {
+            get => _glowOverlayColour;
+            set
+            {
+                _glowOverlayColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbGripBarBackground;
+        public string SliderThumbGripBarBackground
+        {
+            get => _sliderThumbGripBarBackground;
+            set
+            {
+                _sliderThumbGripBarBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPointBackground;
+        public string SliderThumbPointBackground
+        {
+            get => _sliderThumbPointBackground;
+            set
+            {
+                _sliderThumbPointBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbBorder;
+        public string SliderThumbBorder
+        {
+            get => _sliderThumbBorder;
+            set
+            {
+                _sliderThumbBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbForeground;
+        public string SliderThumbForeground
+        {
+            get => _sliderThumbForeground;
+            set
+            {
+                _sliderThumbForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbMouseOverBackground;
+        public string SliderThumbMouseOverBackground
+        {
+            get => _sliderThumbMouseOverBackground;
+            set
+            {
+                _sliderThumbMouseOverBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbMouseOverBorder;
+        public string SliderThumbMouseOverBorder
+        {
+            get => _sliderThumbMouseOverBorder;
+            set
+            {
+                _sliderThumbMouseOverBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPressedBackground;
+        public string SliderThumbPressedBackground
+        {
+            get => _sliderThumbPressedBackground;
+            set
+            {
+                _sliderThumbPressedBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPressedBorder;
+        public string SliderThumbPressedBorder
+        {
+            get => _sliderThumbPressedBorder;
+            set
+            {
+                _sliderThumbPressedBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbDisabledBackground;
+        public string SliderThumbDisabledBackground
+        {
+            get => _sliderThumbDisabledBackground;
+            set
+            {
+                _sliderThumbDisabledBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbDisabledBorder;
+        public string SliderThumbDisabledBorder
+        {
+            get => _sliderThumbDisabledBorder;
+            set
+            {
+                _sliderThumbDisabledBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbTrackBackground;
+        public string SliderThumbTrackBackground
+        {
+            get => _sliderThumbTrackBackground;
+            set
+            {
+                _sliderThumbTrackBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbTrackBorder;
+        public string SliderThumbTrackBorder
+        {
+            get => _sliderThumbTrackBorder;
+            set
+            {
+                _sliderThumbTrackBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _skipToStartButtonFill;
+        public string SkipToStartButtonFill
+        {
+            get => _skipToStartButtonFill;
+            set
+            {
+                _skipToStartButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stopButtonFill;
+        public string StopButtonFill
+        {
+            get => _stopButtonFill;
+            set
+            {
+                _stopButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playButtonFill;
+        public string PlayButtonFill
+        {
+            get => _playButtonFill;
+            set
+            {
+                _playButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _pauseButtonFill;
+        public string PauseButtonFill
+        {
+            get => _pauseButtonFill;
+            set
+            {
+                _pauseButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _skipToEndButtonFill;
+        public string SkipToEndButtonFill
+        {
+            get => _skipToEndButtonFill;
+            set
+            {
+                _skipToEndButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _selectButtonFill;
+        public string SelectButtonFill
+        {
+            get => _selectButtonFill;
+            set
+            {
+                _selectButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchOnBackground;
+        public string SwitchOnBackground
+        {
+            get => _switchOnBackground;
+            set
+            {
+                _switchOnBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchOffBackground;
+        public string SwitchOffBackground
+        {
+            get => _switchOffBackground;
+            set
+            {
+                _switchOffBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchForeground;
+        public string SwitchForeground
+        {
+            get => _switchForeground;
+            set
+            {
+                _switchForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderMidBarFill;
+        public string GainSliderMidBarFill
+        {
+            get => _gainSliderMidBarFill;
+            set
+            {
+                _gainSliderMidBarFill = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderTextForeground;
+        public string GainSliderTextForeground
+        {
+            get => _gainSliderTextForeground;
+            set
+            {
+                _gainSliderTextForeground = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderTickForeground;
+        public string GainSliderTickForeground
+        {
+            get => _gainSliderTickForeground;
+            set
+            {
+                _gainSliderTickForeground = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonLightFill;
+        public string PowerButtonLightFill
+        {
+            get => _powerButtonLightFill;
+            set
+            {
+                _powerButtonLightFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonStrokeFill;
+        public string PowerButtonStrokeFill
+        {
+            get => _powerButtonStrokeFill;
+            set
+            {
+                _powerButtonStrokeFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonHighlight;
+        public string PowerButtonHighlight
+        {
+            get => _powerButtonHighlight;
+            set
+            {
+                _powerButtonHighlight = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _monoOnFill;
+        public string MonoOnFill
+        {
+            get => _monoOnFill;
+            set
+            {
+                _monoOnFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _monoOffFill;
+        public string MonoOffFill
+        {
+            get => _monoOffFill;
+            set
+            {
+                _monoOffFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stereoOnFill;
+        public string StereoOnFill
+        {
+            get => _stereoOnFill;
+            set
+            {
+                _stereoOnFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stereoOffFill;
+        public string StereoOffFill
+        {
+            get => _stereoOffFill;
+            set
+            {
+                _stereoOffFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _labelForeground;
+        public string LabelForeground
+        {
+            get => _labelForeground;
+            set
+            {
+                _labelForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playbackIndicatorOffLamp;
+        public string PlaybackIndicatorOffLamp
+        {
+            get => _playbackIndicatorOffLamp;
+            set
+            {
+                _playbackIndicatorOffLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playbackIndicatorOnLamp;
+        public string PlaybackIndicatorOnLamp
+        {
+            get => _playbackIndicatorOnLamp;
+            set
+            {
+                _playbackIndicatorOnLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -440,6 +957,8 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
 
+            LoadAndSetTheme();
+
             if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
             {
                 return;
@@ -466,7 +985,7 @@ namespace DigitalAudioExperiment.ViewModel
                 if (viewModel.FileExistsInList(settingsData.LastPlayedFile))
                 {
                     viewModel.SetNextSelectedToFile(settingsData.LastPlayedFile);
-                    SetupWithAutoPlay(doNotAutoPlay: true);
+                    //SetupWithAutoPlay(doNotAutoPlay: true);
 
                     return;
                 }
@@ -474,6 +993,10 @@ namespace DigitalAudioExperiment.ViewModel
 
             SelectFile(settingsData.LastPlayedFile, doNotAutoPlay: true);
         }
+
+
+        private void LoadAndSetTheme()
+            => SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
 
         public void SetGetFileCallback(Func<string, string> callback)
             => _getFile = callback;
@@ -799,7 +1322,8 @@ namespace DigitalAudioExperiment.ViewModel
                 PlaylistPageViewInstance.Owner = App.Current.MainWindow;
             }
 
-            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
+            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null 
+                    || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
                 ? new PlaylistPageViewModel()
                 : PlaylistPageViewInstance.DataContext;
 
@@ -866,7 +1390,7 @@ namespace DigitalAudioExperiment.ViewModel
         {
             var settings = new SettingsView();
 
-            using (var viewModel = new SettingsViewModel(this, FilterSettingsViewModel, settings.Close))
+            using (var viewModel = SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, settings.Close))
             {
                 _isInitialising = true;
 
@@ -1058,6 +1582,8 @@ namespace DigitalAudioExperiment.ViewModel
                     _filterSettingsView?.Dispose();
 
                     PropertyChanged -= OnAnyPropertyChanged;
+
+                    SettingsViewModel.GetSettingsInstance(null, null, null).ExplicitDispose();
                 }
 
                 _isDisposed = true;

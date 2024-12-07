@@ -45,6 +45,19 @@ namespace DigitalAudioExperiment.ViewModel
 
         protected abstract void Dispose(bool isDisposng);
 
+        /// <summary>
+        /// Dispose by application control. 
+        /// </summary>
+        /// <remarks>
+        /// Use this when you want the ViewModel to persist until your application logic
+        /// explicitely needs to dispose. Eg Persist ViewModel resources after its associated
+        /// dialog or window has closed.
+        /// </remarks>
+        public virtual void ExplicitDispose()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             Dispose(true);

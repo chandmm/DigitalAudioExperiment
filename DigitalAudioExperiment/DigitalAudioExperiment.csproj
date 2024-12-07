@@ -14,12 +14,11 @@
     <None Remove="Resources\DaeIconResized.ico" />
     <None Remove="Resources\HuffmanTables.json" />
     <None Remove="Resources\ScalefactorBandTables.json" />
+    <None Remove="Resources\Themes\AudioPlayerFacePlateBrushedMetal.png" />
+    <None Remove="Resources\Themes\AudioPlayerFacePlateRounded.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\AudioPlayerFacePlateRounded.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\DaeIconResized.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -29,9 +28,16 @@
     <Content Include="Resources\ScalefactorBandTables.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Themes\AudioPlayerFacePlateBrushedMetal.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Themes\AudioPlayerFacePlateRounded.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Flac.Unknown" Version="1.0.2" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
