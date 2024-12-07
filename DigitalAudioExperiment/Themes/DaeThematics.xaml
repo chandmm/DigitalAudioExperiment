@@ -248,10 +248,16 @@
         <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{DynamicResource ComponentBackgroundColour}"/>
     </Viewbox>
 
-    <Viewbox Stretch="Fill" x:Key="DockModeViewBox" Margin="5">
+    <Viewbox Stretch="Fill" x:Key="DockedModeViewBox" Margin="5">
         <Grid>
             <Rectangle Stroke="{DynamicResource ButtonContentForegroundColour}" StrokeThickness="2" Width="80" Height="35" RadiusX="5" RadiusY="5"/>
             <Rectangle Fill="{DynamicResource ButtonContentForegroundColour}" Width="20" Height="35" HorizontalAlignment="Left"/>
+        </Grid>
+    </Viewbox>
+    <Viewbox Stretch="Fill" x:Key="UndockedDockModeViewBox" Margin="5">
+        <Grid>
+            <Rectangle Stroke="{DynamicResource ButtonContentForegroundColour}" StrokeThickness="2" Width="80" Height="35" RadiusX="5" RadiusY="5"/>
+            <Rectangle Fill="{DynamicResource ButtonContentForegroundColour}" Width="20" Height="35" HorizontalAlignment="Right"/>
         </Grid>
     </Viewbox>
 

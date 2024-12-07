@@ -88,6 +88,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private bool _isSortedAlpherbaticallyAscending;
+        public bool IsSortedAlpherbaticallyAscending
+        {
+            get => _isSortedAlpherbaticallyAscending;
+            set
+            {
+                _isSortedAlpherbaticallyAscending = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -101,6 +113,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand MoveUpCommand { get; private set; }
         public RelayCommand MoveDownCommand { get; private set; }
         public RelayCommand DockToggleCommand { get; private set; }
+        public RelayCommand SortCommand { get; private set; }
 
         #endregion
 
@@ -109,6 +122,7 @@ namespace DigitalAudioExperiment.ViewModel
         public PlaylistPageViewModel()
         {
             PlayList = new ObservableCollection<PlaylistModel>();
+            IsSortedAlpherbaticallyAscending = true;
 
             RemoveAllCommand = new RelayCommand(RemoveAll, () => true);
             RemoveCommand = new RelayCommand(Remove, () => true);
@@ -118,8 +132,10 @@ namespace DigitalAudioExperiment.ViewModel
             MoveUpCommand = new RelayCommand(() => MoveItem(false), () => true);
             MoveDownCommand = new RelayCommand(MoveItemDown, () => true);
             DockToggleCommand = new RelayCommand(DockToggle, () => true);
-
+            SortCommand = new RelayCommand(SortAscendingDescendingToggle, () => true);
             ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
+
+            Sort();
         }
 
         #endregion
@@ -135,7 +151,34 @@ namespace DigitalAudioExperiment.ViewModel
                     FileName = Path.GetFileName(playlistItem)
                 });
 
+            Sort();
+
             OnPropertyChanged(nameof(IsHasList));
+        }
+
+        private void Sort()
+        {
+            if (PlayList == null
+                || !PlayList.Any())
+            {
+                return;
+            }
+
+            var file = PlayList.FirstOrDefault(x => x.IsSelected)?.FullFilePathName;
+
+            if (IsSortedAlpherbaticallyAscending)
+            {
+                PlayList = new ObservableCollection<PlaylistModel>(SortAscending());
+            }
+            else
+            {
+                PlayList = new ObservableCollection<PlaylistModel>(SortDescending());
+            }
+
+            if (!string.IsNullOrEmpty(file))
+            {
+                _previousPlayIndex = PlayList.IndexOf(PlayList.FirstOrDefault(x => x.FullFilePathName.Equals(file))) - 1;
+            }
         }
 
         public string GetNextFile()
@@ -418,6 +461,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             _previousPlayIndex = index - 1;
         }
+
         private void MoveItemDown()
             => MoveItem(true);
 
@@ -444,6 +488,44 @@ namespace DigitalAudioExperiment.ViewModel
             _previousPlayIndex = PlayList.IndexOf(model) - 1;
 
             HandleIsSelected(model);
+        }
+
+        private void SortAscendingDescendingToggle()
+        {
+            if (PlayList == null
+                || !PlayList.Any())
+            {
+                return;
+            }
+
+            IsSortedAlpherbaticallyAscending = !IsSortedAlpherbaticallyAscending;
+
+            var file = PlayList.FirstOrDefault(x => x.IsSelected).FullFilePathName;
+
+            if (IsSortedAlpherbaticallyAscending)
+            {
+                PlayList = new ObservableCollection<PlaylistModel>(SortAscending());
+            }
+
+            if (!IsSortedAlpherbaticallyAscending)
+            {
+                PlayList = new ObservableCollection<PlaylistModel>(SortDescending());
+            }
+
+            if (!string.IsNullOrEmpty(file))
+            {
+                _previousPlayIndex = PlayList.IndexOf(PlayList.FirstOrDefault(x => x.FullFilePathName.Equals(file))) - 1;
+            }
+        }
+
+        private IEnumerable<PlaylistModel> SortAscending()
+        {
+            return PlayList.OrderBy(x => x.FileName);
+        }
+
+        private IEnumerable<PlaylistModel> SortDescending()
+        {
+            return SortAscending().Reverse();
         }
 
         #endregion
