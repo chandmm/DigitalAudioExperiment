@@ -129,10 +129,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Button
                             ToolTip="Remove selected item."
@@ -165,6 +162,23 @@
                             Grid.Column="3"
                             Content="{StaticResource MoveDownViewBoxIcon}"
                             Command="{Binding MoveDownCommand}">
+                        </Button>
+                        <Button
+                            ToolTip="Sort playlist"
+                            VerticalContentAlignment="Center"
+                            Grid.Column="4"
+                            Command="{Binding SortCommand}">
+                            <Button.Resources>
+                                <Style TargetType="Button" BasedOn="{StaticResource PlaylistButtonStyle}">
+                                    <Setter Property="Content" Value="Sort descending"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSortedAlpherbaticallyAscending}" Value="False">
+                                            <Setter Property="Content" Value="Sort ascending"/>        
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
                         </Button>
                     </Grid>
                 </Grid>
