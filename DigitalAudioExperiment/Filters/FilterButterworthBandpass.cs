@@ -103,11 +103,21 @@ namespace DigitalAudioExperiment.Filters
 
             foreach (var filter in _highPassFilters[channel])
             {
+                if (filter == null)
+                {
+                    continue;
+                }
+
                 filteredSample = filter.Transform(filteredSample);
             }
 
             foreach (var filter in _lowPassFilters[channel])
             {
+                if (filter == null)
+                {
+                    continue;
+                }
+
                 filteredSample = filter.Transform(filteredSample);
             }
 

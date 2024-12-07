@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="DigitalAudioExperiment.Pages.ThemeSettings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DigitalAudioExperiment.Pages" 
+      xmlns:settingspages="clr-namespace:DigitalAudioExperiment.Pages.SettingsPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="800">
+    
+    <Grid>
+        <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
+            <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
+        </Viewbox>
+        <Border BorderBrush="{StaticResource ComponentBackgroundColour}" 
+                BorderThickness="2"
+                CornerRadius="10">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="50" Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition MaxHeight="50"/>
+                </Grid.RowDefinitions>
+                <Border BorderThickness="1"
+                        BorderBrush="Gray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition MinWidth="100" Width="Auto"/>
+                            <ColumnDefinition MinWidth="100" Width="Auto"/>
+                            <ColumnDefinition MinWidth="100" Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Select Theme" 
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            Margin="5"
+                            Foreground="{DynamicResource ComponentForegroundColour}"/>
+                        <ComboBox Grid.Column="1"
+                            Text="Combo Theme"
+                            ItemsSource="{Binding ThematicList}"
+                            SelectedItem="{Binding Thematic}"
+                            DisplayMemberPath="Description"
+                            VerticalAlignment="Center"
+                            Margin="5"/>
+                        <Button Grid.Column="2"
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Content="Apply"
+                            Command="{Binding ApplyThemeCommand}"/>
+                        <Button Grid.Column="3"
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Visibility="{Binding IsSystemDefaultTheme, Converter={StaticResource BoolToVisibilityInverseConvertor}}"
+                            Content="Delete Selected Theme"
+                            Command="{Binding DeleteThemeCommand}"/>
+                        <Button Grid.Column="4"
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Content="Create new theme"
+                            Command="{Binding CreateNewThemeCommand}"/>
+                        <!--<Button Grid.Column="4"
+                            Style="{StaticResource PlaylistButtonStyle}"
+                            Content="Save"
+                            Command="{Binding SaveCommand}"/>-->
+                    </Grid>
+                </Border>
+                <Grid Grid.Row="1">
+                    <Label Style="{StaticResource DialogLabelStyle}"
+                           Content="Change Thematic settings for components:"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <TabControl DataContext="{Binding}">
+                        <TabItem Header="Application">
+                            <settingspages:ApplicationSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="VU Meters">
+                            <settingspages:VUSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Seek Slider">
+                            <settingspages:SeekSliderSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Playback">
+                            <settingspages:PlaybackControlsSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Volume and tonal">
+                            <settingspages:VolumeBassTrebleControlsSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Power button">
+                            <settingspages:PowerButtonControlsSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Stereo indicator">
+                            <settingspages:StereoIndicatorControlSettingsPage/>
+                        </TabItem>
+                        <TabItem Header="Playback indicator">
+                            <settingspages:PlaybackIndicatorControlSettingsPage/>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+                <Grid Grid.Row="3"
+                      Background="Gray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Add background image."
+                       Foreground="{StaticResource ComponentForegroundColour}"
+                       VerticalAlignment="Center"
+                       Grid.Row="2"/>
+                    <Button Grid.Row="2"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource PlaylistButtonStyle}"
+                        Content="Add"
+                        Command="{Binding AddImageCommand}"/>
+                    <TextBlock Grid.Column="2"
+                               Style="{StaticResource TextListItemStyle}"
+                               VerticalAlignment="Center"
+                               Text="{Binding Thematic.ImageName, StringFormat='{}Current: {0}'}"
+                               Margin="5"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -16,14 +16,6 @@
         ResizeMode="CanResize"
         ShowInTaskbar="True"
         x:Name="filterSettingsDialog">
-
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
     
     <Grid>
         <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
@@ -66,6 +58,9 @@
                         <ToggleButton.Resources>
                             <Style TargetType="ToggleButton">
                                 <Setter Property="Content" Value="VU Only Mode"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource ComponentBorderColour}"/>
+                                <Setter Property="Background" Value="{DynamicResource ComponentBackgroundColour}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ComponentForegroundColour}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsFilterOutput}" Value="True">
                                         <Setter Property="Content" Value="Output and VU Mode"/>
@@ -79,7 +74,7 @@
                         Style="{StaticResource PlaylistButtonStyle}" 
                         FontSize="28"
                         FontWeight="Bold"
-                        Background="{StaticResource ComponentBackgroundColour}"
+                        Background="{DynamicResource ComponentBackgroundColour}"
                         Command="{Binding DefaultCommand}"/>
                 </Grid>
                 <Grid Grid.ColumnSpan="3">
@@ -94,14 +89,14 @@
                             Style="{StaticResource PlaylistButtonStyle}" 
                             FontSize="28"
                             FontWeight="Bold"
-                            Background="{StaticResource ComponentBackgroundColour}"
+                            Background="{DynamicResource ComponentBackgroundColour}"
                             Command="{Binding ExitCommand}"/>
                 </Grid>
                 <Label Grid.Row="1" 
                     Content="Center Cutoff Frequency:" 
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Style="{StaticResource DialogLabelStyle}"/>
+                    Style="{DynamicResource DialogLabelStyle}"/>
                 <Slider Grid.Row="1"
                     x:Name="cutoffFrequencySetting"
                     Minimum="20"

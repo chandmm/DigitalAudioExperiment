@@ -22,6 +22,7 @@
 using DigitalAudioExperiment.Filters;
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Model;
+using System.ComponentModel;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -33,6 +34,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         public delegate void ApplySettingsEvent(FilterSettingsViewModel filterSettingsViewModel);
         public event ApplySettingsEvent OnSettingsApplied;
+
+        public Dictionary<FilterType, FilterTypeDescriptionModel> FilterTypeLookup = new Dictionary<FilterType, FilterTypeDescriptionModel>();
 
         #endregion
 
@@ -128,6 +131,12 @@ namespace DigitalAudioExperiment.ViewModel
             Initialisation();
             ExitCommand = new RelayCommand(ExitFilterSettings, () => true);
             DefaultCommand = new RelayCommand(ResetToDefaultSettings, () => true);
+            PropertyChanged += OnAnyPropertyChanged;
+        }
+
+        private void OnAnyPropertyChanged(object? sender, PropertyChangedEventArgs args)
+        {
+            Settings.SaveSettings(this);
         }
 
         private void Initialisation()
@@ -142,10 +151,11 @@ namespace DigitalAudioExperiment.ViewModel
 
             FilterTypeSet = FilterTypes.First(x => x.FilterTypeValue == FilterType.Bandpass);
 
-            CutoffFrequency = 500;
-            Bandwidth = 600;
-            FilterOrder = 2;
+            FilterTypes.ForEach(x => FilterTypeLookup.Add(x.FilterTypeValue, x));
+
+            ResetToDefaultSettings();
         }
+
 
         #endregion
 
@@ -164,8 +174,8 @@ namespace DigitalAudioExperiment.ViewModel
                     Bandwidth = 0;
                     break;
                 case FilterType.Bandpass:
-                    CutoffFrequency = 500;
-                    Bandwidth = 600;
+                    CutoffFrequency = 1040;
+                    Bandwidth = 2020;
                     FilterOrder = 2;
                     break;
                 case FilterType.ButterworthBandpass:
@@ -201,6 +211,7 @@ namespace DigitalAudioExperiment.ViewModel
                 if (isDisposng)
                 {
                     // Dispose managed resources.
+                    PropertyChanged -= OnAnyPropertyChanged;
                 }
 
                 _isDisposed = true;

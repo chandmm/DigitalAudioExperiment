@@ -25,7 +25,7 @@ namespace DigitalAudioExperiment.Filters
     {
         protected bool _isDisposed;
 
-        public event EventHandler<RmsEventArgs> RmsCalculated;
+        public event EventHandler<RmsEventArgs>? RmsCalculated;
 
         public abstract FilterType GetFilterType();
         public abstract float Transform(float sample, int channel);
@@ -34,6 +34,11 @@ namespace DigitalAudioExperiment.Filters
         protected abstract void CreateFilter(WaveFormat waveFormat, float lowPassCutoff, float highPassCutoff, int filterOrder);
 
         protected abstract void Dispose(bool isDisposing);
+
+        public virtual void UpdateFilterSettings(int valueOne, int valueTwo)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Dispose()
         {

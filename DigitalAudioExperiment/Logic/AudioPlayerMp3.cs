@@ -28,7 +28,6 @@ namespace DigitalAudioExperiment.Logic
         private SimpleDecoder? _simpleDecoder;
         private DecoderSimplePcmStream? _decoderPcmStream;
         private bool _isDisposed;
-
         #endregion
 
         #region Initialisation

@@ -25,6 +25,12 @@ namespace DigitalAudioExperiment.Logic
 {
     public abstract class AudioPlayerBase : IAudioPlayer
     {
+        #region Statics and Constants
+
+        public SynchronizationContext? Context { get; set; }
+
+        #endregion
+
         #region Fields
         private readonly int _volumeScaler = 100;
         private static object _lock = new object();
@@ -37,6 +43,8 @@ namespace DigitalAudioExperiment.Logic
         private (float, float, float) _dbRMSValues;
         private (float left, float right) _dbVuValues;
         private ISampleProvider _sampleAggregator;
+        private int _bassGainDb = 0;
+        private int _trebleGainDb = 0;
 
         protected int _bitRate;
         protected Action<int> _seekPositionCallback;
@@ -50,7 +58,7 @@ namespace DigitalAudioExperiment.Logic
         protected WaveOutEvent _waveOut;
         protected WaveStream _waveStream;
         protected string _fileName;
-        protected int _rmsSampleLength = 576;
+        protected int _rmsSampleLength = 288;
         protected FilterSettingsViewModel _filterSettingsViewModel;
 
         public string DecoderType { get; protected set; }
@@ -134,7 +142,11 @@ namespace DigitalAudioExperiment.Logic
                 while (_waveOut.PlaybackState == PlaybackState.Playing
                     || _waveOut.PlaybackState == PlaybackState.Paused)
                 {
-                    HandlePlaybackStates(_waveOut);
+                    try
+                    {
+                        HandlePlaybackStates(_waveOut);
+                    }
+                    catch { };
 
                     Thread.Sleep(100);
                 }
@@ -158,12 +170,14 @@ namespace DigitalAudioExperiment.Logic
                 return null;
             }
 
-            var aggregator = new SampleAggregator(sampleProvider
-                , FilterFactory.GetFilterInterface(_filterSettingsViewModel.FilterTypeSet.FilterTypeValue, 
+            var aggregator = new SampleAggregator(sampleProvider,
+                FilterFactory.GetFilterInterface(_filterSettingsViewModel.FilterTypeSet.FilterTypeValue,
                 waveStream.WaveFormat, 
                 _filterSettingsViewModel.CutoffFrequency - (_filterSettingsViewModel.Bandwidth/2),
                 _filterSettingsViewModel.CutoffFrequency + (_filterSettingsViewModel.Bandwidth/2), 
-                _filterSettingsViewModel.FilterOrder), _filterSettingsViewModel.IsFilterOutput)
+                _filterSettingsViewModel.FilterOrder),
+                FilterFactory.GetFilterInterface(FilterType.BassAndTreble, waveStream.WaveFormat, _bassGainDb, _trebleGainDb, 2),
+                _filterSettingsViewModel.IsFilterOutput)
             {
                 NotificationCount = _rmsSampleLength,
                 PerformRmsCalculation = true
@@ -270,6 +284,24 @@ namespace DigitalAudioExperiment.Logic
         public bool IsStopped()
             => !_isPlaying;
 
+        public void SetContext(SynchronizationContext context)
+            => Context = context;
+
+        public virtual void SetBassTreble(int bass, int treble)
+        {
+            _bassGainDb = bass;
+            _trebleGainDb = treble;
+
+            if (_sampleAggregator == null)
+            {
+                return;
+            }
+
+            var sampleAggregator = (_sampleAggregator as SampleAggregator);
+
+            sampleAggregator.UpdateBassAndTrebleFilter(_bassGainDb, _trebleGainDb);
+        }
+
         #endregion
 
         #region DB RMS value calculations
@@ -313,7 +345,8 @@ namespace DigitalAudioExperiment.Logic
             }
 
             (_sampleAggregator as SampleAggregator).UpdateFilterSettings(_filterSettingsViewModel.CutoffFrequency, _filterSettingsViewModel.Bandwidth, _filterSettingsViewModel.FilterOrder, _filterSettingsViewModel.IsFilterOutput);
-            // TODO Filter change code.
+            
+            // TODO Live Filter change code.
         }
 
         #endregion
@@ -419,6 +452,8 @@ namespace DigitalAudioExperiment.Logic
                         _stream?.Dispose();
                         _stream = null;
                     }
+
+                    Context = null;
                 }
 
                 _isDisposed = true;

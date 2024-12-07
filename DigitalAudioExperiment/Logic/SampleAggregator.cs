@@ -23,7 +23,6 @@ using DigitalAudioExperiment.Events;
 using DigitalAudioExperiment.Filters;
 using NAudio.Dsp;
 using NAudio.Wave;
-using System.Security.Policy;
 
 namespace DigitalAudioExperiment.Logic
 {
@@ -37,6 +36,7 @@ namespace DigitalAudioExperiment.Logic
         private int _count;
         private double[] _sumSquares;
         private IFilter _filter;
+        private IFilter _filterBassTreble;
 
         // Arrays of filters for cascading (one per channel)
         private BiQuadFilter[][] _lowPassFilters;
@@ -68,7 +68,7 @@ namespace DigitalAudioExperiment.Logic
         /// <param name="lowCutoffFrequency">The lower cutoff frequency for the band-pass filter.</param>
         /// <param name="highCutoffFrequency">The upper cutoff frequency for the band-pass filter.</param>
         /// <param name="filterOrder">The order of the Butterworth filter (must be a multiple of 2).</param>
-        public SampleAggregator(ISampleProvider source, IFilter filter, bool isFilterOutput = false)
+        public SampleAggregator(ISampleProvider source, IFilter filter, IFilter filterBassTreble, bool isFilterOutput = false)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             WaveFormat = source.WaveFormat;
@@ -77,6 +77,7 @@ namespace DigitalAudioExperiment.Logic
             IsFilterOutput = isFilterOutput;
 
             _filter = filter;
+            _filterBassTreble = filterBassTreble;
         }
 
         public SampleAggregator(ISampleProvider source, FilterAbstractBase filter)
@@ -88,24 +89,49 @@ namespace DigitalAudioExperiment.Logic
         {
             int samplesRead = _source.Read(buffer, offset, sampleCount);
 
+            ProcessSampleWithBassAndTreble(samplesRead, buffer, offset);
             CalculateRms(samplesRead, buffer, offset);
             FilterOutput(samplesRead, buffer, offset);
+            
 
             return samplesRead;
         }
 
+        private void ProcessSampleWithBassAndTreble(int samplesRead, float[] buffer, int offset)
+        {
+            if (_filterBassTreble == null)
+            {
+                return;
+            }
+
+            for (int sampleIndex = 0; sampleIndex < samplesRead; sampleIndex += _channels)
+            {
+                for (int channel = 0; channel < _channels; channel++)
+                {
+                    int index = offset + sampleIndex + channel;
+
+                    if (index < buffer.Length)
+                    {
+                        buffer[index] = _filterBassTreble.Transform(buffer[index], channel); ;
+                    }
+                }
+            }
+        }
+
         private void FilterOutput(int samplesRead, float[] buffer, int offset)
         {
-            if (IsFilterOutput)
+            if (!IsFilterOutput)
             {
-                for (int samplesProcessed = 0; samplesProcessed < samplesRead; samplesProcessed += _channels)
+                return;
+            }
+
+            for (int samplesProcessed = 0; samplesProcessed < samplesRead; samplesProcessed += _channels)
+            {
+                for (int channel = 0; channel < _channels; channel++)
                 {
-                    for (int channel = 0; channel < _channels; channel++)
+                    if ((samplesProcessed + channel) < samplesRead)
                     {
-                        if ((samplesProcessed + channel) < samplesRead)
-                        {
-                            buffer[samplesProcessed + channel] = _filter.Transform(buffer[samplesProcessed + channel], channel);
-                        }
+                        buffer[samplesProcessed + channel] = _filter.Transform(buffer[samplesProcessed + channel], channel);
                     }
                 }
             }
@@ -165,6 +191,10 @@ namespace DigitalAudioExperiment.Logic
             }
         }
 
+        public void UpdateBassAndTrebleFilter(int bass, int treble)
+        {
+            _filterBassTreble.UpdateFilterSettings(bass, treble);
+        }
 
         #region Dispose
 

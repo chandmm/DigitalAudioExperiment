@@ -1,29 +1,52 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:convertors="clr-namespace:DigitalAudioExperiment.Convertors">
 
-    <SolidColorBrush x:Key="ComponentBackgroundColour" Color="#62e3f6"/>
+    <SolidColorBrush x:Key="ComponentBackgroundColour" Color="DodgerBlue"/>
+    <SolidColorBrush x:Key="ComponentHighlightColour" Color="#62e3f6"/>
     <SolidColorBrush x:Key="ComponentForegroundColour" Color="White"/>
+    <SolidColorBrush x:Key="ComponentBorderColour" Color="DarkBlue"/>
+    <SolidColorBrush x:Key="ComponentDefaultDialogBackgroundColour" Color="Silver"/>
+    <SolidColorBrush x:Key="ApplicationTransparentBackgroundColour" Color="Transparent"/>
+    <SolidColorBrush x:Key="ApplicationBorderColour" Color="DodgerBlue"/>
+    <SolidColorBrush x:Key="ListTextForegroundColour" Color="Blue"/>
+    <SolidColorBrush x:Key="ComponentWindowsDefaultBackgroundColour" Color="Silver"/>
+    <SolidColorBrush x:Key="ApplicationForegroundColour" Color="White"/>
+    <SolidColorBrush x:Key="ButtonContentForegroundColour" Color="Black"/>
+    <SolidColorBrush x:Key="ApplicationBackgroundFill" Color="Black"/>
+    <SolidColorBrush x:Key="PanelBackground" Color="Black"/>
+    <SolidColorBrush x:Key="PanelForeground" Color="DodgerBlue"/>
 
-    <!--Styles-->
+    <system:Double x:Key="AppWidth">1080</system:Double>
+    <system:Double x:Key="AppHeight">476</system:Double>
+    <system:Double x:Key="listWindowWidth">400</system:Double>
+    
     <Style TargetType="Image" x:Key="ReceiverFacePlateImageKey">
-        <Setter Property="Source" Value="/Resources/AudioPlayerFacePlateRounded.png"/>
+        <Setter Property="Source" Value="{DynamicResource ReceiverFacePlateImageSource}" />
     </Style>
     <Style TargetType="TextBlock" x:Key="TextBlockTitleStyle">
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationForegroundColour}"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="FontFamily" Value="Ariel"/>
     </Style>
     <Style TargetType="TextBlock" x:Key="TextBlockSubTitleStyle">
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationForegroundColour}"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Ariel"/>
         <Setter Property="FontStyle" Value="Italic"/>
     </Style>
 
+    <Style TargetType="TextBlock" x:Key="TextListItemStyle">
+        <Setter Property="Foreground" Value="{DynamicResource ListTextForegroundColour}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Ariel"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
     <Style TargetType="Border" x:Key="DialogBorderStyle">
-        <Setter Property="BorderBrush" Value="DodgerBlue"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBorderColour}"/>
         <Setter Property="BorderThickness" Value="5"/>
         <Setter Property="CornerRadius" Value="10"/>
     </Style>
@@ -48,39 +71,55 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Margin" Value="2"/>
-        <Setter Property="Background" Value="DodgerBlue"/>
+        <Setter Property="Background" Value="{DynamicResource ComponentBackgroundColour}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonContentForegroundColour}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource ComponentBackgroundColour}"/>
+                <Setter Property="Background" Value="{DynamicResource ComponentHighlightColour}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="Label" x:Key="DialogLabelStyle">
         <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="{StaticResource ComponentForegroundColour}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource ComponentForegroundColour}"/>
         <Setter Property="Padding" Value="5"/>
     </Style>
-    
+
+    <Style TargetType="Label" x:Key="DialogLabelTitleStyle">
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="Foreground" Value="{DynamicResource ListTextForegroundColour}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="SettingsLabelStyle" BasedOn="{StaticResource DialogLabelStyle}">
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+
     <!--Templates-->
     <DataTemplate x:Key="PlaylistItemsTemplate">
         <Grid>
             <ToggleButton Command="{Binding IsSelectedCommand}" >
                 <ToggleButton.Resources>
                     <Style TargetType="ToggleButton">
-                        <Setter Property="Background" Value="{StaticResource ComponentBackgroundColour}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource ComponentBorderColour}"/>
+                        <Setter Property="Background" Value="{DynamicResource ComponentBackgroundColour}"/>
                         <Setter Property="HorizontalContentAlignment" Value="Left"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter Property="Background" Value="DodgerBlue"/>
+                                <Setter Property="Background" Value="{DynamicResource ComponentHighlightColour}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </ToggleButton.Resources>
                 <ToggleButton.Content>
                     <Grid>
-                        <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                        <TextBlock Style="{StaticResource TextListItemStyle}" Text="{Binding FileName}" TextWrapping="Wrap"/>
                     </Grid>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -88,77 +127,90 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ComboBoxTemplate">
-        <TextBlock Text="{Binding Path=Description}" Foreground="Black"/>
+        <TextBlock Text="{Binding Path=Description}" Foreground="{DynamicResource ListTextForegroundColour}"/>
     </DataTemplate>
     
     <!--ViewBox Implementations-->
     <Viewbox Stretch="Fill" x:Key="LoadViewBox">
         <Grid>
-            <Path Data="M 0.06143274,3.5396934 H 15.956811 V 12.456895 H 0.06143274 Z" Stroke="Black"/>
-            <Path Data="M 1.9928603,3.505048 2.4974326,5.4948318 H 13.502564 L 13.9935,3.5489404" Stroke="Black"/>
-            <Path Data="M 3.0911754,3.7267096 A 0.30000001,0.30000001 0 0 1 3.3493728,4.0432592 0.30000001,0.30000001 0 0 1 3.0525013,4.3238601 0.30000001,0.30000001 0 0 1 2.7509921,4.0482486 0.30000001,0.30000001 0 0 1 3.003875,3.7274375" Stroke="Black"/>
-            <Path Data="M 13.091176,3.727 A 0.30000001,0.30000001 0 0 1 13.349373,4.0435495 0.30000001,0.30000001 0 0 1 13.052502,4.3241504 0.30000001,0.30000001 0 0 1 12.750992,4.048539 0.30000001,0.30000001 0 0 1 13.003875,3.7277279" Stroke="Black"/>
-            <Path Data="m 4.5500001,4.4000001 a 0.15000001,0.15000001 0 0 1 -0.15,0.15 0.15000001,0.15000001 0 0 1 -0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,0.15 z" Stroke="Black"/>
-            <Path Data="m 12.05,4.4000001 a 0.15000001,0.15000001 0 0 1 -0.15,0.15 0.15000001,0.15000001 0 0 1 -0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,0.15 z" Stroke="Black"/>
-            <Path Data="m 5.0034103,8.0204611 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 z" Stroke="Black"/>
-            <Path Data="m 13.001065,8.0002127 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 z" Stroke="Black"/>
-            <Path Data="m 5.4682931,7.3217288 a 2.0272806,1.8363172 0 0 1 0.056354,1.22621" Stroke="Black"/>
-            <Path Data="M 10.912542,9.1574199 A 2,2 0 0 1 10.38002,8.1062139" Stroke="Black"/>
+            <Path Data="M 0.06143274,3.5396934 H 15.956811 V 12.456895 H 0.06143274 Z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 1.9928603,3.505048 2.4974326,5.4948318 H 13.502564 L 13.9935,3.5489404" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 3.0911754,3.7267096 A 0.30000001,0.30000001 0 0 1 3.3493728,4.0432592 0.30000001,0.30000001 0 0 1 3.0525013,4.3238601 0.30000001,0.30000001 0 0 1 2.7509921,4.0482486 0.30000001,0.30000001 0 0 1 3.003875,3.7274375" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 13.091176,3.727 A 0.30000001,0.30000001 0 0 1 13.349373,4.0435495 0.30000001,0.30000001 0 0 1 13.052502,4.3241504 0.30000001,0.30000001 0 0 1 12.750992,4.048539 0.30000001,0.30000001 0 0 1 13.003875,3.7277279" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 4.5500001,4.4000001 a 0.15000001,0.15000001 0 0 1 -0.15,0.15 0.15000001,0.15000001 0 0 1 -0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,0.15 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 12.05,4.4000001 a 0.15000001,0.15000001 0 0 1 -0.15,0.15 0.15000001,0.15000001 0 0 1 -0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,-0.15 0.15000001,0.15000001 0 0 1 0.15,0.15 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 5.0034103,8.0204611 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 13.001065,8.0002127 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 5.4682931,7.3217288 a 2.0272806,1.8363172 0 0 1 0.056354,1.22621" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 10.912542,9.1574199 A 2,2 0 0 1 10.38002,8.1062139" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
         </Grid>
     </Viewbox>
 
-    <Viewbox Stretch="Uniform" x:Key="OpenViewBox">
+    <Viewbox Stretch="Fill" x:Key="OpenViewBox">
         <Grid>
-            <Path Data="m 1.9913053,0.05439099 9.9985767,0.01354751 2.018813,1.977935 V 15.945609 H 1.9913053 Z" Stroke="Black"/>
-            <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="Black"/>
-            <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="Black"/>
-            <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="Black"/>
-            <Path Data="m 4.5285592,9.11168 h 7.5294118 v 0.968457 H 4.5285592 Z" Stroke="Black"/>
-            <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="Black"/>
-            <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="Black"/>
+            <Path Data="m 1.9913053,0.05439099 9.9985767,0.01354751 2.018813,1.977935 V 15.945609 H 1.9913053 Z" Stroke="{DynamicResource ButtonContentForegroundColour}" Margin="1,0,2,0"/>
+            <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 4.5285592,9.11168 h 7.5294118 v 0.968457 H 4.5285592 Z" Stroke="{DynamicResource ComponentHighlightColour}"/>
+            <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
         </Grid>
     </Viewbox>
 
     <Viewbox Stretch="Uniform" x:Key="AddFileViewBox">
         <Grid>
-            <Path Data="m 0.25,3 h 15.5 V 13 H 0.25 Z" Stroke="Black"/>
-            <Path Data="M 0.97705351,3.0543403 1.9608016,0.2240154 5.9777728,0.23693926 6.9888472,3.0543403" Stroke="Black"/>
-            <Path Data="M 8.5343137,8.4230852 H 5.3409544 V 11.616445 H 4.3682981 V 8.4230852 H 1.1749387 v -0.9375 H 4.3682981 V 4.2922258 h 0.9726563 v 3.1933594 h 3.1933593 z" Stroke="Black"/>
+            <Path Data="m 0.25,3 h 15.5 V 13 H 0.25 Z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 0.97705351,3.0543403 1.9608016,0.2240154 5.9777728,0.23693926 6.9888472,3.0543403" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 8.5343137,8.4230852 H 5.3409544 V 11.616445 H 4.3682981 V 8.4230852 H 1.1749387 v -0.9375 H 4.3682981 V 4.2922258 h 0.9726563 v 3.1933594 h 3.1933593 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
         </Grid>
     </Viewbox>
 
     <Viewbox Stretch="Uniform" x:Key="SavePlaylistViewBox" Margin="2">
         <Grid>
-            <Path Data="M 0,0 H 16 V 16 H 0 Z" Stroke="Black"/>
-            <Path Data="M 2.0187552,0.0136402 H 13.967605 v 4.937767 H 2.0187552 Z" Stroke="Black"/>
-            <Path Data="m 11.007673,0.54560953 h 1.404944 V 4.4330776 h -1.404944 z" Stroke="Black"/>
-            <Path Data="M 1.5004263,6.0153451 H 14.513212 V 14.949701 H 1.5004263 Z" Stroke="Black"/>
-            <Path Data="M 1.9914749,7.9658994 H 13.981245" Stroke="Black"/>
-            <Path Data="M 2.0136402,10.000554 H 14.00341" Stroke="Black"/>
-            <Path Data="M 2,13.983504 H 13.98977" Stroke="Black"/>
-            <Path Data="M 2.0136402,11.923828 H 14.00341" Stroke="Black"/>
-            <Path Data="m 14.949702,14.949702 h 0.913897 v 0.900255 h -0.913897 z" Stroke="Black"/>
+            <Path Data="M 0,0 H 16 V 16 H 0 Z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 2.0187552,0.0136402 H 13.967605 v 4.937767 H 2.0187552 Z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 11.007673,0.54560953 h 1.404944 V 4.4330776 h -1.404944 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 1.5004263,6.0153451 H 14.513212 V 14.949701 H 1.5004263 Z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 1.9914749,7.9658994 H 13.981245" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 2.0136402,10.000554 H 14.00341" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 2,13.983504 H 13.98977" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 2.0136402,11.923828 H 14.00341" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 14.949702,14.949702 h 0.913897 v 0.900255 h -0.913897 z" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
         </Grid>
     </Viewbox>
 
     <Viewbox Stretch="Uniform" x:Key="ExitIconViewBox" Margin="2">
         <Grid>
-            <Path Data="M 5.0468882,7 H 13.115516 V 9 H 5.0468882 Z" Stroke="Black" Fill="Black"/>
-            <Path Data="m 13.430871,8.9753916 0.01522,1.9950894 2.20748,-2.9521927 -2.20748,-2.9791525 z" Stroke="Black" Fill="Black"/>
-            <Path Data="M 11.745312,6.0239042 V 0.25513471 L 0.24159449,0.24187317 V 15.731351 l 11.50371751,0.02652 0.01309,-5.835077" Stroke="Black"/>
+            <Path Data="M 5.0468882,7 H 13.115516 V 9 H 5.0468882 Z" Stroke="{DynamicResource ButtonContentForegroundColour}" Fill="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="m 13.430871,8.9753916 0.01522,1.9950894 2.20748,-2.9521927 -2.20748,-2.9791525 z" Stroke="{DynamicResource ButtonContentForegroundColour}" Fill="{DynamicResource ButtonContentForegroundColour}"/>
+            <Path Data="M 11.745312,6.0239042 V 0.25513471 L 0.24159449,0.24187317 V 15.731351 l 11.50371751,0.02652 0.01309,-5.835077" Stroke="{DynamicResource ButtonContentForegroundColour}"/>
         </Grid>
     </Viewbox>
 
     <Viewbox Stretch="Uniform" x:Key="PlaylistViewBoxClearAll" Margin="2">
         <Grid>
-            <Grid>
-                <Path Data="m 1.9913053,0.05439099 9.9985767,0.01354751 2.018813,1.977935 V 15.945609 H 1.9913053 Z" Stroke="DarkGray"/>
-                <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="DarkGray"/>
-                <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="DarkGray"/>
-                <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="DarkGray"/>
-                <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="DarkGray"/>
-                <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="DarkGray"/>
-            </Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Grid.RowSpan="2">
+                <Label.Content>
+                    <Grid>
+                        <Path Data="m 1.9913053,0.05439099 9.9985767,0.01354751 2.018813,1.977935 V 15.945609 H 1.9913053 Z" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                        <Path Data="M 4.5013387,4.0102383 11.98971,3.9965818" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                        <Path Data="M 4.4911923,7.0636481 11.993207,7.0499923" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                        <Path Data="m 4.5048325,13.046598 7.5020145,-0.01366" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                        <Path Data="m 2.2233589,9.2344416 0.6547315,0.6820119 1.49435,-1.434576" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                        <Path Data="M 13.994885,2.0187553 11.98977,2.0051153 12.00295,0.06829102" Stroke="{DynamicResource ComponentWindowsDefaultBackgroundColour}"/>
+                    </Grid>
+                </Label.Content>
+            </Label>
+            <Label Grid.RowSpan="2" Background="Transparent"
+                Foreground="{DynamicResource ButtonContentForegroundColour}"
+                Content="X" 
+                FontSize="25"
+                HorizontalContentAlignment="Center"/>
         </Grid>
     </Viewbox>
 
@@ -169,23 +221,57 @@
             VerticalAlignment="Center" 
             HorizontalAlignment="Center" 
             HorizontalContentAlignment="Center" 
+            Foreground="{DynamicResource ButtonContentForegroundColour}"
             VerticalContentAlignment="Center"/>
     </Viewbox>
 
-    <Viewbox Stretch="Fill" x:Key="MoveDownViewBoxIcon" Margin="2">
+    <Viewbox x:Key="MoveDownViewBoxIcon" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+        <Viewbox.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="180"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Viewbox.RenderTransform>
         <Label Content="^"
-            FontWeight="Bold"
-            FontSize="48"
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Center" 
-            HorizontalContentAlignment="Center" 
-            VerticalContentAlignment="Center"/>
+               FontWeight="Bold"
+               FontSize="48"
+               VerticalAlignment="Center" 
+               HorizontalAlignment="Center" 
+               HorizontalContentAlignment="Center" 
+               Foreground="{DynamicResource ButtonContentForegroundColour}"
+               VerticalContentAlignment="Center"/>
     </Viewbox>
+
     <Viewbox Stretch="Fill" x:Key="FilterIconViewbox" Margin="5">
-        <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{StaticResource ComponentBackgroundColour}"/>
+        <Path Data="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2h14z" Fill="{DynamicResource ComponentBackgroundColour}"/>
+    </Viewbox>
+
+    <Viewbox Stretch="Fill" x:Key="DockModeViewBox" Margin="5">
+        <Grid>
+            <Rectangle Stroke="{DynamicResource ButtonContentForegroundColour}" StrokeThickness="2" Width="80" Height="35" RadiusX="5" RadiusY="5"/>
+            <Rectangle Fill="{DynamicResource ButtonContentForegroundColour}" Width="20" Height="35" HorizontalAlignment="Left"/>
+        </Grid>
+    </Viewbox>
+
+    <Viewbox Stretch="Fill" x:Key="SettingsCogViewBox">
+        <Grid>
+            <Path Data="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" 
+                  StrokeThickness="2" 
+                  Stroke="{DynamicResource ComponentForegroundColour}"
+                  StrokeEndLineCap="Round" 
+                  StrokeLineJoin="round"/>
+            <Path Data="M19.6224 10.3954L18.5247 7.7448L20 6L18 4L16.2647 5.48295L13.5578 4.36974L12.9353 2H10.981L10.3491 4.40113L7.70441 5.51596L6 4L4 6L5.45337 7.78885L4.3725 10.4463L2 11V13L4.40111 13.6555L5.51575 16.2997L4 18L6 20L7.79116 18.5403L10.397 19.6123L11 22H13L13.6045 19.6132L16.2551 18.5155C16.6969 18.8313 18 20 18 20L20 18L18.5159 16.2494L19.6139 13.598L21.9999 12.9772L22 11L19.6224 10.3954Z" 
+                  Stroke="{DynamicResource ComponentForegroundColour}" 
+                  StrokeEndLineCap="round" 
+                  StrokeLineJoin="Round" StrokeThickness="2"/>
+        </Grid>
     </Viewbox>
 
     <!--Convetors-->
     <convertors:BoolToVisibilityConvertor x:Key="BoolToVisibilityConvertor"/>
+    <convertors:VisibilityToGridLengthConvertor x:Key="VisibilityToGridLengthConvertor"/>
+    <convertors:BoolToVisibilityInverseConvertor x:Key="BoolToVisibilityInverseConvertor"/>
 
 </ResourceDictionary>    

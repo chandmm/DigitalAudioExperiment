@@ -21,6 +21,8 @@ namespace DigitalAudioExperiment.Logic
 {
     public interface IAudioPlayer: IDisposable
     {
+        SynchronizationContext? Context { get; set; }
+
         void Initialise();
 
         #region Playback control
@@ -47,6 +49,8 @@ namespace DigitalAudioExperiment.Logic
         void SetVolume(int volume);
 
         bool IsStopped();
+
+        void SetBassTreble(int bass, int treble);
 
         #endregion
 
@@ -81,6 +85,8 @@ namespace DigitalAudioExperiment.Logic
         bool IsDisposed();
 
         string DecoderType { get; }
+
+        void SetContext(SynchronizationContext? context);
 
         #endregion
 

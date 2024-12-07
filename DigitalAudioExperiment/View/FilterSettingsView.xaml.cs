@@ -1,4 +1,5 @@
 ﻿using DigitalAudioExperiment.ViewModel;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,6 +8,8 @@ namespace DigitalAudioExperiment.View
 {
     public partial class FilterSettingsView : Window, IDisposable
     {
+        public static FilterSettingsView Instance { get; private set; }
+
         private bool _isDisposed;
 
         public FilterSettingsView()
@@ -27,7 +30,11 @@ namespace DigitalAudioExperiment.View
         {
             if (DataContext is FilterSettingsViewModel viewModel)
             {
+                Instance = this;
+
+                this.Resources.MergedDictionaries.Add(App.Current.Resources.MergedDictionaries.First());
                 viewModel.SetExitCallback(ExitSettings);
+                SettingsViewModel.GetSettingsInstance(null, null, null)?.ApplyCurrentTheme();
             }
         }
 

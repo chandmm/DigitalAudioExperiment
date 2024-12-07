@@ -7,15 +7,8 @@
              xmlns:controls="clr-namespace:WpfAudioControlLibrary.Controls;assembly=WpfAudioControlLibrary"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Themes/DaeThematics.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
-        <Border BorderThickness="2" BorderBrush="Silver" Background="Black">
+        <Border BorderThickness="2" BorderBrush="Silver" Background="{DynamicResource PanelBackground}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -44,30 +37,57 @@
                 <controls:StereoIndicatorControl 
                     Grid.Column="9" 
                     IsMono="{Binding Path=DataContext.IsMono, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                    MonoOnFill="{Binding Path=DataContext.MonoOnFill, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    MonoOffFill="{Binding Path=DataContext.MonoOffFill, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    StereoOnFill="{Binding Path=DataContext.StereoOnFill, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    StereoOffFill="{Binding Path=DataContext.StereoOffFill, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    LabelForeground="{Binding Path=DataContext.LabelForeground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     Margin="2"/>
                 <Grid Grid.RowSpan="6" Grid.ColumnSpan="5">
                     <StackPanel Orientation="Horizontal">
                         <controls:VUControl
-                            Mark1="-20"
-                            Mark2="-10"
-                            Mark3="0"
-                            Mark4="+3"
+                            Mark1="20"
+                            Mark2="10"
+                            Mark3="7"
+                            Mark4="5"
+                            Mark5="0"
+                            Mark6="3"
+                            NeedleColour="{Binding Path=DataContext.NeedleColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            DecalColour="{Binding Path=DataContext.DecalColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            OverdriveLampColour="{Binding Path=DataContext.OverdriveLampColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            OverdriveLampOffColour="{Binding Path=DataContext.OverdriveLampOffColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            MeterLabelForeground="{Binding Path=DataContext.MeterLabelForeground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BottomCoverFill="{Binding Path=DataContext.BottomCoverFill, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BackgroundColour="{Binding Path=DataContext.BackgroundColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            MeterLabel="L"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.LeftdB, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            NeedleThickness="{Binding Path=DataContext.NeedleThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             HorizontalAlignment="Left"
                             Margin="2"
                         />
                         <controls:VUControl
-                            Mark1="-20"
-                            Mark2="-10"
-                            Mark3="0"
-                            Mark4="+3"
+                            Mark1="20"
+                            Mark2="10"
+                            Mark3="7"
+                            Mark4="5"
+                            Mark5="0"
+                            Mark6="3"
+                            NeedleColour="{Binding Path=DataContext.NeedleColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            DecalColour="{Binding Path=DataContext.DecalColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            OverdriveLampColour="{Binding Path=DataContext.OverdriveLampColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            OverdriveLampOffColour="{Binding Path=DataContext.OverdriveLampOffColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            MeterLabelForeground="{Binding Path=DataContext.MeterLabelForeground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BottomCoverFill="{Binding Path=DataContext.BottomCoverFill, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            BackgroundColour="{Binding Path=DataContext.BackgroundColour, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            MeterLabel="R"
                             Minimum="{Binding Path=DataContext.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Maximum="{Binding Path=DataContext.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             Value="{Binding Path=DataContext.RightdB, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             BackplateText="{Binding Path=DataContext.VuLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
+                            NeedleThickness="{Binding Path=DataContext.NeedleThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
                             HorizontalAlignment="Left"
                             Margin="2"
                         />
@@ -81,14 +101,14 @@
                     BorderThickness="0" 
                     TextWrapping="Wrap" 
                     Text="{Binding Bitrate, StringFormat='{}Bitrate: {0}'}" 
-                    Background="Black" 
-                    Foreground="SteelBlue"/>
+                    Background="{DynamicResource PanelBackground}"
+                    Foreground="{DynamicResource PanelForeground}"/>
                 <TextBox 
                     Text="{Binding DecoderType, StringFormat='{}Decoder: {0}'}"
                     FontWeight="Bold"
                     FontSize="12"
-                    Background="Black" 
-                    Foreground="SteelBlue"
+                    Background="{DynamicResource PanelBackground}" 
+                    Foreground="{DynamicResource PanelForeground}"
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Grid.Column="3"
@@ -98,8 +118,8 @@
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Text="{Binding Metadata, Mode=OneWay}" 
-                    Background="Black" 
-                    Foreground="SteelBlue" 
+                    Background="{DynamicResource PanelBackground}" 
+                    Foreground="{DynamicResource PanelForeground}" 
                     Grid.Row="1"
                     Grid.RowSpan="6" 
                     Grid.ColumnSpan="4" 
@@ -109,8 +129,8 @@
                     IsReadOnly="True" 
                     BorderThickness="0" 
                     Text="{Binding HeaderData, Mode=OneWay}" 
-                    Background="Black" 
-                    Foreground="SteelBlue" 
+                    Background="{DynamicResource PanelBackground}" 
+                    Foreground="{DynamicResource PanelForeground}" 
                     Grid.RowSpan="4" 
                     Grid.ColumnSpan="2" 
                     Grid.Column="7" 
@@ -125,7 +145,7 @@
                     TickFrequency="{Binding Path=DataContext.TickFrequency, RelativeSource={RelativeSource AncestorType=Grid}}"  
                     Minimum="0" 
                     Maximum="{Binding Path=DataContext.SliderMaximum, RelativeSource={RelativeSource AncestorType=Grid}}" 
-                    Value="{Binding Path=DataContext.Value, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}" 
+                    Value="{Binding Path=DataContext.SeekIndicatorValue, RelativeSource={RelativeSource AncestorType=Grid}, Mode=TwoWay}" 
                     PreviewMouseLeftButtonDown="SeekSiderControl_PreviewMouseLeftButtonDown"
                     PreviewMouseLeftButtonUp="SeekSiderControl_PreviewMouseLeftButtonUp"
                     ElapsedHours="{Binding Path=DataContext.ElapsedHours, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
@@ -134,6 +154,20 @@
                     DurationHours="{Binding Path=DataContext.DurationHours, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     DurationMinutes="{Binding Path=DataContext.DurationMinutes, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
                     DurationSeconds="{Binding Path=DataContext.DurationSeconds, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbGlowOverlay="{Binding Path=DataContext.SliderThumbGlowOverlay, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbGripBarBackground="{Binding Path=DataContext.SliderThumbGripBarBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbPointBackground="{Binding Path=DataContext.SliderThumbPointBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbBorder="{Binding Path=DataContext.SliderThumbBorder, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbForeground="{Binding Path=DataContext.SliderThumbForeground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbMouseOverBackground="{Binding Path=DataContext.SliderThumbMouseOverBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbMouseOverBorder="{Binding Path=DataContext.SliderThumbMouseOverBorder, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbPressedBackground="{Binding Path=DataContext.SliderThumbPressedBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbPressedBorder="{Binding Path=DataContext.SliderThumbPressedBorder, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbDisabledBackground="{Binding Path=DataContext.SliderThumbDisabledBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbDisabledBorder="{Binding Path=DataContext.SliderThumbDisabledBorder, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbTrackBackground="{Binding Path=DataContext.SliderThumbTrackBackground, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+                    SliderThumbTrackBorder="{Binding Path=DataContext.SliderThumbTrackBorder, RelativeSource={RelativeSource AncestorType=Grid}, Mode=OneWay}"
+
                     Grid.Row="6"
                     Grid.RowSpan="4"
                     Grid.ColumnSpan="10"

@@ -18,7 +18,10 @@
 
 using DigitalAudioExperiment.Infrastructure;
 using DigitalAudioExperiment.Logic;
+using DigitalAudioExperiment.Model;
 using DigitalAudioExperiment.View;
+using DigitalAudioExperiment.ViewModel.SettingsViewModels;
+using System.ComponentModel;
 using System.IO;
 using System.Timers;
 
@@ -35,11 +38,11 @@ namespace DigitalAudioExperiment.ViewModel
         private IAudioPlayer _player;
         private System.Timers.Timer _vuUpdateTimer;
         private System.Timers.Timer _applicationHeartBeatTimer;
-        private double _vuHeartBeatInterval = 10;
+        private double _vuHeartBeatInterval = 3;
         private bool _canContinueLoopMode = true;
-        private PlaylistPageView _playlistPageView;
-        private FilterSettingsViewModel _filterSettingsViewModel;
         private FilterSettingsView _filterSettingsView;
+        private bool _isSeeking;
+        private bool _isInitialising;
 
         #endregion
 
@@ -75,13 +78,13 @@ namespace DigitalAudioExperiment.ViewModel
             get => _isMono;
         }
 
-        private double _value;
-        public double Value
+        private double _seekIndicatorValue;
+        public double SeekIndicatorValue
         {
-            get => _value;
+            get => _seekIndicatorValue;
             set
             {
-                _value = value;
+                _seekIndicatorValue = value;
 
                 OnPropertyChanged();
             }
@@ -319,6 +322,567 @@ namespace DigitalAudioExperiment.ViewModel
 
         public string DecoderType { get; set; }
 
+        private PlaylistPageView _playlistPageView;
+        public PlaylistPageView PlaylistPageViewInstance
+        {
+            get => _playlistPageView;
+            set
+            {
+                _playlistPageView = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _bass;
+        public int Bass
+        {
+            get => _bass;
+            set
+            {
+                _bass = value;
+
+                UpdateBassTrebleSettings();
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int _treble;
+        public int Treble
+        {
+            get => _treble;
+            set
+            {
+                _treble = value;
+
+                UpdateBassTrebleSettings();
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int BassTrebleRangeMax => 20;
+        public int BassTrebleRangeMin => -20;
+        public FilterSettingsViewModel FilterSettingsViewModel { get; private set; }
+
+        #endregion
+
+        #region Styling Properties
+
+        public string _backgroundColour;
+        public string BackgroundColour
+        {
+            get => _backgroundColour;
+            set
+            {
+                _backgroundColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _needleColour;
+        public string NeedleColour
+        {
+            get => _needleColour;
+            set
+            {
+                _needleColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _decalColour;
+        public string DecalColour
+        {
+            get => _decalColour;
+            set
+            {
+                _decalColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _overdriveLampColour;
+        public string OverdriveLampColour
+        {
+            get => _overdriveLampColour;
+            set
+            {
+                _overdriveLampColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _overdriveLampOffColour;
+        public string OverdriveLampOffColour
+        {
+            get => _overdriveLampOffColour;
+            set
+            {
+                _overdriveLampOffColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _meterLabelForeground;
+        public string MeterLabelForeground
+        {
+            get => _meterLabelForeground;
+            set
+            {
+                _meterLabelForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _bottomCoverFill;
+        public string BottomCoverFill
+        {
+            get => _bottomCoverFill;
+            set
+            {
+                _bottomCoverFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private double? _needleThickness;
+        public double? NeedleThickness
+        {
+            get => _needleThickness;
+            set
+            {
+                _needleThickness = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _glowOverlayColour;
+        public string SliderThumbGlowOverlay
+        {
+            get => _glowOverlayColour;
+            set
+            {
+                _glowOverlayColour = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbGripBarBackground;
+        public string SliderThumbGripBarBackground
+        {
+            get => _sliderThumbGripBarBackground;
+            set
+            {
+                _sliderThumbGripBarBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPointBackground;
+        public string SliderThumbPointBackground
+        {
+            get => _sliderThumbPointBackground;
+            set
+            {
+                _sliderThumbPointBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbBorder;
+        public string SliderThumbBorder
+        {
+            get => _sliderThumbBorder;
+            set
+            {
+                _sliderThumbBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbForeground;
+        public string SliderThumbForeground
+        {
+            get => _sliderThumbForeground;
+            set
+            {
+                _sliderThumbForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbMouseOverBackground;
+        public string SliderThumbMouseOverBackground
+        {
+            get => _sliderThumbMouseOverBackground;
+            set
+            {
+                _sliderThumbMouseOverBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbMouseOverBorder;
+        public string SliderThumbMouseOverBorder
+        {
+            get => _sliderThumbMouseOverBorder;
+            set
+            {
+                _sliderThumbMouseOverBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPressedBackground;
+        public string SliderThumbPressedBackground
+        {
+            get => _sliderThumbPressedBackground;
+            set
+            {
+                _sliderThumbPressedBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbPressedBorder;
+        public string SliderThumbPressedBorder
+        {
+            get => _sliderThumbPressedBorder;
+            set
+            {
+                _sliderThumbPressedBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbDisabledBackground;
+        public string SliderThumbDisabledBackground
+        {
+            get => _sliderThumbDisabledBackground;
+            set
+            {
+                _sliderThumbDisabledBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbDisabledBorder;
+        public string SliderThumbDisabledBorder
+        {
+            get => _sliderThumbDisabledBorder;
+            set
+            {
+                _sliderThumbDisabledBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbTrackBackground;
+        public string SliderThumbTrackBackground
+        {
+            get => _sliderThumbTrackBackground;
+            set
+            {
+                _sliderThumbTrackBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _sliderThumbTrackBorder;
+        public string SliderThumbTrackBorder
+        {
+            get => _sliderThumbTrackBorder;
+            set
+            {
+                _sliderThumbTrackBorder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _skipToStartButtonFill;
+        public string SkipToStartButtonFill
+        {
+            get => _skipToStartButtonFill;
+            set
+            {
+                _skipToStartButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stopButtonFill;
+        public string StopButtonFill
+        {
+            get => _stopButtonFill;
+            set
+            {
+                _stopButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playButtonFill;
+        public string PlayButtonFill
+        {
+            get => _playButtonFill;
+            set
+            {
+                _playButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _pauseButtonFill;
+        public string PauseButtonFill
+        {
+            get => _pauseButtonFill;
+            set
+            {
+                _pauseButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _skipToEndButtonFill;
+        public string SkipToEndButtonFill
+        {
+            get => _skipToEndButtonFill;
+            set
+            {
+                _skipToEndButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _selectButtonFill;
+        public string SelectButtonFill
+        {
+            get => _selectButtonFill;
+            set
+            {
+                _selectButtonFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchOnBackground;
+        public string SwitchOnBackground
+        {
+            get => _switchOnBackground;
+            set
+            {
+                _switchOnBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchOffBackground;
+        public string SwitchOffBackground
+        {
+            get => _switchOffBackground;
+            set
+            {
+                _switchOffBackground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _switchForeground;
+        public string SwitchForeground
+        {
+            get => _switchForeground;
+            set
+            {
+                _switchForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderMidBarFill;
+        public string GainSliderMidBarFill
+        {
+            get => _gainSliderMidBarFill;
+            set
+            {
+                _gainSliderMidBarFill = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderTextForeground;
+        public string GainSliderTextForeground
+        {
+            get => _gainSliderTextForeground;
+            set
+            {
+                _gainSliderTextForeground = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _gainSliderTickForeground;
+        public string GainSliderTickForeground
+        {
+            get => _gainSliderTickForeground;
+            set
+            {
+                _gainSliderTickForeground = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonLightFill;
+        public string PowerButtonLightFill
+        {
+            get => _powerButtonLightFill;
+            set
+            {
+                _powerButtonLightFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonStrokeFill;
+        public string PowerButtonStrokeFill
+        {
+            get => _powerButtonStrokeFill;
+            set
+            {
+                _powerButtonStrokeFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _powerButtonHighlight;
+        public string PowerButtonHighlight
+        {
+            get => _powerButtonHighlight;
+            set
+            {
+                _powerButtonHighlight = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _monoOnFill;
+        public string MonoOnFill
+        {
+            get => _monoOnFill;
+            set
+            {
+                _monoOnFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _monoOffFill;
+        public string MonoOffFill
+        {
+            get => _monoOffFill;
+            set
+            {
+                _monoOffFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stereoOnFill;
+        public string StereoOnFill
+        {
+            get => _stereoOnFill;
+            set
+            {
+                _stereoOnFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _stereoOffFill;
+        public string StereoOffFill
+        {
+            get => _stereoOffFill;
+            set
+            {
+                _stereoOffFill = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _labelForeground;
+        public string LabelForeground
+        {
+            get => _labelForeground;
+            set
+            {
+                _labelForeground = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playbackIndicatorOffLamp;
+        public string PlaybackIndicatorOffLamp
+        {
+            get => _playbackIndicatorOffLamp;
+            set
+            {
+                _playbackIndicatorOffLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string _playbackIndicatorOnLamp;
+        public string PlaybackIndicatorOnLamp
+        {
+            get => _playbackIndicatorOnLamp;
+            set
+            {
+                _playbackIndicatorOnLamp = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -334,6 +898,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand OpenVisualisationFilterSettingsCommand { get; set; }
         public RelayCommand SetAutoplayModeToggleCommand { get; set; }
         public RelayCommand SetLoopPlayModeToggleCommand { get; set; }
+        public RelayCommand SettingsCommand { get; set; }
 
         #endregion
 
@@ -341,16 +906,18 @@ namespace DigitalAudioExperiment.ViewModel
 
         public ReceiverViewModel()
         {
+            _isInitialising = true;
+            _isMono = true;
+
             Title = "Digital Audio Experiment(DAE)";
             SubTitle = "Mp3 Digital Audio";
             VuLabel = "DB RMS Power";
             VolumeLabel = "Volume";
-            _isMono = true;
 
             ExitCommand = new RelayCommand(() => Exit(), () => true);
             PlayCommand = new RelayCommand(async () => PlayButtonFromCommand(), () => true);
             PauseCommand = new RelayCommand(async () => await PauseButton(), () => true);
-            SelectCommand = new RelayCommand(SelectFile, () => true);
+            SelectCommand = new RelayCommand(() => SelectFile(null), () => true);
             StopCommand = new RelayCommand(StopButton, () => true);
             SkipToStartCommand = new RelayCommand(SkipToStartButton, () => true);
             SkipToEndCommand = new RelayCommand(SkipToEndButton, () => true);
@@ -358,6 +925,7 @@ namespace DigitalAudioExperiment.ViewModel
             OpenVisualisationFilterSettingsCommand = new RelayCommand(OpenVisualisationFilterSettings, () => true);
             SetAutoplayModeToggleCommand = new RelayCommand(SetAutoplayModeToggle, () => true);
             SetLoopPlayModeToggleCommand = new RelayCommand(SetLoopPlayModeToggle, () => true);
+            SettingsCommand = new RelayCommand(OpenSettings, () => true);
 
             Volume = _initialSafeVolume;
             IsAutoPlayChecked = true;
@@ -367,14 +935,68 @@ namespace DigitalAudioExperiment.ViewModel
             SliderMaximum = 1;
             Maximum = 100;
             Minimum = 0;
-            Value = 0;
+            SeekIndicatorValue = 0;
 
             _filterSettingsView = new FilterSettingsView();
-            _filterSettingsView.DataContext = _filterSettingsViewModel = new FilterSettingsViewModel();
-            _filterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
+            _filterSettingsView.DataContext = FilterSettingsViewModel = new FilterSettingsViewModel();
+            FilterSettingsViewModel.OnSettingsApplied += OnFilterSettingsApplied;
+
+            var playlistViewModel = new PlaylistPageViewModel();
+            playlistViewModel.DockingChangedEvent += OnDockingChanged;
+            PlaylistPageViewInstance = new PlaylistPageView();
+            PlaylistPageViewInstance.DataContext = playlistViewModel;
+            PlaylistPageViewInstance.SetPlaylistPageComponent(new Pages.PlaylistPage());
+            PlaylistPageViewInstance.SetDocked();
+
+            PropertyChanged += OnAnyPropertyChanged;
 
             RaisePropertyChangedEvents();
         }
+
+        public void LoadSettings()
+        {
+            var settingsData = Settings.LoadSettings(this, FilterSettingsViewModel);
+
+            LoadAndSetTheme();
+
+            if (string.IsNullOrEmpty(settingsData.LastPlayedFile))
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(settingsData.PlayListFile))
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(settingsData.PlayListFile)
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel)
+            {
+                viewModel.LoadPlaylistFile(settingsData.PlayListFile);
+
+                PlaylistPageViewInstance.Owner = MainWindow.Instance;
+                viewModel.IsShowing = settingsData.IsShowing;
+                viewModel.IsDocked = settingsData.IsDocked;
+
+                viewModel.Update();
+
+                _isInitialising = false;
+
+                if (viewModel.FileExistsInList(settingsData.LastPlayedFile))
+                {
+                    viewModel.SetNextSelectedToFile(settingsData.LastPlayedFile);
+                    //SetupWithAutoPlay(doNotAutoPlay: true);
+
+                    return;
+                }
+            }
+
+            SelectFile(settingsData.LastPlayedFile, doNotAutoPlay: true);
+        }
+
+
+        private void LoadAndSetTheme()
+            => SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, null).ApplyCurrentTheme();
 
         public void SetGetFileCallback(Func<string, string> callback)
             => _getFile = callback;
@@ -392,7 +1014,7 @@ namespace DigitalAudioExperiment.ViewModel
             _player?.Dispose();
             _player = null;
 
-            Value = 0;
+            SeekIndicatorValue = 0;
             LeftdB = Minimum;
             RightdB = Minimum;
         }
@@ -405,7 +1027,7 @@ namespace DigitalAudioExperiment.ViewModel
         private async Task PlayInternal(bool fromPlayButton = false)
         {
             if (_player == null
-                && _playlistPageView == null)
+                && PlaylistPageViewInstance == null)
             {
                 return;
             }
@@ -420,9 +1042,9 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             if (_player == null
-                && _playlistPageView.DataContext is PlaylistPageViewModel newViewModel
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel newViewModel
                 && newViewModel != null
-                && newViewModel.PlayList.Any())
+                && newViewModel.IsHasList)
             {
                 ResetPlayer();
                 SetupWithAutoPlay(autoPlayOverride: true, fromPlayButton);
@@ -442,7 +1064,7 @@ namespace DigitalAudioExperiment.ViewModel
 
             _player.SetHardStop(false);
 
-            OnFilterSettingsApplied(_filterSettingsViewModel);
+            OnFilterSettingsApplied(FilterSettingsViewModel);
 
             Play();
         }
@@ -465,31 +1087,80 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async void SkipToStartButton()
         {
-            Value = 0;
+            SeekIndicatorValue = 0;
             SetSeekValue();
         }
 
         private void SkipToEndButton()
         {
-            Value = (int)_player?.GetFrameCount() - 1;
+            SeekIndicatorValue = (int)_player?.GetFrameCount() - 1;
             SetSeekValue();
         }
 
-        private async void SelectFile()
+        public void StartIsSeeking(bool isSeeking)
         {
-            if (_getFile == null)
+            _isSeeking = isSeeking;
+        }
+
+        public void SetSeekValue()
+        {
+            _player?.Seek((int)SeekIndicatorValue);
+        }
+
+        private void SetAutoplayModeToggle()
+        {
+            IsAutoPlayChecked = !IsAutoPlayChecked;
+        }
+
+        private void SetLoopPlayModeToggle()
+        {
+            IsLoopPlayChecked = !IsLoopPlayChecked;
+        }
+
+        #endregion
+
+        #region Audio File Management
+
+        public async void SelectFile(string? fileNameParameter = null, bool doNotAutoPlay = false)
+        {
+            if (_getFile == null
+                && string.IsNullOrEmpty(fileNameParameter))
             {
                 return;
             }
 
-            var fileName = _getFile.Invoke(PlaylistPageViewModel.FileFiltersAudio);
+            var fileName = string.IsNullOrEmpty(fileNameParameter) 
+                ? _getFile.Invoke(PlaylistPageViewModel.FileFiltersAudio) 
+                : fileNameParameter;
 
             if (string.IsNullOrEmpty(fileName))
             {
                 return;
             }
 
-            OnFileSelected(fileName);
+            if (_player != null
+                && !_player.IsStopped())
+            {
+                StopButton();
+
+                while (_player != null
+                        && (!_player.IsDisposed()
+                        || !_player.IsStopped()))
+                {
+                    Thread.Sleep(10);
+                }
+
+                _player = null;
+            }
+
+            if (PlaylistPageViewInstance != null
+                && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel
+                && string.IsNullOrEmpty(fileNameParameter))
+            {
+                viewModel.RemoveAll();
+            }
+
+            OnFileSelected(fileName, doNotAutoPlay);
         }
 
         private void ResetPlayer()
@@ -500,19 +1171,33 @@ namespace DigitalAudioExperiment.ViewModel
                 _player.Dispose();
             }
 
-            Value = 0;
+            SeekIndicatorValue = 0;
         }
 
-        private void OnFileSelected(string fileName)
+        private void OnFileSelected(string fileName, bool doNotAutoPlay)
         {
             if (string.IsNullOrEmpty(fileName))
             {
                 return;
             }
 
-            SetupPlayListControls(fileName);
+            StopButton();
 
-            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel
+            var timeout = 30;
+            var timeoutCount = 0;
+
+            while(_player != null
+                && timeoutCount < 30)
+            {
+                Thread.Sleep(10);
+                timeoutCount++;
+            }
+
+            SetupPlayListControls(fileName);
+            ResetPlayer();
+            SetupWithAutoPlay(fileName: fileName, doNotAutoPlay: doNotAutoPlay);
+
+            if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel
                 && playlistPageViewModel.PlayList.Count() == 1
                 && _player == null)
             {
@@ -523,26 +1208,20 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void SetupPlayListControls(string fileName)
         {
-            if (_playlistPageView == null)
-            {
-                _playlistPageView = new PlaylistPageView();
-                _playlistPageView.DataContext = new PlaylistPageViewModel();
-            }
-
-            if (_playlistPageView.DataContext is PlaylistPageViewModel playlistPageViewModel)
+            if (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playlistPageViewModel)
             {
                 playlistPageViewModel.Add(fileName);
             }
         }
 
-        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false)
+        private void SetupWithAutoPlay(bool autoPlayOverride = false, bool fromPlayButton = false, string fileName = "", bool doNotAutoPlay = false)
         {
-            if (!(_playlistPageView.DataContext is PlaylistPageViewModel viewModel))
+            if (!(PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel))
             {
                 return;
             }
 
-            var fileName = viewModel.GetNextFile();
+            fileName = viewModel.GetNextFile();
 
             if (string.IsNullOrEmpty(fileName)
                 && fromPlayButton)
@@ -565,7 +1244,7 @@ namespace DigitalAudioExperiment.ViewModel
                 _player.SetPlaybackStoppedCallback(PlaybackStoppedCallback);
                 SliderMaximum = _player.GetFrameCount() ?? 0;
                 _isMono = _player.GetIsMonoChannel();
-                Value = 0;
+                SeekIndicatorValue = 0;
                 _player.SetVolume(Volume);
                 DurationMinutes = _player.Duration().Item1;
                 DurationSeconds = _player.Duration().Item2;
@@ -573,11 +1252,13 @@ namespace DigitalAudioExperiment.ViewModel
                 HeaderData = _player.GetAudioFileInfo();
                 Metadata = _player?.GetMetadata();
 
+                UpdateBassTrebleSettings();
                 SetTickFrequency();
 
                 RaisePropertyChangedEvents();
 
                 if (IsAutoPlayChecked
+                    && !doNotAutoPlay
                     && !autoPlayOverride)
                 {
                     PlayInternal();
@@ -590,9 +1271,9 @@ namespace DigitalAudioExperiment.ViewModel
                 _player?.Dispose();
                 _player = null;
 
-                if (_playlistPageView != null
+                if (PlaylistPageViewInstance != null
                     && viewModel != null
-                    && viewModel.PlayList.Any())
+                    && viewModel.IsHasList)
                 {
                     SetupWithAutoPlay(autoPlayOverride, fromPlayButton);
                 }
@@ -600,66 +1281,61 @@ namespace DigitalAudioExperiment.ViewModel
 
             DecoderType = _player?.DecoderType;
             OnPropertyChanged(nameof(DecoderType));
-        }
-
-        private void SetTickFrequency()
-        {
-            TickFrequency = SliderMaximum * _tickPercentage;
-        }
-
-        private void UpdatePosition(int position)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                Value = position;
-            });
-        }
-
-        public void StartIsSeeking(bool isSeeking)
-        {
-            _player?.Pause();
-        }
-
-        public void SetSeekValue()
-        {
-            _player?.Seek((int)Value);
-        }
-
-        private void SetAutoplayModeToggle()
-        {
-            IsAutoPlayChecked = !IsAutoPlayChecked;
-        }
-
-        private void SetLoopPlayModeToggle()
-        {
-            IsLoopPlayChecked = !IsLoopPlayChecked;
+            Settings.SaveSettings(this);
         }
 
         #endregion
 
         #region Application Logic
 
+        private void SetTickFrequency()
+        {
+            TickFrequency = SliderMaximum * _tickPercentage;
+        }
+
         private void OpenPlaylist()
         {
-            if (_playlistPageView != null
-                && (_playlistPageView.DataContext is PlaylistPageViewModel viewModel)
-                && viewModel.IsShowing)
+            var viewModel = PlaylistPageViewInstance?.DataContext as PlaylistPageViewModel;
+
+            if (viewModel == null)
             {
-                _playlistPageView.Close();
+                return;
+            }
+
+            var isShowing = PlaylistPageViewInstance.GetIsViewVisible();
+
+            if (PlaylistPageViewInstance != null
+                && viewModel != null
+                && (PlaylistPageViewInstance.GetIsViewVisible()
+                    || (!PlaylistPageViewInstance.GetIsViewVisible() && viewModel.IsShowing)))
+            {
+                PlaylistPageViewInstance.Close();
+                viewModel.IsShowing = false;
+                viewModel.Update();
 
                 return;
             }
 
-            if (_playlistPageView == null)
+            if (PlaylistPageViewInstance == null)
             {
-                _playlistPageView = new PlaylistPageView();
-                _playlistPageView.Owner = App.Current.MainWindow;
+                PlaylistPageViewInstance = new PlaylistPageView();
+                PlaylistPageViewInstance.Owner = App.Current.MainWindow;
             }
 
-            _playlistPageView.DataContext = _playlistPageView.DataContext == null || (_playlistPageView.DataContext is PlaylistPageViewModel) == null
+            PlaylistPageViewInstance.DataContext = PlaylistPageViewInstance.DataContext == null 
+                    || (PlaylistPageViewInstance.DataContext is PlaylistPageViewModel) == null
                 ? new PlaylistPageViewModel()
-                : _playlistPageView.DataContext;
-            _playlistPageView.Show();
+                : PlaylistPageViewInstance.DataContext;
+
+            PlaylistPageViewInstance.Owner = MainWindow.Instance;
+
+            if (!viewModel.IsDocked)
+            {
+                PlaylistPageViewInstance.Show();
+            }
+
+            viewModel.IsShowing = true;
+            viewModel.Update();
         }
 
         private void VolumeAdjust(int value)
@@ -699,7 +1375,7 @@ namespace DigitalAudioExperiment.ViewModel
             if (_filterSettingsView.IsDisposed())
             {
                 _filterSettingsView = new FilterSettingsView();
-                _filterSettingsView.DataContext = _filterSettingsViewModel;
+                _filterSettingsView.DataContext = FilterSettingsViewModel;
             }
 
             if (_filterSettingsView.IsLoaded)
@@ -709,6 +1385,31 @@ namespace DigitalAudioExperiment.ViewModel
 
             _filterSettingsView.Show();
         }
+
+        private void OpenSettings()
+        {
+            var settings = new SettingsView();
+
+            using (var viewModel = SettingsViewModel.GetSettingsInstance(this, FilterSettingsViewModel, settings.Close))
+            {
+                _isInitialising = true;
+
+                settings.DataContext = viewModel;
+                var result = settings.ShowDialog();
+
+                if (!viewModel.IsReset)
+                {
+                    _isInitialising = false;
+
+                    return;
+                }
+                
+                LoadSettings();
+            }
+        }
+
+        private void UpdateBassTrebleSettings()
+            => _player?.SetBassTreble(_bass, _treble);
 
         private void Exit()
         {
@@ -720,6 +1421,17 @@ namespace DigitalAudioExperiment.ViewModel
         #endregion
 
         #region Callbacks
+
+        private void UpdatePosition(int position)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (!_isSeeking)
+                {
+                    SeekIndicatorValue = position;
+                }
+            });
+        }
 
         private void OnFilterSettingsApplied(FilterSettingsViewModel filterSettingsViewModel)
         {
@@ -752,7 +1464,8 @@ namespace DigitalAudioExperiment.ViewModel
 
             if (IsLoopPlayChecked
                 && _canContinueLoopMode
-                && _player.IsStopped())
+                && _player.IsStopped()
+                && !_player.IsHardStop())
             {
                 PlayInternal();
 
@@ -764,14 +1477,15 @@ namespace DigitalAudioExperiment.ViewModel
                 if (IsAutoPlayChecked
                     && _player != null
                     && !_player.IsHardStop()
-                    && _playlistPageView.DataContext is PlaylistPageViewModel viewModel
+                    && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel viewModel
+                    && viewModel.IsHasList
                     && !viewModel.IsLastItem())
                 {
                     ResetPlayer();
                     SetupWithAutoPlay();
                 }
                 else if (_player != null
-                        && _playlistPageView.DataContext is PlaylistPageViewModel playListViewModel
+                        && PlaylistPageViewInstance.DataContext is PlaylistPageViewModel playListViewModel
                         && playListViewModel.IsLastItem()
                         && _player.IsStopped())
                 {
@@ -779,6 +1493,39 @@ namespace DigitalAudioExperiment.ViewModel
                     playListViewModel.ResetToSelectedPlayed();
                 }
             });
+        }
+
+        private void OnDockingChanged(bool isDocked)
+        {
+            var page = PlaylistPageViewInstance.GetPlaylistPage();
+            var viewModel = PlaylistPageViewInstance.DataContext as PlaylistPageViewModel;
+
+            if (page == null)
+            {
+                return;
+            }
+
+            if (viewModel == null)
+            {
+                return;
+            }
+
+            if (viewModel.IsDocked
+                && viewModel.IsShowing)
+            {
+                PlaylistPageViewInstance.Close();
+            }
+            else if (viewModel.IsShowing)
+            {
+                PlaylistPageViewInstance.Show();
+            }
+
+            if (_isInitialising)
+            {
+                return;
+            }
+
+            Settings.SaveSettings(this);
         }
 
         #endregion
@@ -792,6 +1539,18 @@ namespace DigitalAudioExperiment.ViewModel
                 , nameof(Metadata));
         }
 
+        private void OnAnyPropertyChanged(object? sender, PropertyChangedEventArgs args)
+        {
+            switch (args.PropertyName)
+            {
+                case nameof(Bass):
+                case nameof(Treble):
+                case nameof(IsAutoPlayChecked):
+                case nameof(IsLoopPlayChecked):
+                    Settings.SaveSettings(this);
+                    break;
+            }
+        }
         #endregion
 
         #region Dispose
@@ -810,17 +1569,21 @@ namespace DigitalAudioExperiment.ViewModel
 
                     _player?.Dispose();
 
-                    _playlistPageView?.CloseExit();
+                    PlaylistPageViewInstance?.CloseExit();
                     
-                    if (_playlistPageView?.DataContext is PlaylistPageViewModel viewModel)
+                    if (PlaylistPageViewInstance?.DataContext is PlaylistPageViewModel viewModel)
                     {
                         viewModel.Dispose();
-                        _playlistPageView.DataContext = null;
+                        PlaylistPageViewInstance.DataContext = null;
                     }
 
-                    _filterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;
-                    _filterSettingsViewModel?.Dispose();
+                    FilterSettingsViewModel.OnSettingsApplied -= OnFilterSettingsApplied;
+                    FilterSettingsViewModel?.Dispose();
                     _filterSettingsView?.Dispose();
+
+                    PropertyChanged -= OnAnyPropertyChanged;
+
+                    SettingsViewModel.GetSettingsInstance(null, null, null).ExplicitDispose();
                 }
 
                 _isDisposed = true;

@@ -22,16 +22,27 @@ namespace DigitalAudioExperiment
 {
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += OnLoaded;
         }
 
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            base.OnMouseLeftButtonDown(e);
+            Instance = this;
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs args)
+        {
+            base.OnMouseLeftButtonDown(args);
 
             this.DragMove();
+
+            args.Handled = true;
         }
     }
 }
