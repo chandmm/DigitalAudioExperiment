@@ -100,6 +100,18 @@ namespace DigitalAudioExperiment.ViewModel
             }
         }
 
+        private bool _isFileOrderOnly;
+        public bool IsFileOrderOnly
+        {
+            get => _isFileOrderOnly;
+            set
+            {
+                _isFileOrderOnly = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -114,6 +126,7 @@ namespace DigitalAudioExperiment.ViewModel
         public RelayCommand MoveDownCommand { get; private set; }
         public RelayCommand DockToggleCommand { get; private set; }
         public RelayCommand SortCommand { get; private set; }
+        public RelayCommand AllowSortCommand { get; private set; }
 
         #endregion
 
@@ -123,6 +136,7 @@ namespace DigitalAudioExperiment.ViewModel
         {
             PlayList = new ObservableCollection<PlaylistModel>();
             IsSortedAlpherbaticallyAscending = true;
+            IsFileOrderOnly = true;
 
             RemoveAllCommand = new RelayCommand(RemoveAll, () => true);
             RemoveCommand = new RelayCommand(Remove, () => true);
@@ -135,23 +149,46 @@ namespace DigitalAudioExperiment.ViewModel
             SortCommand = new RelayCommand(SortAscendingDescendingToggle, () => true);
             ExitPlaylistCommand = new RelayCommand(ExitPlaylist, () => true);
 
-            Sort();
+            AllowSortCommand = new RelayCommand(() =>
+            {
+                IsFileOrderOnly = !IsFileOrderOnly;
+                if (IsFileOrderOnly)
+                {
+                    var model = PlayList?.FirstOrDefault(x => x.IsSelected);
+
+                    LoadPlaylistFile(_currentPlaylist);
+
+                    if (model != null)
+                    {
+                        _previousPlayIndex = PlayList.IndexOf(PlayList.FirstOrDefault(x => x.FullFilePathName.Equals(model.FullFilePathName))) - 1;
+                        HandleIsSelected(PlayList.ElementAt(_previousPlayIndex + 1));
+                        //PlayList.Refresh();
+                    }
+                }
+                else
+                {
+                    Sort();
+                }
+            }, () => true);
         }
 
         #endregion
 
         #region Manage List
 
-        public void Add(string playlistItem)
+        public void Add(string fullFilePath)
         {
+            if (PlayList.Any(x => x.FullFilePathName.Equals(fullFilePath)))
+            {
+                return;
+            }
+
             PlayList.Add(
                 new PlaylistModel(HandleIsSelected)
                 {
-                    FullFilePathName = playlistItem,
-                    FileName = Path.GetFileName(playlistItem)
+                    FullFilePathName = fullFilePath,
+                    FileName = Path.GetFileName(fullFilePath)
                 });
-
-            Sort();
 
             OnPropertyChanged(nameof(IsHasList));
         }
@@ -302,6 +339,8 @@ namespace DigitalAudioExperiment.ViewModel
             {
                 Add(fileName);
             }
+
+            Sort();
 
             if (!PlayList.Any(x => x.IsSelected))
             {

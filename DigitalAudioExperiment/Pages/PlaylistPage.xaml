@@ -109,6 +109,24 @@
                                 <Viewbox Stretch="Uniform" Child="{StaticResource ExitIconViewBox}"/>
                             </Button.Content>
                         </Button>
+                        <Button
+                            ToolTip="Toggle between original order or sorted"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding AllowSortCommand}"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3">
+                            <Button.Resources>
+                                <Style TargetType="Button" BasedOn="{StaticResource PlaylistButtonStyle}">
+                                    <Setter Property="Content" Value="Enable sorting"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFileOrderOnly}" Value="False">
+                                            <Setter Property="Content" Value="Disable Sorting"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
                     </Grid>
                     <Grid Grid.ColumnSpan="10" 
                           Grid.Row="1" 
@@ -166,15 +184,16 @@
                         <Button
                             ToolTip="Sort playlist"
                             VerticalContentAlignment="Center"
-                            Grid.Column="4"
-                            Command="{Binding SortCommand}">
+                            Visibility="{Binding IsFileOrderOnly, Converter={StaticResource BoolToVisibilityInverseConvertor}}"
+                            Command="{Binding SortCommand}"
+                            Grid.Column="4">
                             <Button.Resources>
                                 <Style TargetType="Button" BasedOn="{StaticResource PlaylistButtonStyle}">
                                     <Setter Property="Content" Value="Sort descending"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsSortedAlpherbaticallyAscending}" Value="False">
-                                            <Setter Property="Content" Value="Sort ascending"/>        
+                                            <Setter Property="Content" Value="Sort ascending"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
