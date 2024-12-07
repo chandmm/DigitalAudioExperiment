@@ -82,6 +82,21 @@
           Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\Themes\AudioPlayerFacePlateBrushedMetal.png"
           KeyPath="yes" />
       </Component>
+    
+      <!--Default classic theme xml file-->
+      <Component Id="DefaultClassicXml" Guid="{29830948-A43F-44D0-AB04-D0202E1E2B9E}">
+        <File
+          Id="DefaultClassicXml"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\Themes\DefaultClassic.xml"
+          KeyPath="yes" />
+      </Component>
+      <!--Default modern theme xml file-->
+      <Component Id="DefaultThemeXml" Guid="{4909ACEA-2A0A-4BEF-BAEC-0ED9E9AC700A}">
+        <File
+          Id="DefaultThemeXml"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Resources\Themes\DefaultTheme.xml"
+          KeyPath="yes" />
+      </Component>
     </ComponentGroup>
     
     <ComponentGroup Id="ProductResourceComponents" Directory="ResourcesFolder">
@@ -270,6 +285,12 @@
         <File
           Id="Xceed.Wpf.ToolkitDllFile"
           Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\Xceed.Wpf.Toolkit.dll"
+          KeyPath="yes" />
+      </Component>
+      <Component Id="SettingsJson" Guid="{F9AE68BF-57BC-4ECC-8766-6D70B5A041B8}">
+        <File
+          Id="SettingsJson"
+          Source="..\DigitalAudioExperiment\bin\Release\net8.0-windows\settings.json"
           KeyPath="yes" />
       </Component>
     </ComponentGroup>
