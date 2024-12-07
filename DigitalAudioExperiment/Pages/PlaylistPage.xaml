@@ -50,12 +50,20 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <Button ToolTip="Dock playlist window"
-                            Style="{StaticResource PlaylistButtonStyle}"
+                        <Button
                             Command="{Binding DockToggleCommand}">
-                            <Button.Content>
-                                <Viewbox Stretch="Fill"  Child="{StaticResource DockModeViewBox}"/>
-                            </Button.Content>
+                            <Button.Resources>
+                                <Style TargetType="Button" BasedOn="{StaticResource PlaylistButtonStyle}">
+                                    <Setter Property="Content" Value="{StaticResource UndockedDockModeViewBox}"/>
+                                    <Setter Property="ToolTip" Value="Dock playlist window"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDocked}" Value="True">
+                                            <Setter Property="Content" Value="{StaticResource DockedModeViewBox}"/>
+                                            <Setter Property="ToolTip" Value="Undock playlist window"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
                         </Button>
                         <Button Grid.Column="4"
                             ToolTip="Load playlist from file."
