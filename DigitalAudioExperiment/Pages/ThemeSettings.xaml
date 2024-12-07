@@ -36,7 +36,7 @@
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Center"
                             Margin="5"
-                            Foreground="{StaticResource ComponentForegroundColour}"/>
+                            Foreground="{DynamicResource ComponentForegroundColour}"/>
                         <ComboBox Grid.Column="1"
                             Text="Combo Theme"
                             ItemsSource="{Binding ThematicList}"

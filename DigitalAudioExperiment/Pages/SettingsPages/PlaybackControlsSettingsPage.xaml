@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/WpfAudioControlLibrary;component/controls/convertors/Convertors.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="Label" BasedOn="{StaticResource SettingsLabelStyle}"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="5">

@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/WpfAudioControlLibrary;component/controls/convertors/Convertors.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="Label" BasedOn="{StaticResource SettingsLabelStyle}"/>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -36,11 +37,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Style="{StaticResource DialogLabelTitleStyle}"
-               Content="Set colours and settings for components in the VU meter"
+        <Label Content="Set colours and settings for components in the VU meter"
+               Style="{StaticResource DialogLabelTitleStyle}"
                Grid.ColumnSpan="2"/>
-        <Label Content="Background Colour:" 
-           Style="{StaticResource DialogLabelStyle}"
+        <Label Content="Background Colour:"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -53,7 +53,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Needle Colour:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -66,7 +65,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Decal Colour:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -79,7 +77,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Bottom Cover Fill:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -92,7 +89,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Overdrive Lamp Colour:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -105,7 +101,6 @@
               DisplayColorTooltip="True"
               Margin="5"/>
         <Label Content="Overdrive Lamp Off Colour:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -118,7 +113,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Meter Label Foreground:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"
@@ -131,7 +125,6 @@
                       DisplayColorTooltip="True"
                       Margin="5"/>
         <Label Content="Needle thickness:" 
-           Style="{StaticResource DialogLabelStyle}"
            Foreground="Black"
            VerticalAlignment="Center"
            Margin="5"

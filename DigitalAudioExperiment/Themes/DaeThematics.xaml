@@ -96,7 +96,11 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5"/>
     </Style>
-    
+
+    <Style TargetType="Label" x:Key="SettingsLabelStyle" BasedOn="{StaticResource DialogLabelStyle}">
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+
     <!--Templates-->
     <DataTemplate x:Key="PlaylistItemsTemplate">
         <Grid>

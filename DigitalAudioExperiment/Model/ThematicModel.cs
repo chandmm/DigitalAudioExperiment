@@ -179,6 +179,7 @@ namespace DigitalAudioExperiment.Model
             theme.ImagePath = Path.Combine("Resources/Themes", DefaultThemeClassicImageFile);
             theme.ThematicFileName = DefaultClassicThematicFileName;
             theme.Description = "Dlefault classic";
+            theme.ComponentForegroundColour = "White";
 
             return theme;
         }

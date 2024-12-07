@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/WpfAudioControlLibrary;component/controls/convertors/Convertors.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="Label" BasedOn="{StaticResource SettingsLabelStyle}"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -52,7 +53,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="0" 
                                   Grid.Column="1" 
@@ -68,7 +68,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="1" 
                                   Grid.Column="1" 
@@ -84,7 +83,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="2" 
                                   Grid.Column="1" 
@@ -100,7 +98,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="3" 
                                   Grid.Column="1" 
@@ -115,8 +112,7 @@
                        Grid.Row="4" 
                        Grid.Column="0" 
                        Margin="5" 
-                       VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
+                       VerticalAlignment="Center"  
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="4" 
                                   Grid.Column="1" 
@@ -132,7 +128,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="5" 
                                   Grid.Column="1" 
@@ -148,7 +143,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="6" 
                                   Grid.Column="1" 
@@ -163,8 +157,7 @@
                        Grid.Row="7" 
                        Grid.Column="0" 
                        Margin="5" 
-                       VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
+                       VerticalAlignment="Center"  
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="7" 
                                   Grid.Column="1" 
@@ -180,7 +173,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="8" 
                                   Grid.Column="1" 
@@ -196,7 +188,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="9" 
                                   Grid.Column="1" 
@@ -212,7 +203,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="10" 
                                   Grid.Column="1" 
@@ -228,7 +218,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="11" 
                                   Grid.Column="1" 
@@ -244,7 +233,6 @@
                        Grid.Column="0" 
                        Margin="5" 
                        VerticalAlignment="Center" 
-                       Style="{StaticResource DialogLabelStyle}" 
                        Foreground="Black"/>
                 <xctk:ColorPicker Grid.Row="12" 
                                   Grid.Column="1" 

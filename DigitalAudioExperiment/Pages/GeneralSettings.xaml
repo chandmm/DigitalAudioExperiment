@@ -17,11 +17,15 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition/>
-                    <RowDefinition/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Label Content="Reset all player settings to defaults."
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource ComponentForegroundColour}"/>
+                       Foreground="{DynamicResource ComponentForegroundColour}"
+                       Grid.ColumnSpan="2"/>
                 <Button Content="Default"
                         ToolTip="Reset player settings to defaults."
                         Style="{StaticResource PlaylistButtonStyle}" 
@@ -46,6 +50,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Grid.Row="2"
+                        Grid.Column="1"
                         Margin="5"/>    
             </Grid>
         </Border>
