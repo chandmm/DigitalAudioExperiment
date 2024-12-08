@@ -24,7 +24,6 @@ using DigitalAudioExperiment.ViewModel.SettingsViewModels;
 using System.ComponentModel;
 using System.IO;
 using System.Timers;
-using System.Windows.Media.Animation;
 
 namespace DigitalAudioExperiment.ViewModel
 {
@@ -1109,12 +1108,24 @@ namespace DigitalAudioExperiment.ViewModel
 
         private async void SkipToStartButton()
         {
+            if (_player == null
+                || _player.IsPaused)
+            {
+                return;
+            }
+
             SeekIndicatorValue = 0;
             SetSeekValue();
         }
 
         private void SkipToEndButton()
         {
+            if (_player == null
+                || _player.IsPaused)
+            {
+                return;
+            }
+
             SeekIndicatorValue = (int)_player?.GetFrameCount() - 1;
             SetSeekValue();
         }
@@ -1126,6 +1137,7 @@ namespace DigitalAudioExperiment.ViewModel
 
         public void SetSeekValue()
         {
+            IsPaused = false;
             _player?.Seek((int)SeekIndicatorValue);
         }
 
@@ -1183,6 +1195,8 @@ namespace DigitalAudioExperiment.ViewModel
             }
 
             OnFileSelected(fileName, doNotAutoPlay);
+
+            IsPaused = false;
         }
 
         private void ResetPlayer()
