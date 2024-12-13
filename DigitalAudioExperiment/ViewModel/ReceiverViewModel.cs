@@ -1087,7 +1087,6 @@ namespace DigitalAudioExperiment.ViewModel
             Task.Run(() =>
             {
                 _player?.Play();
-
             }).ConfigureAwait(false);
 
             RaisePropertyChangedEvents();
