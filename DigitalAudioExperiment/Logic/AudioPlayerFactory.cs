@@ -30,19 +30,18 @@ namespace DigitalAudioExperiment.Logic
 
             var extension = Path.GetExtension(fileName).ToLower();
             IAudioPlayer player = null;
-
             switch (extension)
             {
                 case ".mp3":
-                {
-                    player = new AudioPlayerMp3(fileName);
-                    break;
-                }
+                    {
+                        player = new AudioPlayerMp3(fileName);
+                        break;
+                    }
                 case ".flac":
-                {
-                    player = new AudioPlayerFlac(fileName);
-                    break;
-                }
+                    {
+                        player = new AudioPlayerFlac(fileName);
+                        break;
+                    }
                 case ".wav":
                     player = new AudioPlayerPcm(fileName);
                     break;

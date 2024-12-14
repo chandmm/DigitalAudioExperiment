@@ -1087,7 +1087,6 @@ namespace DigitalAudioExperiment.ViewModel
             Task.Run(() =>
             {
                 _player?.Play();
-
             }).ConfigureAwait(false);
 
             RaisePropertyChangedEvents();
@@ -1449,6 +1448,8 @@ namespace DigitalAudioExperiment.ViewModel
 
         private void Exit()
         {
+            Settings.SaveSettings(this);
+
             this.Dispose();
             
             Environment.Exit(0);

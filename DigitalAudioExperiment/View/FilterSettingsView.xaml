@@ -18,7 +18,7 @@
         x:Name="filterSettingsDialog">
     
     <Grid>
-        <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="2">
+        <Viewbox Stretch="Fill" Grid.RowSpan="2" Margin="4">
             <Image Style="{StaticResource ReceiverFacePlateImageKey}"/>
         </Viewbox>
         <Border Style="{StaticResource DialogBorderStyle}">

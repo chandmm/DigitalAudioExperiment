@@ -94,7 +94,14 @@ namespace DigitalAudioExperiment.Logic
                 throw new ApplicationException("No frames present or invalid audio file format.");
             }
 
-            return string.Join("\r\n", _simpleDecoder.GetFrames().First().ToStringShort().Split("\r\n").Take(4));
+            try
+            {
+                return string.Join("\r\n", _simpleDecoder.GetFrames().First().ToStringShort().Split("\r\n").Take(4));
+            }
+            catch 
+            {
+                return "No Data.";
+            }
         }
 
         public override bool GetIsMonoChannel()
