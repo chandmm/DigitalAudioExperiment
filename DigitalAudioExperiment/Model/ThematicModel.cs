@@ -178,8 +178,10 @@ namespace DigitalAudioExperiment.Model
             theme.Id = DefaultClassicThemeGuid;
             theme.ImagePath = Path.Combine("Resources/Themes", DefaultThemeClassicImageFile);
             theme.ThematicFileName = DefaultClassicThematicFileName;
-            theme.Description = "Dlefault classic";
+            theme.Description = "Default classic";
             theme.ComponentForegroundColour = "White";
+            theme.GainSliderTextForeground = "White";
+            theme.GainSliderTickForeground = "White";
 
             return theme;
         }
@@ -243,7 +245,7 @@ namespace DigitalAudioExperiment.Model
             PanelBackground = DefaultPanelBackground,
             PanelForeground = DefaultPanelForeground,
             Description = "Default modern",
-            ThematicFileName = "DefaultTheme.xml",
+            ThematicFileName = DefaultThematicFileName,
             ImagePath = Path.Combine("Resources/Themes", DefaultThemeImageFile),
             Id = DefaultThemeGuid,
         };
